@@ -1,0 +1,3047 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.43.1.21952",
+      "templateHash": "2517968462479158164"
+    }
+  },
+  "definitions": {
+    "subnetConfigurationType": {
+      "type": "object",
+      "properties": {
+        "subnetName": {
+          "type": "string"
+        },
+        "networkPrefixSize": {
+          "type": "int"
+        }
+      }
+    },
+    "governedServiceType": {
+      "type": "object",
+      "properties": {
+        "serviceId": {
+          "type": "string"
+        },
+        "option": {
+          "type": "string"
+        },
+        "enforcement": {
+          "type": "string"
+        },
+        "policyAction": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "parameters": {
+    "prefix": {
+      "type": "string",
+      "metadata": {
+        "example": "ave",
+        "description": "Prefix for resource naming."
+      },
+      "minLength": 1,
+      "maxLength": 6
+    },
+    "suffix": {
+      "type": "string",
+      "metadata": {
+        "example": "prod",
+        "description": "Suffix for resource naming."
+      },
+      "minLength": 1,
+      "maxLength": 6
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[deployment().location]",
+      "metadata": {
+        "example": "eastus",
+        "description": "Azure region for all resources."
+      }
+    },
+    "communitySubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Subscription ID for community resources."
+      }
+    },
+    "communityResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[format('rg-{0}-community-{1}', parameters('prefix'), parameters('suffix'))]",
+      "metadata": {
+        "description": "Resource group name for community resources."
+      }
+    },
+    "enclaveSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Subscription ID for enclave resources."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {
+        "created-by": "Mrs. Admin",
+        "deploy-type": "production"
+      },
+      "metadata": {
+        "description": "Tags to apply to all resources."
+      }
+    },
+    "communityAddressSpace": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/16",
+      "metadata": {
+        "description": "Address space for the community network in CIDR notation."
+      }
+    },
+    "communityMaintenanceModeMode": {
+      "type": "string",
+      "defaultValue": "Off",
+      "allowedValues": [
+        "Off",
+        "General",
+        "Advanced"
+      ],
+      "metadata": {
+        "description": "Maintenance mode for the community."
+      }
+    },
+    "communityMaintenanceModeJustification": {
+      "type": "string",
+      "defaultValue": "Off",
+      "allowedValues": [
+        "Off",
+        "Networking",
+        "Governance"
+      ],
+      "metadata": {
+        "description": "Maintenance mode justification for the community."
+      }
+    },
+    "communityMaintenanceModePrincipals": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "List of principal objects for community maintenance mode access. Off example: \"principals\":[]}. On example: \"principals\":[{\"id\":\"<your-user-object-id>\",\"type\":\"User\"}]}."
+      }
+    },
+    "enclaveLabel": {
+      "type": "string",
+      "defaultValue": "WebApp",
+      "metadata": {
+        "description": "Name for the enclave resource."
+      }
+    },
+    "enclaveName": {
+      "type": "string",
+      "defaultValue": "[format('ve-{0}-{1}-{2}', parameters('prefix'), parameters('enclaveLabel'), parameters('suffix'))]",
+      "minLength": 3,
+      "maxLength": 30,
+      "metadata": {
+        "description": "Name for the enclave resource."
+      }
+    },
+    "enclave1ResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[format('rg-ve-{0}-{1}-{2}', parameters('prefix'), parameters('enclaveLabel'), parameters('suffix'))]",
+      "metadata": {
+        "description": "Resource group name for the first enclave."
+      }
+    },
+    "networkSize": {
+      "type": "string",
+      "defaultValue": "small",
+      "allowedValues": [
+        "small",
+        "medium",
+        "large",
+        "custom"
+      ],
+      "metadata": {
+        "description": "Network size for the enclave virtual network."
+      }
+    },
+    "enclaveSubnetConfigurations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/subnetConfigurationType"
+      },
+      "defaultValue": [
+        {
+          "subnetName": "appSubnet",
+          "networkPrefixSize": 26
+        },
+        {
+          "subnetName": "workloadSubnet",
+          "networkPrefixSize": 26
+        }
+      ],
+      "metadata": {
+        "example": [
+          {
+            "subnetName": "appSubnet",
+            "networkPrefixSize": 26
+          },
+          {
+            "subnetName": "workloadSubnet",
+            "networkPrefixSize": 26
+          }
+        ],
+        "description": "Subnet configurations for the enclave."
+      }
+    },
+    "enclaveMaintenanceModeMode": {
+      "type": "string",
+      "defaultValue": "Off",
+      "allowedValues": [
+        "Off",
+        "General",
+        "Advanced"
+      ],
+      "metadata": {
+        "description": "Maintenance mode for the enclave."
+      }
+    },
+    "enclaveMaintenanceModeJustification": {
+      "type": "string",
+      "defaultValue": "Off",
+      "allowedValues": [
+        "Off",
+        "Networking",
+        "Governance"
+      ],
+      "metadata": {
+        "description": "Maintenance mode justification for the enclave."
+      }
+    },
+    "enclaveMaintenanceModePrincipals": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "List of principal objects for enclave maintenance mode access. Off example: \"principals\":[]}. On example: \"principals\":[{\"id\":\"<your-user-object-id>\",\"type\":\"User\"}]}."
+      }
+    },
+    "deployWorkload": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Whether to deploy a workload within the enclave."
+      }
+    },
+    "appendUniqueNameSuffix": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Whether to append a unique suffix to resource names to avoid conflicts."
+      }
+    },
+    "workloadName": {
+      "type": "string",
+      "defaultValue": "[format('wl-{0}-{1}-{2}', parameters('prefix'), parameters('enclaveLabel'), parameters('suffix'))]",
+      "minLength": 3,
+      "maxLength": 30,
+      "metadata": {
+        "description": "Name for the workload resource (only used if deployWorkload is true)."
+      }
+    },
+    "workloadResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[if(parameters('appendUniqueNameSuffix'), format('wl-rg-{0}-{1}-{2}-{3}', parameters('prefix'), parameters('enclaveLabel'), parameters('suffix'), substring(uniqueString(deployment().name, parameters('location')), 0, 4)), format('wl-rg-{0}-{1}-{2}', parameters('prefix'), parameters('enclaveLabel'), parameters('suffix')))]",
+      "metadata": {
+        "description": "Resource group name for the workload (only used if deployWorkload is true)."
+      }
+    },
+    "deployTransitHub": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Whether to deploy a transit hub for on-premises/remote connectivity."
+      }
+    },
+    "transitHubRemoteVnetId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Network/virtualNetworks/vnet-example",
+        "description": "Resource ID of the remote virtual network for peering through your transit hub."
+      }
+    },
+    "transitHubConnectionType": {
+      "type": "string",
+      "defaultValue": "Gateway",
+      "allowedValues": [
+        "Gateway",
+        "ExpressRoute",
+        "Peering"
+      ],
+      "metadata": {
+        "description": "Type of connection for the transit hub."
+      }
+    },
+    "remoteSourceAddressSpace": {
+      "type": "string",
+      "defaultValue": "172.16.0.0/23",
+      "metadata": {
+        "example": "172.16.0.0/23",
+        "description": "Source address space for remote connections (CIDR notation, comma-separated for multiple ranges)."
+      }
+    }
+  },
+  "variables": {
+    "governedServices": [
+      {
+        "serviceId": "AKS",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "AppService",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "ContainerRegistry",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "CosmosDB",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "KeyVault",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "MicrosoftSQL",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "Monitoring",
+        "option": "NotApplicable",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "PostgreSQL",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "ServiceBus",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "Storage",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "AzureFirewalls",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "Insights",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "Logic",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "PrivateDNSZones",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      },
+      {
+        "serviceId": "DataConnectors",
+        "option": "Allow",
+        "enforcement": "Enabled",
+        "policyAction": "Enforce"
+      }
+    ],
+    "transitOptions": "[if(equals(parameters('transitHubConnectionType'), 'Peering'), createObject('type', parameters('transitHubConnectionType'), 'params', createObject('remoteVirtualNetworkId', parameters('transitHubRemoteVnetId'))), createObject('type', parameters('transitHubConnectionType'), 'params', createObject('scaleUnits', 2)))]",
+    "authenticationEndpointRules": [
+      {
+        "endpointRuleName": "auth-microsoft",
+        "destinationType": "FQDN",
+        "destination": "login.microsoftonline.com,*.msft.sts.microsoft.com,*.aadcdn.msftauth.net,*.aadcdn.msftauthimages.net,*.aadcdn.msauthimages.net,*.logincdn.msftauth.net,login.live.com,*.msauth.net,microsoftonline-p.com,*.microsoftonline-p.com,*.live.com,*.microsoftonline.com,*.microsoftonlinesupport.net,autologon.microsoftazuread-sso.com,clientconfig.passport.net,hrd.svc.cloud.microsoft",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      },
+      {
+        "endpointRuleName": "auth-mfa",
+        "destinationType": "FQDN",
+        "destination": "pfd.phonefactor.net,pfd2.phonefactor.net,css.phonefactor.net",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      },
+      {
+        "endpointRuleName": "auth-certs",
+        "destinationType": "FQDN",
+        "destination": "*.digicert.com,www.microsoft.com,crl.microsoft.com",
+        "protocols": [
+          "HTTP"
+        ],
+        "ports": "80"
+      }
+    ],
+    "portalManagementEndpointRules": [
+      {
+        "endpointRuleName": "portal-core",
+        "destinationType": "FQDN",
+        "destination": "*.portal.azure.com,*.hosting.portal.azure.net,*.reactblade.portal.azure.net,*reactblade-ms.portal.azure.net,afd-v2.hosting-ms.portal.azure.net,shell.azure.com,management.azure.com",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      },
+      {
+        "endpointRuleName": "portal-services",
+        "destinationType": "FQDN",
+        "destination": "gallery.azure.com,marketplacedataprovider.azure.com,marketplaceemail.azure.com,catalogapi.azure.com,catalogartifact.azureedge.net",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      }
+    ],
+    "azureServiceEndpointRules": [
+      {
+        "endpointRuleName": "services-data-analytics",
+        "destinationType": "FQDN",
+        "destination": "*.asazure.windows.net,asazure.windows.net,*.database.windows.net,datalake.azure.net,cosmos.azure.com,dev.azuresynapse.net,kusto.windows.net,help.kusto.windows.net",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      },
+      {
+        "endpointRuleName": "services-compute-integration",
+        "destinationType": "FQDN",
+        "destination": "appservice.azure.com,*.azurewebsites.net,batch.azure.com,functions.azure.com,logic.azure.com,eventhubs.azure.net,servicebus.azure.net,servicebus.windows.net,*.servicebus.windows.net",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      },
+      {
+        "endpointRuleName": "services-ai-iot",
+        "destinationType": "FQDN",
+        "destination": "cognitiveservices.azure.com,digitaltwins.azure.net,sphere.azure.net,quantum.azure.com",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      },
+      {
+        "endpointRuleName": "services-governance-security",
+        "destinationType": "FQDN",
+        "destination": "purview.azure.com,informationprotection.azure.com,api.aadrm.com,identitygovernance.azure.com,iga.azure.com,elm.iga.azure.com,mspim.azure.com,api.azrbac.mspim.azure.com,*.access.mcas.ms,cxcs.microsoft.net",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      },
+      {
+        "endpointRuleName": "services-monitoring-storage",
+        "destinationType": "FQDN",
+        "destination": "*.applicationinsights.azure.com,monitor.azure.com,api.loganalytics.io,changeanalysis.azure.com,storage.azure.com,storage.azure.net,*core.windows.net,vault.azure.net,search.azure.com,adl.windows.com",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      },
+      {
+        "endpointRuleName": "services-misc",
+        "destinationType": "FQDN",
+        "destination": "*.azconfig.io,*.aad.azure.com,*.aadconnecthealth.azure.com,ad.azure.com,adf.azure.com,*.arc.azure.net,bastion.azure.com,config.office.com,media.azure.net,rest.media.azure.net,network.azure.com,dev.azure.com,*.wvd.microsoft.com,enterpriseregistration.windows.net,ecs.office.com,asmconfigfiles-prod.azure-api.net",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      }
+    ],
+    "graphExtensionEndpointRules": [
+      {
+        "endpointRuleName": "graph-apis",
+        "destinationType": "FQDN",
+        "destination": "*.graph.windows.net,*.graph.microsoft.com,graph.microsoft.com",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      },
+      {
+        "endpointRuleName": "azure-extensions",
+        "destinationType": "FQDN",
+        "destination": "*.ext.azure.com",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      }
+    ],
+    "microsoftCdnEndpointRules": [
+      {
+        "endpointRuleName": "microsoft-domains",
+        "destinationType": "FQDN",
+        "destination": "*microsoft.com,*azure.com,*.msn.com,*.msn.cn,go.microsoft.com,aka.ms,learn.microsoft.com,privacy.microsoft.com,azure.status.microsoft,packages.microsoft.com,www.msftconnecttest.com,client.wns.windows.com,www.bing.com",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      },
+      {
+        "endpointRuleName": "cdn-edge",
+        "destinationType": "FQDN",
+        "destination": "*.azureedge.net,*.akamaized.net,static.edge.microsoftapp.net,*config.edge.skype.com,outlookmobile-office365-tas.msedge.net",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      }
+    ],
+    "thirdPartyEndpointRules": [
+      {
+        "endpointRuleName": "third-party-services",
+        "destinationType": "FQDN",
+        "destination": "clients2.google.com,clients2.googleusercontent.com,www.googleapis.com,bing.com",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      },
+      {
+        "endpointRuleName": "telemetry-reporting",
+        "destinationType": "FQDN",
+        "destination": "query.prod.cms.rt.microsoft.com,identity.nel.measure.office.net,deff.nelreports.net",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      }
+    ],
+    "azurePortalEndpointRules": "[concat(variables('authenticationEndpointRules'), variables('portalManagementEndpointRules'), variables('azureServiceEndpointRules'), variables('graphExtensionEndpointRules'), variables('microsoftCdnEndpointRules'), variables('thirdPartyEndpointRules'))]",
+    "windowsUpdateEndpointRules": [
+      {
+        "endpointRuleName": "win-updates-https",
+        "destinationType": "FQDNTag",
+        "destination": "windowsupdate",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      },
+      {
+        "endpointRuleName": "win-updates-http",
+        "destinationType": "FQDNTag",
+        "destination": "windowsupdate",
+        "protocols": [
+          "HTTP"
+        ],
+        "ports": "80"
+      }
+    ],
+    "wingetEndpointRules": [
+      {
+        "endpointRuleName": "win-winget-https",
+        "destinationType": "FQDN",
+        "destination": "github.com,*.github.com,objects.githubusercontent.com,*.azureedge.com,*.azurefd.net,*.sourceforge.net,sourceforge.net,settings-win.data.microsoft.com",
+        "protocols": [
+          "HTTPS"
+        ],
+        "ports": "443"
+      }
+    ]
+  },
+  "resources": {
+    "communityResourceGroup": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('communityResourceGroup-{0}', uniqueString('communityResourceGroup', deployment().name))]",
+      "subscriptionId": "[parameters('communitySubscriptionId')]",
+      "location": "[deployment().location]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "resourceGroupName": {
+            "value": "[parameters('communityResourceGroupName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "resourceGroupTags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "1185626799855696947"
+            },
+            "name": "Resource Group Creation",
+            "description": "Creates a new resource group at the subscription scope with configurable location and tags.",
+            "owner": "Azure/module-maintainers"
+          },
+          "parameters": {
+            "resourceGroupName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 90,
+              "metadata": {
+                "description": "The name of the resource group to create."
+              }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The Azure region where the resource group will be created."
+              }
+            },
+            "resourceGroupTags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Optional. Tags to apply to the resource group."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/resourceGroups",
+              "apiVersion": "2024-03-01",
+              "name": "[parameters('resourceGroupName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('resourceGroupTags')]"
+            }
+          ],
+          "outputs": {
+            "resourceGroupId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the created resource group."
+              },
+              "value": "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the created resource group."
+              },
+              "value": "[parameters('resourceGroupName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location of the created resource group."
+              },
+              "value": "[reference(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName')), '2024-03-01', 'full').location]"
+            }
+          }
+        }
+      }
+    },
+    "community": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('cmt-{0}-com-{1}', parameters('prefix'), parameters('suffix'))]",
+      "subscriptionId": "[parameters('communitySubscriptionId')]",
+      "resourceGroup": "[parameters('communityResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "communityName": {
+            "value": "[format('cmt-{0}-com-{1}', parameters('prefix'), parameters('suffix'))]"
+          },
+          "addressSpace": {
+            "value": "[parameters('communityAddressSpace')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          },
+          "maintenanceModeConfiguration": {
+            "value": {
+              "mode": "[parameters('communityMaintenanceModeMode')]",
+              "justification": "[parameters('communityMaintenanceModeJustification')]",
+              "principals": "[parameters('communityMaintenanceModePrincipals')]"
+            }
+          },
+          "governedServiceList": {
+            "value": "[variables('governedServices')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "7842133429700029390"
+            },
+            "name": "Community Module",
+            "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
+          },
+          "definitions": {
+            "maintenanceModeConfigurationType": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "allowedValues": [
+                    "Advanced",
+                    "General",
+                    "Off"
+                  ],
+                  "metadata": {
+                    "description": "The mode of the maintenance mode configuration for the community."
+                  }
+                },
+                "justification": {
+                  "type": "string",
+                  "allowedValues": [
+                    "Governance",
+                    "Networking",
+                    "Off"
+                  ],
+                  "metadata": {
+                    "description": "The justification for the maintenance mode configuration for the community."
+                  }
+                },
+                "principals": {
+                  "type": "array",
+                  "metadata": {
+                    "description": "The principals for the maintenance mode configuration for the community."
+                  }
+                }
+              }
+            },
+            "governedServiceType": {
+              "type": "object",
+              "properties": {
+                "serviceId": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The service identifier."
+                  }
+                },
+                "option": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The service option (Allow, Deny, NotApplicable)."
+                  }
+                },
+                "enforcement": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The enforcement mode (Enabled, Disabled)."
+                  }
+                },
+                "policyAction": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The policy action (Enforce, Audit)."
+                  }
+                }
+              }
+            }
+          },
+          "parameters": {
+            "communityName": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 30,
+              "metadata": {
+                "description": "The name of the community resource."
+              }
+            },
+            "addressSpace": {
+              "type": "string",
+              "defaultValue": "10.0.0.0/16",
+              "metadata": {
+                "example": "10.0.0.0/16",
+                "description": "The address space for the community in CIDR notation."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "tabGroup": "Tags",
+                "description": "Tags to be assigned to the community resource."
+              }
+            },
+            "maintenanceModeConfiguration": {
+              "$ref": "#/definitions/maintenanceModeConfigurationType",
+              "defaultValue": {
+                "mode": "Off",
+                "justification": "Off",
+                "principals": []
+              },
+              "metadata": {
+                "displayName": "Maintenance Mode Configuration",
+                "description": "The maintenance mode configuration for the community."
+              }
+            },
+            "governedServiceList": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/governedServiceType"
+              },
+              "metadata": {
+                "displayName": "Governed Services",
+                "description": "The list of governed services for the community."
+              }
+            }
+          },
+          "resources": {
+            "community": {
+              "type": "Microsoft.Mission/communities",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[parameters('communityName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "addressSpace": "[parameters('addressSpace')]",
+                "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]",
+                "governedServiceList": "[parameters('governedServiceList')]"
+              }
+            }
+          },
+          "outputs": {
+            "resourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the community."
+              },
+              "value": "[resourceId('Microsoft.Mission/communities', parameters('communityName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the community."
+              },
+              "value": "[parameters('communityName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where the community was deployed."
+              },
+              "value": "[reference('community', '2025-05-01-preview', 'full').location]"
+            },
+            "addressPrefixes": {
+              "type": "string",
+              "metadata": {
+                "description": "The address prefixes of the community."
+              },
+              "value": "[parameters('addressSpace')]"
+            },
+            "maintenanceModeConfiguration": {
+              "$ref": "#/definitions/maintenanceModeConfigurationType",
+              "metadata": {
+                "description": "The current maintenance mode configuration."
+              },
+              "value": "[parameters('maintenanceModeConfiguration')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "communityResourceGroup"
+      ]
+    },
+    "communityEndpointMsftAzure": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('communityEndpointMsftAzure-{0}', uniqueString('communityEndpointMsftAzure', deployment().name))]",
+      "subscriptionId": "[parameters('communitySubscriptionId')]",
+      "resourceGroup": "[parameters('communityResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "communityEndpointName": {
+            "value": "[format('ce-{0}-msftAz-{1}', parameters('prefix'), parameters('suffix'))]"
+          },
+          "communityName": {
+            "value": "[reference('community').outputs.name.value]"
+          },
+          "communityEndpointRuleCollection": {
+            "value": "[variables('azurePortalEndpointRules')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "7393868016241208554"
+            }
+          },
+          "definitions": {
+            "endpointRuleType": {
+              "type": "object",
+              "properties": {
+                "endpointRuleName": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The name of the rule."
+                  }
+                },
+                "destinationType": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The type of destination (FQDN, FQDNTag, IP)."
+                  }
+                },
+                "destination": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The destination value (FQDN, tag name, or IP)."
+                  }
+                },
+                "protocols": {
+                  "type": "array",
+                  "metadata": {
+                    "description": "The protocols allowed (HTTP, HTTPS, TCP, UDP)."
+                  }
+                },
+                "ports": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The port number or range."
+                  }
+                },
+                "transitHubResourceId": {
+                  "type": "string",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Optional. Transit Hub Resource Id for PrivateNetwork destinations."
+                  }
+                }
+              }
+            }
+          },
+          "parameters": {
+            "communityName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the community."
+              }
+            },
+            "communityEndpointName": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 30,
+              "metadata": {
+                "description": "The name of the community endpoint."
+              }
+            },
+            "communityEndpointRuleCollection": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/endpointRuleType"
+              },
+              "metadata": {
+                "example": [
+                  {
+                    "endpointRuleName": "example-rule",
+                    "destinationType": "FQDN",
+                    "destination": "*.example.com",
+                    "protocols": [
+                      "HTTPS"
+                    ],
+                    "ports": "443"
+                  }
+                ],
+                "description": "The rule collection for the community endpoint."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location of the resource."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Optional. Tags to apply to the community endpoint."
+              }
+            }
+          },
+          "resources": {
+            "community": {
+              "existing": true,
+              "type": "Microsoft.Mission/communities",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[parameters('communityName')]"
+            },
+            "communityEndpoint": {
+              "type": "Microsoft.Mission/communities/communityEndpoints",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
+              }
+            }
+          },
+          "outputs": {
+            "communityEndpointResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the community endpoint."
+              },
+              "value": "[resourceId('Microsoft.Mission/communities/communityEndpoints', parameters('communityName'), parameters('communityEndpointName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the community endpoint."
+              },
+              "value": "[parameters('communityEndpointName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where the community endpoint was deployed."
+              },
+              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "community"
+      ]
+    },
+    "communityEndpointWinUpdate": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('communityEndpointWinUpdate-{0}', uniqueString('communityEndpointWinUpdate', deployment().name))]",
+      "subscriptionId": "[parameters('communitySubscriptionId')]",
+      "resourceGroup": "[parameters('communityResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "communityEndpointName": {
+            "value": "[format('ce-{0}-winupd-{1}', parameters('prefix'), parameters('suffix'))]"
+          },
+          "communityName": {
+            "value": "[reference('community').outputs.name.value]"
+          },
+          "communityEndpointRuleCollection": {
+            "value": "[variables('windowsUpdateEndpointRules')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "7393868016241208554"
+            }
+          },
+          "definitions": {
+            "endpointRuleType": {
+              "type": "object",
+              "properties": {
+                "endpointRuleName": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The name of the rule."
+                  }
+                },
+                "destinationType": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The type of destination (FQDN, FQDNTag, IP)."
+                  }
+                },
+                "destination": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The destination value (FQDN, tag name, or IP)."
+                  }
+                },
+                "protocols": {
+                  "type": "array",
+                  "metadata": {
+                    "description": "The protocols allowed (HTTP, HTTPS, TCP, UDP)."
+                  }
+                },
+                "ports": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The port number or range."
+                  }
+                },
+                "transitHubResourceId": {
+                  "type": "string",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Optional. Transit Hub Resource Id for PrivateNetwork destinations."
+                  }
+                }
+              }
+            }
+          },
+          "parameters": {
+            "communityName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the community."
+              }
+            },
+            "communityEndpointName": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 30,
+              "metadata": {
+                "description": "The name of the community endpoint."
+              }
+            },
+            "communityEndpointRuleCollection": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/endpointRuleType"
+              },
+              "metadata": {
+                "example": [
+                  {
+                    "endpointRuleName": "example-rule",
+                    "destinationType": "FQDN",
+                    "destination": "*.example.com",
+                    "protocols": [
+                      "HTTPS"
+                    ],
+                    "ports": "443"
+                  }
+                ],
+                "description": "The rule collection for the community endpoint."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location of the resource."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Optional. Tags to apply to the community endpoint."
+              }
+            }
+          },
+          "resources": {
+            "community": {
+              "existing": true,
+              "type": "Microsoft.Mission/communities",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[parameters('communityName')]"
+            },
+            "communityEndpoint": {
+              "type": "Microsoft.Mission/communities/communityEndpoints",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
+              }
+            }
+          },
+          "outputs": {
+            "communityEndpointResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the community endpoint."
+              },
+              "value": "[resourceId('Microsoft.Mission/communities/communityEndpoints', parameters('communityName'), parameters('communityEndpointName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the community endpoint."
+              },
+              "value": "[parameters('communityEndpointName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where the community endpoint was deployed."
+              },
+              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "community"
+      ]
+    },
+    "communityEndpointWinget": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('communityEndpointWinget-{0}', uniqueString('communityEndpointWinget', deployment().name))]",
+      "subscriptionId": "[parameters('communitySubscriptionId')]",
+      "resourceGroup": "[parameters('communityResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "communityEndpointName": {
+            "value": "[format('ce-{0}-winget-{1}', parameters('prefix'), parameters('suffix'))]"
+          },
+          "communityName": {
+            "value": "[reference('community').outputs.name.value]"
+          },
+          "communityEndpointRuleCollection": {
+            "value": "[variables('wingetEndpointRules')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "7393868016241208554"
+            }
+          },
+          "definitions": {
+            "endpointRuleType": {
+              "type": "object",
+              "properties": {
+                "endpointRuleName": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The name of the rule."
+                  }
+                },
+                "destinationType": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The type of destination (FQDN, FQDNTag, IP)."
+                  }
+                },
+                "destination": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The destination value (FQDN, tag name, or IP)."
+                  }
+                },
+                "protocols": {
+                  "type": "array",
+                  "metadata": {
+                    "description": "The protocols allowed (HTTP, HTTPS, TCP, UDP)."
+                  }
+                },
+                "ports": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The port number or range."
+                  }
+                },
+                "transitHubResourceId": {
+                  "type": "string",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Optional. Transit Hub Resource Id for PrivateNetwork destinations."
+                  }
+                }
+              }
+            }
+          },
+          "parameters": {
+            "communityName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the community."
+              }
+            },
+            "communityEndpointName": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 30,
+              "metadata": {
+                "description": "The name of the community endpoint."
+              }
+            },
+            "communityEndpointRuleCollection": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/endpointRuleType"
+              },
+              "metadata": {
+                "example": [
+                  {
+                    "endpointRuleName": "example-rule",
+                    "destinationType": "FQDN",
+                    "destination": "*.example.com",
+                    "protocols": [
+                      "HTTPS"
+                    ],
+                    "ports": "443"
+                  }
+                ],
+                "description": "The rule collection for the community endpoint."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location of the resource."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Optional. Tags to apply to the community endpoint."
+              }
+            }
+          },
+          "resources": {
+            "community": {
+              "existing": true,
+              "type": "Microsoft.Mission/communities",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[parameters('communityName')]"
+            },
+            "communityEndpoint": {
+              "type": "Microsoft.Mission/communities/communityEndpoints",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
+              }
+            }
+          },
+          "outputs": {
+            "communityEndpointResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the community endpoint."
+              },
+              "value": "[resourceId('Microsoft.Mission/communities/communityEndpoints', parameters('communityName'), parameters('communityEndpointName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the community endpoint."
+              },
+              "value": "[parameters('communityEndpointName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where the community endpoint was deployed."
+              },
+              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "community"
+      ]
+    },
+    "enc1ResourceGroup": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('enc1ResourceGroup-{0}', uniqueString('enc1ResourceGroup', deployment().name))]",
+      "subscriptionId": "[parameters('enclaveSubscriptionId')]",
+      "location": "[deployment().location]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "resourceGroupName": {
+            "value": "[parameters('enclave1ResourceGroupName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "resourceGroupTags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "1185626799855696947"
+            },
+            "name": "Resource Group Creation",
+            "description": "Creates a new resource group at the subscription scope with configurable location and tags.",
+            "owner": "Azure/module-maintainers"
+          },
+          "parameters": {
+            "resourceGroupName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 90,
+              "metadata": {
+                "description": "The name of the resource group to create."
+              }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The Azure region where the resource group will be created."
+              }
+            },
+            "resourceGroupTags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Optional. Tags to apply to the resource group."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/resourceGroups",
+              "apiVersion": "2024-03-01",
+              "name": "[parameters('resourceGroupName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('resourceGroupTags')]"
+            }
+          ],
+          "outputs": {
+            "resourceGroupId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the created resource group."
+              },
+              "value": "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the created resource group."
+              },
+              "value": "[parameters('resourceGroupName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location of the created resource group."
+              },
+              "value": "[reference(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName')), '2024-03-01', 'full').location]"
+            }
+          }
+        }
+      }
+    },
+    "enclave1": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[parameters('enclaveName')]",
+      "subscriptionId": "[parameters('enclaveSubscriptionId')]",
+      "resourceGroup": "[parameters('enclave1ResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "enclaveName": {
+            "value": "[parameters('enclaveName')]"
+          },
+          "communityResourceId": {
+            "value": "[reference('community').outputs.resourceId.value]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "networkSize": {
+            "value": "[parameters('networkSize')]"
+          },
+          "subnetConfigurationsList": {
+            "value": "[parameters('enclaveSubnetConfigurations')]"
+          },
+          "maintenanceModeConfiguration": {
+            "value": {
+              "mode": "[parameters('enclaveMaintenanceModeMode')]",
+              "justification": "[parameters('enclaveMaintenanceModeJustification')]",
+              "principals": "[parameters('enclaveMaintenanceModePrincipals')]"
+            }
+          },
+          "deployWorkload": {
+            "value": "[parameters('deployWorkload')]"
+          },
+          "workloadName": {
+            "value": "[parameters('workloadName')]"
+          },
+          "workloadResourceGroupName": {
+            "value": "[parameters('workloadResourceGroupName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "10089615923179113772"
+            }
+          },
+          "definitions": {
+            "maintenanceModeConfigurationType": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "allowedValues": [
+                    "Advanced",
+                    "General",
+                    "Off"
+                  ],
+                  "metadata": {
+                    "description": "The mode of the maintenance mode configuration."
+                  }
+                },
+                "justification": {
+                  "type": "string",
+                  "allowedValues": [
+                    "Governance",
+                    "Networking",
+                    "Off"
+                  ],
+                  "metadata": {
+                    "description": "The justification for the maintenance mode configuration."
+                  }
+                },
+                "principals": {
+                  "type": "array",
+                  "metadata": {
+                    "description": "The principals for the maintenance mode configuration."
+                  }
+                }
+              }
+            },
+            "subnetConfigurationType": {
+              "type": "object",
+              "properties": {
+                "subnetName": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The name of the subnet."
+                  }
+                },
+                "networkPrefixSize": {
+                  "type": "int",
+                  "metadata": {
+                    "description": "The network prefix size for the subnet."
+                  }
+                }
+              }
+            }
+          },
+          "parameters": {
+            "communityResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/communities/cmt-example",
+                "description": "The resource ID of the community resource."
+              }
+            },
+            "enclaveName": {
+              "type": "string",
+              "metadata": {
+                "example": "ve-example-001",
+                "description": "The name of the enclave."
+              },
+              "minLength": 3,
+              "maxLength": 30
+            },
+            "networkSize": {
+              "type": "string",
+              "defaultValue": "small",
+              "allowedValues": [
+                "small",
+                "medium",
+                "large",
+                "custom"
+              ],
+              "metadata": {
+                "example": "small",
+                "description": "The size of the enclave virtual network."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "maintenanceModeConfiguration": {
+              "$ref": "#/definitions/maintenanceModeConfigurationType",
+              "defaultValue": {
+                "mode": "Off",
+                "justification": "Off",
+                "principals": []
+              },
+              "metadata": {
+                "description": "The maintenance mode configuration for the enclave."
+              }
+            },
+            "deployWorkload": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "displayName": "Deploy Workload",
+                "description": "Set to true to deploy a workload in the enclave."
+              }
+            },
+            "workloadName": {
+              "type": "string",
+              "defaultValue": "workload",
+              "minLength": 3,
+              "maxLength": 30,
+              "metadata": {
+                "description": "The name of the workload resource."
+              }
+            },
+            "workloadResourceGroupName": {
+              "type": "string",
+              "defaultValue": ""
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags to be assigned to the enclave resource."
+              }
+            },
+            "subnetConfigurationsList": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/subnetConfigurationType"
+              },
+              "metadata": {
+                "displayName": "Subnet Configurations",
+                "example": [
+                  {
+                    "subnetName": "appSubnet",
+                    "networkPrefixSize": 26
+                  },
+                  {
+                    "subnetName": "dataSubnet",
+                    "networkPrefixSize": 26
+                  }
+                ],
+                "description": "The list of subnet configurations for the enclave virtual network."
+              }
+            }
+          },
+          "resources": {
+            "enclave": {
+              "type": "Microsoft.Mission/virtualEnclaves",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[parameters('enclaveName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "communityResourceId": "[parameters('communityResourceId')]",
+                "enclaveVirtualNetwork": {
+                  "networkSize": "[parameters('networkSize')]",
+                  "subnetConfigurations": "[parameters('subnetConfigurationsList')]"
+                },
+                "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]"
+              }
+            },
+            "workload": {
+              "condition": "[parameters('deployWorkload')]",
+              "type": "Microsoft.Mission/virtualEnclaves/workloads",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "resourceGroupCollection": [
+                  "[format('{0}/resourcegroups/{1}', subscription().id, parameters('workloadResourceGroupName'))]"
+                ]
+              },
+              "dependsOn": [
+                "enclave"
+              ]
+            }
+          },
+          "outputs": {
+            "enclaveResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the enclave."
+              },
+              "value": "[resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the enclave."
+              },
+              "value": "[parameters('enclaveName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where the enclave was deployed."
+              },
+              "value": "[reference('enclave', '2025-05-01-preview', 'full').location]"
+            },
+            "enclaveAddressSpace": {
+              "type": "string",
+              "metadata": {
+                "description": "The enclave address space of the enclave."
+              },
+              "value": "[reference('enclave').enclaveAddressSpaces.enclaveAddressSpace]"
+            },
+            "managedAddressSpace": {
+              "type": "string",
+              "metadata": {
+                "description": "The managedaddress space of the enclave."
+              },
+              "value": "[reference('enclave').enclaveAddressSpaces.managedAddressSpace]"
+            },
+            "enclaveSubnetConfig": {
+              "type": "array",
+              "metadata": {
+                "description": "The subnet configurations of the enclave virtual network."
+              },
+              "value": "[reference('enclave').enclaveVirtualNetwork.subnetConfigurations]"
+            },
+            "maintenanceModeConfiguration": {
+              "$ref": "#/definitions/maintenanceModeConfigurationType",
+              "metadata": {
+                "description": "The current maintenance mode configuration."
+              },
+              "value": "[parameters('maintenanceModeConfiguration')]"
+            },
+            "workloadResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the workload (if deployed)."
+              },
+              "value": "[if(parameters('deployWorkload'), resourceId('Microsoft.Mission/virtualEnclaves/workloads', parameters('enclaveName'), parameters('workloadName')), '')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "community",
+        "enc1ResourceGroup"
+      ]
+    },
+    "enclaveEndpointWebApp": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('enclaveEndpointWebApp-{0}', uniqueString('enclaveEndpointWebApp', deployment().name))]",
+      "subscriptionId": "[parameters('enclaveSubscriptionId')]",
+      "resourceGroup": "[parameters('enclave1ResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "enclaveName": {
+            "value": "[reference('enclave1').outputs.name.value]"
+          },
+          "endpointName": {
+            "value": "[format('ee-{0}-{1}-{2}', parameters('prefix'), parameters('enclaveLabel'), parameters('suffix'))]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "rules": {
+            "value": [
+              {
+                "endpointRuleName": "enclave-web-app-subnet",
+                "destination": "[filter(reference('enclave1').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, parameters('enclaveSubnetConfigurations')[1].subnetName)))[0].addressPrefix]",
+                "ports": "443",
+                "protocols": [
+                  "TCP"
+                ]
+              }
+            ]
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "2888754277910093328"
+            }
+          },
+          "definitions": {
+            "enclaveEndpointRuleType": {
+              "type": "object",
+              "properties": {
+                "endpointRuleName": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The name of the rule."
+                  }
+                },
+                "destination": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The destination IP address or CIDR range."
+                  }
+                },
+                "ports": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The port number or range."
+                  }
+                },
+                "protocols": {
+                  "type": "array",
+                  "metadata": {
+                    "description": "The protocols allowed (TCP, UDP, ICMP)."
+                  }
+                }
+              }
+            }
+          },
+          "parameters": {
+            "enclaveName": {
+              "type": "string",
+              "metadata": {
+                "example": "ve-example-001",
+                "description": "The name of the parent enclave resource."
+              }
+            },
+            "endpointName": {
+              "type": "string",
+              "metadata": {
+                "example": "endpoint-webapp",
+                "description": "The name of the endpoint."
+              },
+              "minLength": 3,
+              "maxLength": 30
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location of the resource."
+              }
+            },
+            "rules": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/enclaveEndpointRuleType"
+              },
+              "metadata": {
+                "example": [
+                  {
+                    "endpointRuleName": "allow-web-traffic",
+                    "destination": "10.1.0.0/24",
+                    "ports": "443",
+                    "protocols": [
+                      "TCP"
+                    ]
+                  }
+                ],
+                "description": "The rule collection for the enclave endpoint."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Optional. Tags to apply to the enclave endpoint."
+              }
+            }
+          },
+          "resources": {
+            "enclave": {
+              "existing": true,
+              "type": "Microsoft.Mission/virtualEnclaves",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[parameters('enclaveName')]"
+            },
+            "enclaveEndpoint": {
+              "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('endpointName'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "ruleCollection": "[parameters('rules')]"
+              }
+            }
+          },
+          "outputs": {
+            "endpointId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the enclave endpoint."
+              },
+              "value": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', parameters('enclaveName'), parameters('endpointName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the enclave endpoint."
+              },
+              "value": "[parameters('endpointName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where the enclave endpoint was deployed."
+              },
+              "value": "[reference('enclaveEndpoint', '2025-05-01-preview', 'full').location]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "enclave1"
+      ]
+    },
+    "enclaveConnectionMsftAzure": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('ec-{0}-msftAz-{1}', parameters('prefix'), parameters('suffix'))]",
+      "subscriptionId": "[parameters('enclaveSubscriptionId')]",
+      "resourceGroup": "[parameters('enclave1ResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "connectionName": {
+            "value": "[format('ec-{0}-msftAz-{1}', parameters('prefix'), parameters('suffix'))]"
+          },
+          "sourceResourceId": {
+            "value": "[reference('enclave1').outputs.enclaveResourceId.value]"
+          },
+          "destinationResourceId": {
+            "value": "[reference('communityEndpointMsftAzure').outputs.communityEndpointResourceId.value]"
+          },
+          "sourceAddressSpace": {
+            "value": "[format('{0}, {1}/26', join(map(reference('enclave1').outputs.enclaveSubnetConfig.value, lambda('s', lambdaVariables('s').addressPrefix)), ', '), split(reference('enclave1').outputs.managedAddressSpace.value, '/')[0])]"
+          },
+          "communityResourceId": {
+            "value": "[reference('community').outputs.resourceId.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "5703761224828757488"
+            }
+          },
+          "parameters": {
+            "communityResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/communities/cmt-example",
+                "description": "The resource ID of the community."
+              }
+            },
+            "sourceResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/enclaves/ve-example",
+                "description": "The resource ID of the source resource (enclave or transit hub)."
+              }
+            },
+            "destinationResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/communities/cmt-example/communityEndpoints/endpoint-example",
+                "description": "The resource ID of the destination resource (endpoint)."
+              }
+            },
+            "sourceAddressSpace": {
+              "type": "string",
+              "metadata": {
+                "example": "10.1.0.0/24,10.2.0.0/24",
+                "description": "The source address space in CIDR notation (comma-separated for multiple ranges)."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The Azure region for the resource."
+              }
+            },
+            "connectionName": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 30,
+              "metadata": {
+                "description": "The name of the enclave connection."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags to be assigned to the enclave connection."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Mission/enclaveConnections",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[parameters('connectionName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "communityResourceId": "[parameters('communityResourceId')]",
+                "sourceResourceId": "[parameters('sourceResourceId')]",
+                "sourceCidr": "[parameters('sourceAddressSpace')]",
+                "destinationEndpointId": "[parameters('destinationResourceId')]"
+              }
+            }
+          ],
+          "outputs": {
+            "enclaveConnectionId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the created enclave connection."
+              },
+              "value": "[resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the enclave connection."
+              },
+              "value": "[parameters('connectionName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where the enclave connection was deployed."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+            },
+            "sourceCidr": {
+              "type": "string",
+              "metadata": {
+                "description": "The source CIDR notation used in the connection."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+            },
+            "communityResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The community resource ID associated with the connection."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "community",
+        "communityEndpointMsftAzure",
+        "enclave1"
+      ]
+    },
+    "enclaveConnectionWinUpdate": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('ec-{0}-winUpdate-{1}', parameters('prefix'), parameters('suffix'))]",
+      "subscriptionId": "[parameters('enclaveSubscriptionId')]",
+      "resourceGroup": "[parameters('enclave1ResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "connectionName": {
+            "value": "[format('ec-{0}-winUpdate-{1}', parameters('prefix'), parameters('suffix'))]"
+          },
+          "sourceResourceId": {
+            "value": "[reference('enclave1').outputs.enclaveResourceId.value]"
+          },
+          "destinationResourceId": {
+            "value": "[reference('communityEndpointWinUpdate').outputs.communityEndpointResourceId.value]"
+          },
+          "sourceAddressSpace": {
+            "value": "[format('{0}, {1}/26', join(map(reference('enclave1').outputs.enclaveSubnetConfig.value, lambda('s', lambdaVariables('s').addressPrefix)), ', '), split(reference('enclave1').outputs.managedAddressSpace.value, '/')[0])]"
+          },
+          "communityResourceId": {
+            "value": "[reference('community').outputs.resourceId.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "5703761224828757488"
+            }
+          },
+          "parameters": {
+            "communityResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/communities/cmt-example",
+                "description": "The resource ID of the community."
+              }
+            },
+            "sourceResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/enclaves/ve-example",
+                "description": "The resource ID of the source resource (enclave or transit hub)."
+              }
+            },
+            "destinationResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/communities/cmt-example/communityEndpoints/endpoint-example",
+                "description": "The resource ID of the destination resource (endpoint)."
+              }
+            },
+            "sourceAddressSpace": {
+              "type": "string",
+              "metadata": {
+                "example": "10.1.0.0/24,10.2.0.0/24",
+                "description": "The source address space in CIDR notation (comma-separated for multiple ranges)."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The Azure region for the resource."
+              }
+            },
+            "connectionName": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 30,
+              "metadata": {
+                "description": "The name of the enclave connection."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags to be assigned to the enclave connection."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Mission/enclaveConnections",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[parameters('connectionName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "communityResourceId": "[parameters('communityResourceId')]",
+                "sourceResourceId": "[parameters('sourceResourceId')]",
+                "sourceCidr": "[parameters('sourceAddressSpace')]",
+                "destinationEndpointId": "[parameters('destinationResourceId')]"
+              }
+            }
+          ],
+          "outputs": {
+            "enclaveConnectionId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the created enclave connection."
+              },
+              "value": "[resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the enclave connection."
+              },
+              "value": "[parameters('connectionName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where the enclave connection was deployed."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+            },
+            "sourceCidr": {
+              "type": "string",
+              "metadata": {
+                "description": "The source CIDR notation used in the connection."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+            },
+            "communityResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The community resource ID associated with the connection."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "community",
+        "communityEndpointWinUpdate",
+        "enclave1"
+      ]
+    },
+    "enclaveConnectionWinget": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('enclaveConnectionWinget-{0}', uniqueString('enclaveConnectionWinget', deployment().name))]",
+      "subscriptionId": "[parameters('enclaveSubscriptionId')]",
+      "resourceGroup": "[parameters('enclave1ResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "connectionName": {
+            "value": "[format('ec-{0}-winget-{1}', parameters('prefix'), parameters('suffix'))]"
+          },
+          "sourceResourceId": {
+            "value": "[reference('enclave1').outputs.enclaveResourceId.value]"
+          },
+          "destinationResourceId": {
+            "value": "[reference('communityEndpointWinget').outputs.communityEndpointResourceId.value]"
+          },
+          "sourceAddressSpace": {
+            "value": "[filter(reference('enclave1').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, parameters('enclaveSubnetConfigurations')[1].subnetName)))[0].addressPrefix]"
+          },
+          "communityResourceId": {
+            "value": "[reference('community').outputs.resourceId.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "5703761224828757488"
+            }
+          },
+          "parameters": {
+            "communityResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/communities/cmt-example",
+                "description": "The resource ID of the community."
+              }
+            },
+            "sourceResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/enclaves/ve-example",
+                "description": "The resource ID of the source resource (enclave or transit hub)."
+              }
+            },
+            "destinationResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/communities/cmt-example/communityEndpoints/endpoint-example",
+                "description": "The resource ID of the destination resource (endpoint)."
+              }
+            },
+            "sourceAddressSpace": {
+              "type": "string",
+              "metadata": {
+                "example": "10.1.0.0/24,10.2.0.0/24",
+                "description": "The source address space in CIDR notation (comma-separated for multiple ranges)."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The Azure region for the resource."
+              }
+            },
+            "connectionName": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 30,
+              "metadata": {
+                "description": "The name of the enclave connection."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags to be assigned to the enclave connection."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Mission/enclaveConnections",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[parameters('connectionName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "communityResourceId": "[parameters('communityResourceId')]",
+                "sourceResourceId": "[parameters('sourceResourceId')]",
+                "sourceCidr": "[parameters('sourceAddressSpace')]",
+                "destinationEndpointId": "[parameters('destinationResourceId')]"
+              }
+            }
+          ],
+          "outputs": {
+            "enclaveConnectionId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the created enclave connection."
+              },
+              "value": "[resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the enclave connection."
+              },
+              "value": "[parameters('connectionName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where the enclave connection was deployed."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+            },
+            "sourceCidr": {
+              "type": "string",
+              "metadata": {
+                "description": "The source CIDR notation used in the connection."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+            },
+            "communityResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The community resource ID associated with the connection."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "community",
+        "communityEndpointWinget",
+        "enclave1"
+      ]
+    },
+    "enclaveConnectionWebApp": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('enclaveConnectionWebApp-{0}', uniqueString('enclaveConnectionWebApp', deployment().name))]",
+      "subscriptionId": "[parameters('enclaveSubscriptionId')]",
+      "resourceGroup": "[parameters('enclave1ResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "connectionName": {
+            "value": "[format('ec-{0}-{1}-{2}', parameters('prefix'), parameters('enclaveLabel'), parameters('suffix'))]"
+          },
+          "sourceResourceId": {
+            "value": "[reference('enclave1').outputs.enclaveResourceId.value]"
+          },
+          "destinationResourceId": {
+            "value": "[reference('enclaveEndpointWebApp').outputs.endpointId.value]"
+          },
+          "sourceAddressSpace": {
+            "value": "[filter(reference('enclave1').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, parameters('enclaveSubnetConfigurations')[1].subnetName)))[0].addressPrefix]"
+          },
+          "communityResourceId": {
+            "value": "[reference('community').outputs.resourceId.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "5703761224828757488"
+            }
+          },
+          "parameters": {
+            "communityResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/communities/cmt-example",
+                "description": "The resource ID of the community."
+              }
+            },
+            "sourceResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/enclaves/ve-example",
+                "description": "The resource ID of the source resource (enclave or transit hub)."
+              }
+            },
+            "destinationResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/communities/cmt-example/communityEndpoints/endpoint-example",
+                "description": "The resource ID of the destination resource (endpoint)."
+              }
+            },
+            "sourceAddressSpace": {
+              "type": "string",
+              "metadata": {
+                "example": "10.1.0.0/24,10.2.0.0/24",
+                "description": "The source address space in CIDR notation (comma-separated for multiple ranges)."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The Azure region for the resource."
+              }
+            },
+            "connectionName": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 30,
+              "metadata": {
+                "description": "The name of the enclave connection."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags to be assigned to the enclave connection."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Mission/enclaveConnections",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[parameters('connectionName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "communityResourceId": "[parameters('communityResourceId')]",
+                "sourceResourceId": "[parameters('sourceResourceId')]",
+                "sourceCidr": "[parameters('sourceAddressSpace')]",
+                "destinationEndpointId": "[parameters('destinationResourceId')]"
+              }
+            }
+          ],
+          "outputs": {
+            "enclaveConnectionId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the created enclave connection."
+              },
+              "value": "[resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the enclave connection."
+              },
+              "value": "[parameters('connectionName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where the enclave connection was deployed."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+            },
+            "sourceCidr": {
+              "type": "string",
+              "metadata": {
+                "description": "The source CIDR notation used in the connection."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+            },
+            "communityResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The community resource ID associated with the connection."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "community",
+        "enclave1",
+        "enclaveEndpointWebApp"
+      ]
+    },
+    "transitHub": {
+      "condition": "[parameters('deployTransitHub')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('transitHub-{0}', uniqueString('transitHub', deployment().name))]",
+      "subscriptionId": "[parameters('communitySubscriptionId')]",
+      "resourceGroup": "[parameters('communityResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "transitHubName": {
+            "value": "[format('tHub-{0}-onprem-{1}', parameters('prefix'), parameters('suffix'))]"
+          },
+          "communityName": {
+            "value": "[reference('community').outputs.name.value]"
+          },
+          "transitOption": {
+            "value": "[variables('transitOptions')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "11835955167506431957"
+            }
+          },
+          "definitions": {
+            "transitOptionType": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "allowedValues": [
+                    "ExpressRoute",
+                    "Gateway",
+                    "Peering"
+                  ],
+                  "metadata": {
+                    "description": "The type of transit connection (Gateway, ExpressRoute, or Peering)."
+                  }
+                },
+                "params": {
+                  "type": "object",
+                  "metadata": {
+                    "description": "Parameters specific to the transit type."
+                  }
+                }
+              }
+            }
+          },
+          "parameters": {
+            "communityName": {
+              "type": "string",
+              "metadata": {
+                "example": "cmt-example-001",
+                "description": "The name of the parent community."
+              }
+            },
+            "transitHubName": {
+              "type": "string",
+              "metadata": {
+                "example": "tHub-onprem-001",
+                "description": "The name of the transit hub."
+              },
+              "minLength": 3,
+              "maxLength": 30
+            },
+            "transitOption": {
+              "$ref": "#/definitions/transitOptionType",
+              "metadata": {
+                "example": {
+                  "type": "Gateway",
+                  "params": {
+                    "scaleUnits": 2
+                  }
+                },
+                "description": "The transit option configuration object."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location of the resource."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags to be assigned to the transit hub."
+              }
+            }
+          },
+          "resources": {
+            "community": {
+              "existing": true,
+              "type": "Microsoft.Mission/communities",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[parameters('communityName')]"
+            },
+            "transitHub": {
+              "type": "Microsoft.Mission/communities/transitHubs",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('communityName'), parameters('transitHubName'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "transitOption": "[parameters('transitOption')]"
+              }
+            }
+          },
+          "outputs": {
+            "transitHubResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the created transit hub."
+              },
+              "value": "[resourceId('Microsoft.Mission/communities/transitHubs', parameters('communityName'), parameters('transitHubName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the transit hub."
+              },
+              "value": "[parameters('transitHubName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where the transit hub was deployed."
+              },
+              "value": "[reference('transitHub', '2025-05-01-preview', 'full').location]"
+            },
+            "transitOption": {
+              "$ref": "#/definitions/transitOptionType",
+              "metadata": {
+                "description": "The transit option configuration used."
+              },
+              "value": "[parameters('transitOption')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "community",
+        "enclave1"
+      ]
+    },
+    "transitHubInboundConnection": {
+      "condition": "[parameters('deployTransitHub')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('transitHubInboundConnection-{0}', uniqueString('transitHubInboundConnection', deployment().name))]",
+      "subscriptionId": "[parameters('communitySubscriptionId')]",
+      "resourceGroup": "[parameters('communityResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "connectionName": {
+            "value": "[format('ec-{0}-thub-{1}', parameters('prefix'), parameters('suffix'))]"
+          },
+          "sourceResourceId": {
+            "value": "[coalesce(tryGet(if(parameters('deployTransitHub'), reference('transitHub'), null()), 'outputs', 'transitHubResourceId', 'value'), '')]"
+          },
+          "destinationResourceId": {
+            "value": "[reference('enclaveEndpointWebApp').outputs.endpointId.value]"
+          },
+          "sourceAddressSpace": {
+            "value": "[parameters('remoteSourceAddressSpace')]"
+          },
+          "communityResourceId": {
+            "value": "[reference('community').outputs.resourceId.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "5703761224828757488"
+            }
+          },
+          "parameters": {
+            "communityResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/communities/cmt-example",
+                "description": "The resource ID of the community."
+              }
+            },
+            "sourceResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/enclaves/ve-example",
+                "description": "The resource ID of the source resource (enclave or transit hub)."
+              }
+            },
+            "destinationResourceId": {
+              "type": "string",
+              "metadata": {
+                "example": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.Mission/communities/cmt-example/communityEndpoints/endpoint-example",
+                "description": "The resource ID of the destination resource (endpoint)."
+              }
+            },
+            "sourceAddressSpace": {
+              "type": "string",
+              "metadata": {
+                "example": "10.1.0.0/24,10.2.0.0/24",
+                "description": "The source address space in CIDR notation (comma-separated for multiple ranges)."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The Azure region for the resource."
+              }
+            },
+            "connectionName": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 30,
+              "metadata": {
+                "description": "The name of the enclave connection."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags to be assigned to the enclave connection."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Mission/enclaveConnections",
+              "apiVersion": "2025-05-01-preview",
+              "name": "[parameters('connectionName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "communityResourceId": "[parameters('communityResourceId')]",
+                "sourceResourceId": "[parameters('sourceResourceId')]",
+                "sourceCidr": "[parameters('sourceAddressSpace')]",
+                "destinationEndpointId": "[parameters('destinationResourceId')]"
+              }
+            }
+          ],
+          "outputs": {
+            "enclaveConnectionId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the created enclave connection."
+              },
+              "value": "[resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the enclave connection."
+              },
+              "value": "[parameters('connectionName')]"
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where the enclave connection was deployed."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+            },
+            "sourceCidr": {
+              "type": "string",
+              "metadata": {
+                "description": "The source CIDR notation used in the connection."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+            },
+            "communityResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The community resource ID associated with the connection."
+              },
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "community",
+        "enclaveEndpointWebApp",
+        "transitHub"
+      ]
+    }
+  },
+  "outputs": {
+    "communityResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed community."
+      },
+      "value": "[reference('community').outputs.resourceId.value]"
+    },
+    "communityName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed community."
+      },
+      "value": "[reference('community').outputs.name.value]"
+    },
+    "enclaveResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed enclave."
+      },
+      "value": "[reference('enclave1').outputs.enclaveResourceId.value]"
+    },
+    "enclaveName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed enclave."
+      },
+      "value": "[reference('enclave1').outputs.name.value]"
+    },
+    "enclaveAddressSpace": {
+      "type": "string",
+      "metadata": {
+        "description": "The address space of the enclave."
+      },
+      "value": "[reference('enclave1').outputs.enclaveAddressSpace.value]"
+    },
+    "enclaveSubnetConfig": {
+      "type": "array",
+      "metadata": {
+        "description": "The subnet configurations of the enclave."
+      },
+      "value": "[reference('enclave1').outputs.enclaveSubnetConfig.value]"
+    },
+    "transitHubResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the transit hub."
+      },
+      "value": "[coalesce(tryGet(if(parameters('deployTransitHub'), reference('transitHub'), null()), 'outputs', 'transitHubResourceId', 'value'), '')]"
+    },
+    "enclaveEndpointResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the enclave endpoint."
+      },
+      "value": "[reference('enclaveEndpointWebApp').outputs.endpointId.value]"
+    },
+    "workloadResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the workload (if deployed)."
+      },
+      "value": "[reference('enclave1').outputs.workloadResourceId.value]"
+    },
+    "communityEndpointIds": {
+      "type": "array",
+      "metadata": {
+        "description": "Array of all community endpoint resource IDs."
+      },
+      "value": [
+        "[reference('communityEndpointMsftAzure').outputs.communityEndpointResourceId.value]",
+        "[reference('communityEndpointWinUpdate').outputs.communityEndpointResourceId.value]",
+        "[reference('communityEndpointWinget').outputs.communityEndpointResourceId.value]"
+      ]
+    },
+    "enclaveConnectionIds": {
+      "type": "array",
+      "metadata": {
+        "description": "Array of all enclave connection resource IDs."
+      },
+      "value": [
+        "[reference('enclaveConnectionMsftAzure').outputs.enclaveConnectionId.value]",
+        "[reference('enclaveConnectionWinUpdate').outputs.enclaveConnectionId.value]",
+        "[reference('enclaveConnectionWinget').outputs.enclaveConnectionId.value]",
+        "[reference('enclaveConnectionWebApp').outputs.enclaveConnectionId.value]"
+      ]
+    }
+  }
+}
