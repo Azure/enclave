@@ -61,7 +61,7 @@ param maintenanceModeConfiguration maintenanceModeConfigurationType = {
 @metadata({
   displayName: 'Deploy Workload'
 })
-param deployWorkload bool = true
+param deployWorkload bool = false
 
 @description('The name of the workload resource.')
 @minLength(3)

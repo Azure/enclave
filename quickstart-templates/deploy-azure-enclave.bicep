@@ -101,6 +101,7 @@ param enclave1ResourceGroupName string = 'rg-ve-${prefix}-${enclaveLabel}-${suff
 param networkSize string = 'small'
 
 @description('Subnet configurations for the enclave.')
+@minLength(2)
 @metadata({
   example: [
     { subnetName: 'appSubnet', networkPrefixSize: 26 }
@@ -603,7 +604,7 @@ module transitHubInboundConnection './modules/enclave-connection.bicep' = if (de
   scope: resourceGroup(communitySubscriptionId, communityResourceGroupName)
   params: {
     connectionName: 'ec-${prefix}-thub-${suffix}'
-    sourceResourceId: transitHub.?outputs.transitHubResourceId ?? ''
+    sourceResourceId: transitHub!.outputs.transitHubResourceId
     destinationResourceId: enclaveEndpointWebApp.outputs.endpointId
     sourceAddressSpace: remoteSourceAddressSpace // Address space to connect to on remote side, comma separated list of CIDRs
     communityResourceId: community.outputs.resourceId
@@ -635,7 +636,7 @@ output enclaveAddressSpace string = enclave1.outputs.enclaveAddressSpace
 output enclaveSubnetConfig array = enclave1.outputs.enclaveSubnetConfig
 
 @description('The resource ID of the transit hub.')
-output transitHubResourceId string = transitHub.?outputs.transitHubResourceId ?? ''
+output transitHubResourceId string = deployTransitHub ? transitHub!.outputs.transitHubResourceId : ''
 
 @description('The resource ID of the enclave endpoint.')
 output enclaveEndpointResourceId string = enclaveEndpointWebApp.outputs.endpointId

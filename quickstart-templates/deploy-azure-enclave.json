@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.43.1.21952",
-      "templateHash": "2517968462479158164"
+      "version": "0.45.15.27210",
+      "templateHash": "4608095735445859794"
     }
   },
   "definitions": {
@@ -43,7 +43,7 @@
     "prefix": {
       "type": "string",
       "metadata": {
-        "example": "ave",
+        "example": "ae",
         "description": "Prefix for resource naming."
       },
       "minLength": 1,
@@ -198,7 +198,8 @@
           }
         ],
         "description": "Subnet configurations for the enclave."
-      }
+      },
+      "minLength": 2
     },
     "enclaveMaintenanceModeMode": {
       "type": "string",
@@ -618,8 +619,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "1185626799855696947"
+              "version": "0.45.15.27210",
+              "templateHash": "7558934911608931149"
             },
             "name": "Resource Group Creation",
             "description": "Creates a new resource group at the subscription scope with configurable location and tags.",
@@ -725,8 +726,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "7842133429700029390"
+              "version": "0.45.15.27210",
+              "templateHash": "17615243782070886438"
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
@@ -939,11 +940,35 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "7393868016241208554"
+              "version": "0.45.15.27210",
+              "templateHash": "8579690226755007777"
             }
           },
           "definitions": {
+            "endpointProtocolType": {
+              "type": "string",
+              "allowedValues": [
+                "AH",
+                "ANY",
+                "ESP",
+                "HTTP",
+                "HTTPS",
+                "ICMP",
+                "TCP",
+                "UDP"
+              ]
+            },
+            "endpointDestinationType": {
+              "type": "string",
+              "allowedValues": [
+                "FQDN",
+                "FQDNTag",
+                "IP",
+                "IPAddress",
+                "PrivateNetwork",
+                "ServiceTag"
+              ]
+            },
             "endpointRuleType": {
               "type": "object",
               "properties": {
@@ -954,27 +979,30 @@
                   }
                 },
                 "destinationType": {
-                  "type": "string",
+                  "$ref": "#/definitions/endpointDestinationType",
                   "metadata": {
-                    "description": "The type of destination (FQDN, FQDNTag, IP)."
+                    "description": "Destination type for the rule (for example FQDN, FQDNTag, IPAddress, PrivateNetwork, ServiceTag)."
                   }
                 },
                 "destination": {
                   "type": "string",
                   "metadata": {
-                    "description": "The destination value (FQDN, tag name, or IP)."
+                    "description": "Destination value. Can include comma-separated FQDNs, FQDN tags, CIDRs/IPs, service tags, or private network ranges."
                   }
                 },
                 "protocols": {
                   "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/endpointProtocolType"
+                  },
                   "metadata": {
-                    "description": "The protocols allowed (HTTP, HTTPS, TCP, UDP)."
+                    "description": "Allowed protocols for this rule."
                   }
                 },
                 "ports": {
                   "type": "string",
                   "metadata": {
-                    "description": "The port number or range."
+                    "description": "Port list or range. Supports comma-separated ports and hyphen-delimited ranges."
                   }
                 },
                 "transitHubResourceId": {
@@ -1017,6 +1045,26 @@
                       "HTTPS"
                     ],
                     "ports": "443"
+                  },
+                  {
+                    "endpointRuleName": "example-service-tag",
+                    "destinationType": "ServiceTag",
+                    "destination": "AzureDatabricks,Storage,EventHub,Sql",
+                    "protocols": [
+                      "TCP"
+                    ],
+                    "ports": "443"
+                  },
+                  {
+                    "endpointRuleName": "example-private-network",
+                    "destinationType": "PrivateNetwork",
+                    "destination": "172.16.0.0/20",
+                    "protocols": [
+                      "TCP",
+                      "UDP"
+                    ],
+                    "ports": "443,80,53",
+                    "transitHubResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.Mission/transitHubs/example-transit-hub"
                   }
                 ],
                 "description": "The rule collection for the community endpoint."
@@ -1116,11 +1164,35 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "7393868016241208554"
+              "version": "0.45.15.27210",
+              "templateHash": "8579690226755007777"
             }
           },
           "definitions": {
+            "endpointProtocolType": {
+              "type": "string",
+              "allowedValues": [
+                "AH",
+                "ANY",
+                "ESP",
+                "HTTP",
+                "HTTPS",
+                "ICMP",
+                "TCP",
+                "UDP"
+              ]
+            },
+            "endpointDestinationType": {
+              "type": "string",
+              "allowedValues": [
+                "FQDN",
+                "FQDNTag",
+                "IP",
+                "IPAddress",
+                "PrivateNetwork",
+                "ServiceTag"
+              ]
+            },
             "endpointRuleType": {
               "type": "object",
               "properties": {
@@ -1131,27 +1203,30 @@
                   }
                 },
                 "destinationType": {
-                  "type": "string",
+                  "$ref": "#/definitions/endpointDestinationType",
                   "metadata": {
-                    "description": "The type of destination (FQDN, FQDNTag, IP)."
+                    "description": "Destination type for the rule (for example FQDN, FQDNTag, IPAddress, PrivateNetwork, ServiceTag)."
                   }
                 },
                 "destination": {
                   "type": "string",
                   "metadata": {
-                    "description": "The destination value (FQDN, tag name, or IP)."
+                    "description": "Destination value. Can include comma-separated FQDNs, FQDN tags, CIDRs/IPs, service tags, or private network ranges."
                   }
                 },
                 "protocols": {
                   "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/endpointProtocolType"
+                  },
                   "metadata": {
-                    "description": "The protocols allowed (HTTP, HTTPS, TCP, UDP)."
+                    "description": "Allowed protocols for this rule."
                   }
                 },
                 "ports": {
                   "type": "string",
                   "metadata": {
-                    "description": "The port number or range."
+                    "description": "Port list or range. Supports comma-separated ports and hyphen-delimited ranges."
                   }
                 },
                 "transitHubResourceId": {
@@ -1194,6 +1269,26 @@
                       "HTTPS"
                     ],
                     "ports": "443"
+                  },
+                  {
+                    "endpointRuleName": "example-service-tag",
+                    "destinationType": "ServiceTag",
+                    "destination": "AzureDatabricks,Storage,EventHub,Sql",
+                    "protocols": [
+                      "TCP"
+                    ],
+                    "ports": "443"
+                  },
+                  {
+                    "endpointRuleName": "example-private-network",
+                    "destinationType": "PrivateNetwork",
+                    "destination": "172.16.0.0/20",
+                    "protocols": [
+                      "TCP",
+                      "UDP"
+                    ],
+                    "ports": "443,80,53",
+                    "transitHubResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.Mission/transitHubs/example-transit-hub"
                   }
                 ],
                 "description": "The rule collection for the community endpoint."
@@ -1293,11 +1388,35 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "7393868016241208554"
+              "version": "0.45.15.27210",
+              "templateHash": "8579690226755007777"
             }
           },
           "definitions": {
+            "endpointProtocolType": {
+              "type": "string",
+              "allowedValues": [
+                "AH",
+                "ANY",
+                "ESP",
+                "HTTP",
+                "HTTPS",
+                "ICMP",
+                "TCP",
+                "UDP"
+              ]
+            },
+            "endpointDestinationType": {
+              "type": "string",
+              "allowedValues": [
+                "FQDN",
+                "FQDNTag",
+                "IP",
+                "IPAddress",
+                "PrivateNetwork",
+                "ServiceTag"
+              ]
+            },
             "endpointRuleType": {
               "type": "object",
               "properties": {
@@ -1308,27 +1427,30 @@
                   }
                 },
                 "destinationType": {
-                  "type": "string",
+                  "$ref": "#/definitions/endpointDestinationType",
                   "metadata": {
-                    "description": "The type of destination (FQDN, FQDNTag, IP)."
+                    "description": "Destination type for the rule (for example FQDN, FQDNTag, IPAddress, PrivateNetwork, ServiceTag)."
                   }
                 },
                 "destination": {
                   "type": "string",
                   "metadata": {
-                    "description": "The destination value (FQDN, tag name, or IP)."
+                    "description": "Destination value. Can include comma-separated FQDNs, FQDN tags, CIDRs/IPs, service tags, or private network ranges."
                   }
                 },
                 "protocols": {
                   "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/endpointProtocolType"
+                  },
                   "metadata": {
-                    "description": "The protocols allowed (HTTP, HTTPS, TCP, UDP)."
+                    "description": "Allowed protocols for this rule."
                   }
                 },
                 "ports": {
                   "type": "string",
                   "metadata": {
-                    "description": "The port number or range."
+                    "description": "Port list or range. Supports comma-separated ports and hyphen-delimited ranges."
                   }
                 },
                 "transitHubResourceId": {
@@ -1371,6 +1493,26 @@
                       "HTTPS"
                     ],
                     "ports": "443"
+                  },
+                  {
+                    "endpointRuleName": "example-service-tag",
+                    "destinationType": "ServiceTag",
+                    "destination": "AzureDatabricks,Storage,EventHub,Sql",
+                    "protocols": [
+                      "TCP"
+                    ],
+                    "ports": "443"
+                  },
+                  {
+                    "endpointRuleName": "example-private-network",
+                    "destinationType": "PrivateNetwork",
+                    "destination": "172.16.0.0/20",
+                    "protocols": [
+                      "TCP",
+                      "UDP"
+                    ],
+                    "ports": "443,80,53",
+                    "transitHubResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.Mission/transitHubs/example-transit-hub"
                   }
                 ],
                 "description": "The rule collection for the community endpoint."
@@ -1466,8 +1608,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "1185626799855696947"
+              "version": "0.45.15.27210",
+              "templateHash": "7558934911608931149"
             },
             "name": "Resource Group Creation",
             "description": "Creates a new resource group at the subscription scope with configurable location and tags.",
@@ -1585,8 +1727,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "10089615923179113772"
+              "version": "0.45.15.27210",
+              "templateHash": "13789965355346119931"
             }
           },
           "definitions": {
@@ -1692,7 +1834,7 @@
             },
             "deployWorkload": {
               "type": "bool",
-              "defaultValue": true,
+              "defaultValue": false,
               "metadata": {
                 "displayName": "Deploy Workload",
                 "description": "Set to true to deploy a workload in the enclave."
@@ -1878,8 +2020,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "2888754277910093328"
+              "version": "0.45.15.27210",
+              "templateHash": "15575639647144315238"
             }
           },
           "definitions": {
@@ -2051,8 +2193,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "5703761224828757488"
+              "version": "0.45.15.27210",
+              "templateHash": "11476053832399171077"
             }
           },
           "parameters": {
@@ -2207,8 +2349,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "5703761224828757488"
+              "version": "0.45.15.27210",
+              "templateHash": "11476053832399171077"
             }
           },
           "parameters": {
@@ -2363,8 +2505,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "5703761224828757488"
+              "version": "0.45.15.27210",
+              "templateHash": "11476053832399171077"
             }
           },
           "parameters": {
@@ -2519,8 +2661,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "5703761224828757488"
+              "version": "0.45.15.27210",
+              "templateHash": "11476053832399171077"
             }
           },
           "parameters": {
@@ -2671,8 +2813,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "11835955167506431957"
+              "version": "0.45.15.27210",
+              "templateHash": "4456110992906823786"
             }
           },
           "definitions": {
@@ -2815,7 +2957,7 @@
             "value": "[format('ec-{0}-thub-{1}', parameters('prefix'), parameters('suffix'))]"
           },
           "sourceResourceId": {
-            "value": "[coalesce(tryGet(if(parameters('deployTransitHub'), reference('transitHub'), null()), 'outputs', 'transitHubResourceId', 'value'), '')]"
+            "value": "[reference('transitHub').outputs.transitHubResourceId.value]"
           },
           "destinationResourceId": {
             "value": "[reference('enclaveEndpointWebApp').outputs.endpointId.value]"
@@ -2839,8 +2981,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "5703761224828757488"
+              "version": "0.45.15.27210",
+              "templateHash": "11476053832399171077"
             }
           },
           "parameters": {
@@ -3004,7 +3146,7 @@
       "metadata": {
         "description": "The resource ID of the transit hub."
       },
-      "value": "[coalesce(tryGet(if(parameters('deployTransitHub'), reference('transitHub'), null()), 'outputs', 'transitHubResourceId', 'value'), '')]"
+      "value": "[if(parameters('deployTransitHub'), reference('transitHub').outputs.transitHubResourceId.value, '')]"
     },
     "enclaveEndpointResourceId": {
       "type": "string",

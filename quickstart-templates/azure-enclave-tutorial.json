@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.43.1.21952",
-      "templateHash": "4305012322602217201"
+      "version": "0.45.15.27210",
+      "templateHash": "17019378874668020244"
     },
     "name": "Azure Enclave Tutorial Template",
     "description": "Tutorial template demonstrating Azure Enclave deployment using modular components"
@@ -205,8 +205,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "7842133429700029390"
+              "version": "0.45.15.27210",
+              "templateHash": "17615243782070886438"
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
@@ -430,8 +430,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "16343863317735155871"
+              "version": "0.45.15.27210",
+              "templateHash": "8579690226755007777"
             }
           },
           "definitions": {
@@ -671,8 +671,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "10089615923179113772"
+              "version": "0.45.15.27210",
+              "templateHash": "13789965355346119931"
             }
           },
           "definitions": {
@@ -778,7 +778,7 @@
             },
             "deployWorkload": {
               "type": "bool",
-              "defaultValue": true,
+              "defaultValue": false,
               "metadata": {
                 "displayName": "Deploy Workload",
                 "description": "Set to true to deploy a workload in the enclave."
@@ -970,8 +970,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "10089615923179113772"
+              "version": "0.45.15.27210",
+              "templateHash": "13789965355346119931"
             }
           },
           "definitions": {
@@ -1077,7 +1077,7 @@
             },
             "deployWorkload": {
               "type": "bool",
-              "defaultValue": true,
+              "defaultValue": false,
               "metadata": {
                 "displayName": "Deploy Workload",
                 "description": "Set to true to deploy a workload in the enclave."
@@ -1263,8 +1263,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "2888754277910093328"
+              "version": "0.45.15.27210",
+              "templateHash": "15575639647144315238"
             }
           },
           "definitions": {
@@ -1434,8 +1434,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.1.21952",
-              "templateHash": "5703761224828757488"
+              "version": "0.45.15.27210",
+              "templateHash": "11476053832399171077"
             }
           },
           "parameters": {
