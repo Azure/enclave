@@ -588,7 +588,7 @@ resource wl_enclaveOffline_apps 'Microsoft.Mission/virtualEnclaves/workloads@202
   }
   location: location
   tags: {
-    department: 'senstiveDataDept'
+    department: 'sensitiveDataDept'
     company: 'R&D_Collaboration'
   }
 }

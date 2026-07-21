@@ -482,7 +482,7 @@ module enc1ResourceGroup './modules/newResourceGroup.bicep' = {
   }
 }
 
-module enclave1 './modules/Enclave.bicep' = {
+module enclave1 './modules/enclave.bicep' = {
   scope: resourceGroup(enclaveSubscriptionId, enclave1ResourceGroupName)
   name: enclaveName
   params: {

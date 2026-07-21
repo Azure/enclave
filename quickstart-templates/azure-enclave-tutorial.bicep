@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 // Azure Enclave Docs Tutorial: A modular template for Azure Enclave
-metadata name = 'Azure Enclave  Tutorial Template'
+metadata name = 'Azure Enclave Tutorial Template'
 metadata description = 'Tutorial template demonstrating Azure Enclave deployment using modular components'
 
 // ========================================
