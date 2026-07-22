@@ -101,7 +101,7 @@ param enclave1ResourceGroupName string = 'rg-ve-${prefix}-${enclaveLabel}-${suff
 param networkSize string = 'small'
 
 @description('Subnet configurations for the enclave.')
-@minLength(2)
+@minLength(1)
 @metadata({
   example: [
     { subnetName: 'appSubnet', networkPrefixSize: 26 }
@@ -510,8 +510,8 @@ module enclave1 './modules/enclave.bicep' = {
 // Enclave-derived variables (computed from module outputs)
 // Includes enclave user specified subnets and management subnet
 var enclave1SourceAddressSpaceAllSubnets = '${join(map(enclave1.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclave1.outputs.managedAddressSpace, '/')[0]}/26'
-// Only the "1" index (2nd) subnet name
-var enclave1SourceAddressSpaceOneSubnet = filter(enclave1.outputs.enclaveSubnetConfig, s => s.subnetName == enclaveSubnetConfigurations[1].subnetName)[0].addressPrefix
+// Use the first configured subnet for single-subnet connection flows
+var enclave1SourceAddressSpaceOneSubnet = enclave1.outputs.enclaveSubnetConfig[0].addressPrefix
 
 module enclaveEndpointWebApp './modules/enclave-endpoint.bicep' = {
   scope: resourceGroup(enclaveSubscriptionId, enclave1ResourceGroupName)
@@ -522,7 +522,7 @@ module enclaveEndpointWebApp './modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'enclave-web-app-subnet'
-        destination: filter(enclave1.outputs.enclaveSubnetConfig, s => s.subnetName == enclaveSubnetConfigurations[1].subnetName)[0].addressPrefix
+        destination: enclave1.outputs.enclaveSubnetConfig[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'

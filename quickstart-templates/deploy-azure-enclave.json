@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "18090332549562113728"
+      "templateHash": "351293870262469503"
     }
   },
   "definitions": {
@@ -199,7 +199,7 @@
         ],
         "description": "Subnet configurations for the enclave."
       },
-      "minLength": 2
+      "minLength": 1
     },
     "enclaveMaintenanceModeMode": {
       "type": "string",
@@ -2004,7 +2004,7 @@
             "value": [
               {
                 "endpointRuleName": "enclave-web-app-subnet",
-                "destination": "[filter(reference('enclave1').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, parameters('enclaveSubnetConfigurations')[1].subnetName)))[0].addressPrefix]",
+                "destination": "[reference('enclave1').outputs.enclaveSubnetConfig.value[0].addressPrefix]",
                 "ports": "443",
                 "protocols": [
                   "TCP"
@@ -2487,7 +2487,7 @@
             "value": "[reference('communityEndpointWinget').outputs.communityEndpointResourceId.value]"
           },
           "sourceAddressSpace": {
-            "value": "[filter(reference('enclave1').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, parameters('enclaveSubnetConfigurations')[1].subnetName)))[0].addressPrefix]"
+            "value": "[reference('enclave1').outputs.enclaveSubnetConfig.value[0].addressPrefix]"
           },
           "communityResourceId": {
             "value": "[reference('community').outputs.resourceId.value]"
@@ -2643,7 +2643,7 @@
             "value": "[reference('enclaveEndpointWebApp').outputs.endpointId.value]"
           },
           "sourceAddressSpace": {
-            "value": "[filter(reference('enclave1').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, parameters('enclaveSubnetConfigurations')[1].subnetName)))[0].addressPrefix]"
+            "value": "[reference('enclave1').outputs.enclaveSubnetConfig.value[0].addressPrefix]"
           },
           "communityResourceId": {
             "value": "[reference('community').outputs.resourceId.value]"
