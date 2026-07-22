@@ -795,7 +795,7 @@
             },
             "workloadResourceGroupName": {
               "type": "string",
-              "defaultValue": "[resourceGroup().name]"
+              "defaultValue": "rg-wl-default-name"
             },
             "tags": {
               "type": "object",
