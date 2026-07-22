@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "17019378874668020244"
+      "templateHash": "16070120703006965411"
     },
     "name": "Azure Enclave Tutorial Template",
     "description": "Tutorial template demonstrating Azure Enclave deployment using modular components"
@@ -672,7 +672,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "13789965355346119931"
+              "templateHash": "4595098462561486903"
             }
           },
           "definitions": {
@@ -778,7 +778,7 @@
             },
             "deployWorkload": {
               "type": "bool",
-              "defaultValue": false,
+              "defaultValue": true,
               "metadata": {
                 "displayName": "Deploy Workload",
                 "description": "Set to true to deploy a workload in the enclave."
@@ -795,7 +795,7 @@
             },
             "workloadResourceGroupName": {
               "type": "string",
-              "defaultValue": ""
+              "defaultValue": "[resourceGroup().name]"
             },
             "tags": {
               "type": "object",
@@ -971,7 +971,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "13789965355346119931"
+              "templateHash": "4595098462561486903"
             }
           },
           "definitions": {
@@ -1077,7 +1077,7 @@
             },
             "deployWorkload": {
               "type": "bool",
-              "defaultValue": false,
+              "defaultValue": true,
               "metadata": {
                 "displayName": "Deploy Workload",
                 "description": "Set to true to deploy a workload in the enclave."
@@ -1094,7 +1094,7 @@
             },
             "workloadResourceGroupName": {
               "type": "string",
-              "defaultValue": ""
+              "defaultValue": "[resourceGroup().name]"
             },
             "tags": {
               "type": "object",

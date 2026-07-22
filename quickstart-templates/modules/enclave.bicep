@@ -61,14 +61,14 @@ param maintenanceModeConfiguration maintenanceModeConfigurationType = {
 @metadata({
   displayName: 'Deploy Workload'
 })
-param deployWorkload bool = false
+param deployWorkload bool = true
 
 @description('The name of the workload resource.')
 @minLength(3)
 @maxLength(30)
 param workloadName string = 'workload'
 
-param workloadResourceGroupName string = ''
+param workloadResourceGroupName string = resourceGroup().name
 
 @description('Tags to be assigned to the enclave resource.')
 param tags object = {}

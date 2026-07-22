@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "4608095735445859794"
+      "templateHash": "18090332549562113728"
     }
   },
   "definitions": {
@@ -1728,7 +1728,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "13789965355346119931"
+              "templateHash": "4595098462561486903"
             }
           },
           "definitions": {
@@ -1834,7 +1834,7 @@
             },
             "deployWorkload": {
               "type": "bool",
-              "defaultValue": false,
+              "defaultValue": true,
               "metadata": {
                 "displayName": "Deploy Workload",
                 "description": "Set to true to deploy a workload in the enclave."
@@ -1851,7 +1851,7 @@
             },
             "workloadResourceGroupName": {
               "type": "string",
-              "defaultValue": ""
+              "defaultValue": "[resourceGroup().name]"
             },
             "tags": {
               "type": "object",
