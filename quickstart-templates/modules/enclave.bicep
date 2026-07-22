@@ -68,7 +68,7 @@ param deployWorkload bool = true
 @maxLength(30)
 param workloadName string = 'workload'
 
-param workloadResourceGroupName string = resourceGroup().name
+param workloadResourceGroupName string = 'rg-wl-default-name'
 
 @description('Tags to be assigned to the enclave resource.')
 param tags object = {}
