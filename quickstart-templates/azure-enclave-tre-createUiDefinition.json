@@ -1,0 +1,246 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json#",
+  "view": {
+    "kind": "Form",
+    "properties": {
+      "title": "Azure Enclave - Trusted Research Environment",
+      "steps": [
+        {
+          "name": "basics",
+          "label": "Basics",
+          "elements": [
+            {
+              "name": "infoBox",
+              "type": "Microsoft.Common.InfoBox",
+              "visible": true,
+              "options": {
+                "icon": "Info",
+                "text": "This template will create:\n• 1 Community resource with governed services\n• 4 Azure Enclave (Shared Services, Project 1, Project 2, Data Coordination Center)\n• 1 Transit Hub for external connectivity\n• Multiple Community Endpoints (External, Default Portal, Data Source, Windows Updates, Winget)\n• 4 Workloads (one per enclave)\n• Multiple Enclave Endpoints and Connections for secure communication"
+              }
+            },
+            {
+              "name": "resourceScope",
+              "type": "Microsoft.Common.ResourceScope",
+              "location": {
+                "resourceTypes": [
+                  "Microsoft.Mission/communities",
+                  "Microsoft.Mission/virtualenclaves"
+                ],
+                "allowedValues": []
+              }
+            },
+            {
+              "name": "uniqueNumber",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Unique Number",
+              "defaultValue": "1",
+              "toolTip": "A unique number to make the resources unique within the resource group. This enables easier multiple test deployments.",
+              "constraints": {
+                "required": true,
+                "regex": "^[0-9]{1,4}$",
+                "validationMessage": "Unique number must be a numeric value between 1 and 4 digits."
+              }
+            },
+            {
+              "name": "description",
+              "type": "Microsoft.Common.TextBlock",
+              "options": {
+                "text": "Deploy a Trusted Research Environment (TRE) using Azure Enclave. This template creates a community with multiple enclaves for shared services, research projects, and a data coordination center, along with the necessary endpoints and connections for secure collaboration."
+              }
+            },
+            {
+              "name": "enableTelemetry",
+              "type": "Microsoft.Common.OptionsGroup",
+              "label": "Enable Telemetry",
+              "defaultValue": "Yes",
+              "toolTip": "Enable or disable usage telemetry for this template deployment",
+              "constraints": {
+                "required": true,
+                "allowedValues": [
+                  {
+                    "label": "Yes",
+                    "value": true
+                  },
+                  {
+                    "label": "No",
+                    "value": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "communityConfig",
+          "label": "Community Configuration",
+          "elements": [
+            {
+              "name": "communitySection",
+              "type": "Microsoft.Common.Section",
+              "label": "Community Settings",
+              "elements": [
+                {
+                  "name": "communityName",
+                  "type": "Microsoft.Common.TextBox",
+                  "label": "Community Name",
+                  "defaultValue": "cmt-edu-hub",
+                  "toolTip": "Name of the community (e.g. cmt-azure-enclave-edu-template-test1). Also added to the front of community resource names.",
+                  "constraints": {
+                    "required": true,
+                    "regex": "^[a-zA-Z0-9-]{3,30}$",
+                    "validationMessage": "Community name must be between 3 and 30 characters and contain only alphanumeric characters and hyphens."
+                  }
+                },
+                {
+                  "name": "enclaveNamePrefix",
+                  "type": "Microsoft.Common.TextBox",
+                  "label": "Enclave Name Prefix",
+                  "defaultValue": "ve-edu",
+                  "toolTip": "Prefix for the Enclave names (e.g. ve-azure-enclave-edu-template-test1)",
+                  "constraints": {
+                    "required": true,
+                    "regex": "^[a-zA-Z0-9-]{3,25}$",
+                    "validationMessage": "Enclave name prefix must be between 3 and 25 characters and contain only alphanumeric characters and hyphens."
+                  }
+                }
+              ]
+            },
+            {
+              "name": "networkSection",
+              "type": "Microsoft.Common.Section",
+              "label": "Network Configuration",
+              "elements": [
+                {
+                  "name": "addressSpace",
+                  "type": "Microsoft.Common.TextBox",
+                  "label": "Address Space",
+                  "defaultValue": "10.0.0.0/16",
+                  "toolTip": "The address space for the community in CIDR notation (e.g., 10.0.0.0/16)",
+                  "constraints": {
+                    "required": true,
+                    "regex": "^([0-9]{1,3}\\.){3}[0-9]{1,3}\\/[0-9]{1,2}$",
+                    "validationMessage": "Address space must be in valid CIDR notation (e.g., 10.0.0.0/16)."
+                  }
+                },
+                {
+                  "name": "networkSize",
+                  "type": "Microsoft.Common.DropDown",
+                  "label": "Network Size",
+                  "defaultValue": "Small",
+                  "toolTip": "The size of the enclave virtual networks",
+                  "constraints": {
+                    "required": true,
+                    "allowedValues": [
+                      {
+                        "label": "Small",
+                        "value": "small"
+                      },
+                      {
+                        "label": "Medium",
+                        "value": "medium"
+                      },
+                      {
+                        "label": "Large",
+                        "value": "large"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "transitConfig",
+          "label": "Transit Hub Configuration",
+          "elements": [
+            {
+              "name": "transitSection",
+              "type": "Microsoft.Common.Section",
+              "label": "Transit Hub Settings",
+              "elements": [
+                {
+                  "name": "transitHubName",
+                  "type": "Microsoft.Common.TextBox",
+                  "label": "Transit Hub Name",
+                  "defaultValue": "th-external",
+                  "toolTip": "Name of the transit hub resource",
+                  "constraints": {
+                    "required": true,
+                    "regex": "^[a-zA-Z0-9-]{3,30}$",
+                    "validationMessage": "Transit hub name must be between 3 and 30 characters and contain only alphanumeric characters and hyphens."
+                  }
+                },
+                {
+                  "name": "transitOptionType",
+                  "type": "Microsoft.Common.DropDown",
+                  "label": "Transit Option Type",
+                  "defaultValue": "Gateway",
+                  "toolTip": "The type of transit connection (Gateway or ExpressRoute)",
+                  "constraints": {
+                    "required": true,
+                    "allowedValues": [
+                      {
+                        "label": "Gateway",
+                        "value": "Gateway"
+                      },
+                      {
+                        "label": "ExpressRoute",
+                        "value": "ExpressRoute"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "scaleUnits",
+                  "type": "Microsoft.Common.Slider",
+                  "min": 1,
+                  "max": 10,
+                  "label": "Scale Units",
+                  "subLabel": "units",
+                  "defaultValue": 2,
+                  "toolTip": "Number of scale units for the transit hub (1-10)",
+                  "constraints": {
+                    "required": true
+                  },
+                  "visible": true
+                },
+                {
+                  "name": "remoteVirtualNetworkId",
+                  "type": "Microsoft.Common.TextBox",
+                  "label": "Remote Virtual Network ID",
+                  "defaultValue": "",
+                  "toolTip": "The resource ID of the remote virtual network (required if using Peering transit option)",
+                  "constraints": {
+                    "required": false,
+                    "regex": "^$|^\\/subscriptions\\/[a-fA-F0-9-]+\\/resourceGroups\\/[^/]+\\/providers\\/Microsoft\\.Network\\/virtualNetworks\\/[^/]+$",
+                    "validationMessage": "Must be empty or a valid virtual network resource ID."
+                  },
+                  "visible": "[not(or(equals(steps('transitConfig').transitSection.transitOptionType, 'Gateway'), equals(steps('transitConfig').transitSection.transitOptionType, 'ExpressRoute')))]"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "outputs": {
+      "parameters": {
+        "communityName": "[steps('communityConfig').communitySection.communityName]",
+        "enclaveNamePrefix": "[steps('communityConfig').communitySection.enclaveNamePrefix]",
+        "uniqueNumber": "[steps('basics').uniqueNumber]",
+        "addressSpace": "[steps('communityConfig').networkSection.addressSpace]",
+        "dnsServers": [],
+        "networkSize": "[steps('communityConfig').networkSection.networkSize]",
+        "transitOptionType": "[steps('transitConfig').transitSection.transitOptionType]",
+        "transitHubName": "[steps('transitConfig').transitSection.transitHubName]",
+        "scaleUnits": "[steps('transitConfig').transitSection.scaleUnits]",
+        "remoteVirtualNetworkId": "[steps('transitConfig').transitSection.remoteVirtualNetworkId]",
+        "enableTelemetry": "[steps('basics').enableTelemetry]"
+      },
+      "kind": "ResourceGroup",
+      "location": "[steps('basics').resourceScope.location.name]",
+      "resourceGroupId": "[steps('basics').resourceScope.resourceGroup.id]"
+    }
+  }
+}

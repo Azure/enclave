@@ -38,18 +38,18 @@
   "parameters": {
     "communityName": {
       "type": "string",
-      "defaultValue": "cmt-tre-hub",
+      "defaultValue": "cmt-edu-hub",
       "maxLength": 26,
       "metadata": {
-        "description": "Name of the community (e.g. cmt-azure-enclave-tre-template-test1). Also added to the front of community resource names."
+        "description": "Name of the community (e.g. cmt-azure-enclave-edu-template-test1). Also added to the front of community resource names."
       }
     },
     "enclaveNamePrefix": {
       "type": "string",
-      "defaultValue": "ve-tre",
+      "defaultValue": "ve-edu",
       "maxLength": 15,
       "metadata": {
-        "description": "Prefix for the Enclave names (e.g. ve-azure-enclave-tre-template-test1)"
+        "description": "Prefix for the Enclave names (e.g. ve-azure-enclave-edu-template-test1)"
       }
     },
     "uniqueNumber": {
@@ -230,7 +230,7 @@
       "condition": "[parameters('enableTelemetry')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2024-03-01",
-      "name": "[take(format('virtualenclaves.ave-tre.{0}.{1}', replace('-..--..-', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4)), 64)]",
+      "name": "[take(format('virtualenclaves.ave-edu.{0}.{1}', replace('-..--..-', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4)), 64)]",
       "properties": {
         "mode": "Incremental",
         "template": {
@@ -3772,7 +3772,7 @@
             "value": "[parameters('location')]"
           },
           "connectionName": {
-            "value": "[format('ec-shared-portal-tre-{0}', parameters('uniqueNumber'))]"
+            "value": "[format('ec-shared-portal-edu-{0}', parameters('uniqueNumber'))]"
           },
           "tags": {
             "value": {
@@ -3931,7 +3931,7 @@
             "value": "[parameters('location')]"
           },
           "connectionName": {
-            "value": "[format('ec-proj1-portal-tre-{0}', parameters('uniqueNumber'))]"
+            "value": "[format('ec-proj1-portal-edu-{0}', parameters('uniqueNumber'))]"
           },
           "tags": {
             "value": {
@@ -4090,7 +4090,7 @@
             "value": "[parameters('location')]"
           },
           "connectionName": {
-            "value": "[format('ec-proj2-portal-tre-{0}', parameters('uniqueNumber'))]"
+            "value": "[format('ec-proj2-portal-edu-{0}', parameters('uniqueNumber'))]"
           },
           "tags": {
             "value": {
@@ -4249,7 +4249,7 @@
             "value": "[parameters('location')]"
           },
           "connectionName": {
-            "value": "[format('ec-dcc-portal-tre-{0}', parameters('uniqueNumber'))]"
+            "value": "[format('ec-dcc-portal-edu-{0}', parameters('uniqueNumber'))]"
           },
           "tags": {
             "value": {
@@ -4408,7 +4408,7 @@
             "value": "[parameters('location')]"
           },
           "connectionName": {
-            "value": "[format('ec-dcc-proj1-tre-{0}', parameters('uniqueNumber'))]"
+            "value": "[format('ec-dcc-proj1-edu-{0}', parameters('uniqueNumber'))]"
           },
           "tags": {
             "value": {
