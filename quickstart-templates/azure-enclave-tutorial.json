@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "16070120703006965411"
+      "templateHash": "1864178162585895933"
     },
     "name": "Azure Enclave Tutorial Template",
     "description": "Tutorial template demonstrating Azure Enclave deployment using modular components"
@@ -672,7 +672,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "4595098462561486903"
+              "templateHash": "5832050067387916600"
             }
           },
           "definitions": {
@@ -971,7 +971,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "4595098462561486903"
+              "templateHash": "5832050067387916600"
             }
           },
           "definitions": {
@@ -1094,7 +1094,7 @@
             },
             "workloadResourceGroupName": {
               "type": "string",
-              "defaultValue": "[resourceGroup().name]"
+              "defaultValue": "rg-wl-default-name"
             },
             "tags": {
               "type": "object",

@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "351293870262469503"
+      "templateHash": "9468356943558436920"
     }
   },
   "definitions": {
@@ -1728,7 +1728,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "4595098462561486903"
+              "templateHash": "5832050067387916600"
             }
           },
           "definitions": {
@@ -1851,7 +1851,7 @@
             },
             "workloadResourceGroupName": {
               "type": "string",
-              "defaultValue": "[resourceGroup().name]"
+              "defaultValue": "rg-wl-default-name"
             },
             "tags": {
               "type": "object",

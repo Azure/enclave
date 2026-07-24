@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.45.6.27763",
-      "templateHash": "4791511340828518580"
+      "version": "0.45.15.27210",
+      "templateHash": "7134258315099424332"
     }
   },
   "definitions": {
@@ -631,7 +631,7 @@
       },
       "location": "[parameters('location')]",
       "tags": {
-        "department": "senstiveDataDept",
+        "department": "sensitiveDataDept",
         "company": "R&D_Collaboration"
       },
       "dependsOn": [
@@ -2364,8 +2364,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "3883375941552165530"
+              "version": "0.45.15.27210",
+              "templateHash": "17615243782070886438"
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
@@ -2582,8 +2582,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "11214773546894560206"
+              "version": "0.45.15.27210",
+              "templateHash": "4456110992906823786"
             }
           },
           "definitions": {
@@ -2730,8 +2730,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "10580882565943275943"
+              "version": "0.45.15.27210",
+              "templateHash": "9622407626512764700"
             }
           },
           "definitions": {
@@ -3128,8 +3128,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16987716157445245839"
+              "version": "0.45.15.27210",
+              "templateHash": "8579690226755007777"
             }
           },
           "definitions": {
@@ -3357,8 +3357,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16987716157445245839"
+              "version": "0.45.15.27210",
+              "templateHash": "8579690226755007777"
             }
           },
           "definitions": {
@@ -3586,8 +3586,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16987716157445245839"
+              "version": "0.45.15.27210",
+              "templateHash": "8579690226755007777"
             }
           },
           "definitions": {
@@ -3815,8 +3815,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16987716157445245839"
+              "version": "0.45.15.27210",
+              "templateHash": "8579690226755007777"
             }
           },
           "definitions": {
@@ -4044,8 +4044,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16987716157445245839"
+              "version": "0.45.15.27210",
+              "templateHash": "8579690226755007777"
             }
           },
           "definitions": {
