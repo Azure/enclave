@@ -6,7 +6,13 @@ Run the repository-pinned Bicep compiler from the repository root:
 pwsh ./eng/Build-ArmTemplates.ps1
 ```
 
-The script verifies the standalone compiler checksum, builds and lints all Bicep files, regenerates the five published ARM JSON files, and validates their scopes, metadata, mappings, and README deployment paths. Use `-Check` to reproduce the read-only CI drift check.
+The script verifies the standalone compiler checksum, builds and lints all Bicep files, regenerates the five published ARM JSON files, and validates their scopes, metadata, mappings, and every README deployment-button Template URI. Template URI validation is structural and local; it does not fetch private or public raw GitHub content. Use `-Check` to reproduce the read-only CI drift check.
+
+Run the focused adversarial deployment-link tests with:
+
+```powershell
+pwsh ./eng/Build-ArmTemplates.ps1 -TestReadmeDeploymentLinks
+```
 
 ## Updating Bicep
 

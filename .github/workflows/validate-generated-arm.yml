@@ -28,4 +28,6 @@ jobs:
 
       - name: Regenerate and verify ARM templates
         shell: pwsh
-        run: ./eng/Build-ArmTemplates.ps1 -Check
+        run: |
+          ./eng/Build-ArmTemplates.ps1 -TestReadmeDeploymentLinks
+          ./eng/Build-ArmTemplates.ps1 -Check

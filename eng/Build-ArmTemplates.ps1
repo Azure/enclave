@@ -2,7 +2,8 @@
 
 [CmdletBinding()]
 param(
-    [switch] $Check
+    [switch] $Check,
+    [switch] $TestReadmeDeploymentLinks
 )
 
 Set-StrictMode -Version Latest
@@ -240,35 +241,345 @@ function Assert-GeneratedArtifacts {
     }
 }
 
-function Assert-ReadmeDeploymentPaths {
-    $readme = Get-Content -LiteralPath (Join-Path $repoRoot 'README.md') -Raw
-    $patterns = @(
-        '(?i)https%3A%2F%2Fraw\.githubusercontent\.com%2Fazure%2Fenclave%2Fmain%2F(?<path>[^)\s]+?\.json)',
-        '(?i)https://raw\.githubusercontent\.com/azure/enclave/main/(?<path>[^)\s]+?\.json)'
+function Assert-WellFormedPercentEncoding {
+    param(
+        [Parameter(Mandatory)][string] $Value,
+        [Parameter(Mandatory)][string] $Description
     )
-    $paths = @(
-        foreach ($pattern in $patterns) {
-            foreach ($match in [regex]::Matches($readme, $pattern)) {
-                [System.Uri]::UnescapeDataString($match.Groups['path'].Value).Replace('\', '/')
-            }
-        }
-    ) | Sort-Object -Unique
 
-    if ($paths.Count -eq 0) {
-        throw 'README.md contains no Azure/enclave deployment-button template paths.'
+    if ($Value -match '%(?![0-9A-Fa-f]{2})') {
+        throw "$Description contains malformed percent-encoding."
+    }
+}
+
+function Get-ReadmeDeploymentLinks {
+    param(
+        [Parameter(Mandatory)][string] $Readme,
+        [Parameter(Mandatory)][string] $ReadmeName
+    )
+
+    $labelPattern = '(?i)Deploy\s+To\s+Azure'
+    $linkPattern = @'
+(?isx)
+\[
+    (?:
+        !\[\s*Deploy\s+To\s+Azure\s*\]\([^)]+\)
+        |
+        \s*Deploy\s+To\s+Azure\s*
+    )
+\]
+\(
+    \s*(?<href>[^)\s]+)\s*
+\)
+'@
+
+    $labelCount = [regex]::Matches($Readme, $labelPattern).Count
+    $linkMatches = [regex]::Matches($Readme, $linkPattern)
+    if ($labelCount -eq 0) {
+        throw "$ReadmeName contains no Deploy To Azure buttons or links."
+    }
+    if ($linkMatches.Count -ne $labelCount) {
+        throw "$ReadmeName contains $labelCount Deploy To Azure label(s), but only $($linkMatches.Count) use a supported Markdown button/link form."
+    }
+
+    return @($linkMatches | ForEach-Object { $_.Groups['href'].Value })
+}
+
+function Get-DeploymentTemplateArtifactPath {
+    param(
+        [Parameter(Mandatory)][string] $DeploymentLink,
+        [Parameter(Mandatory)][string] $ReadmeName,
+        [Parameter(Mandatory)][int] $LinkNumber,
+        [Parameter(Mandatory)][string[]] $MappedArtifacts
+    )
+
+    $description = "$ReadmeName deployment link #$LinkNumber"
+    Assert-WellFormedPercentEncoding -Value $DeploymentLink -Description $description
+
+    $templateParameters = @(
+        [regex]::Matches(
+            $DeploymentLink,
+            '(?i)[?&](?<name>template(?:uri)?)=') |
+            ForEach-Object { $_.Groups['name'].Value.ToLowerInvariant() }
+    )
+    if ($templateParameters.Count -gt 1) {
+        throw "$description contains duplicate or ambiguous template parameters."
+    }
+    if ($templateParameters.Count -eq 1) {
+        throw "$description uses an unsupported template query parameter in addition to, or instead of, the Template URI route."
+    }
+
+    $portalUri = $null
+    if (-not [System.Uri]::TryCreate(
+            $DeploymentLink,
+            [System.UriKind]::Absolute,
+            [ref]$portalUri)) {
+        throw "$description is not a well-formed absolute deployment URL."
+    }
+    if ($portalUri.Scheme -ne 'https' -or
+        $portalUri.Host -ne 'portal.azure.com' -or
+        -not [string]::IsNullOrEmpty($portalUri.UserInfo) -or
+        -not $portalUri.IsDefaultPort) {
+        throw "$description must use https://portal.azure.com with no user information or custom port."
+    }
+    if ($portalUri.AbsolutePath -ne '/' -or
+        -not [string]::IsNullOrEmpty($portalUri.Query)) {
+        throw "$description must not use an outer path or query string."
+    }
+
+    $routePrefix = '#create/Microsoft.Template/uri/'
+    if (-not $portalUri.Fragment.StartsWith(
+            $routePrefix,
+            [System.StringComparison]::Ordinal)) {
+        throw "$description must use the exact '$routePrefix<Template URI>' route."
+    }
+
+    $encodedTemplateUri = $portalUri.Fragment.Substring($routePrefix.Length)
+    if ([string]::IsNullOrWhiteSpace($encodedTemplateUri)) {
+        throw "$description has an empty Template URI."
+    }
+    if ($encodedTemplateUri.Contains('?') -or $encodedTemplateUri.Contains('#')) {
+        throw "$description contains query or fragment data after the Template URI."
+    }
+
+    Assert-WellFormedPercentEncoding `
+        -Value $encodedTemplateUri `
+        -Description "$description Template URI"
+
+    if ($encodedTemplateUri.StartsWith(
+            'https://',
+            [System.StringComparison]::OrdinalIgnoreCase)) {
+        if ($encodedTemplateUri.Contains('%')) {
+            throw "$description Template URI mixes raw and percent-encoded forms."
+        }
+        $templateUriText = $encodedTemplateUri
+    }
+    elseif ($encodedTemplateUri -match '(?i)^https%3A%2F%2F') {
+        if ($encodedTemplateUri -match '[:/\\?#]') {
+            throw "$description Template URI is only partially percent-encoded."
+        }
+        try {
+            $templateUriText = [System.Uri]::UnescapeDataString($encodedTemplateUri)
+        }
+        catch {
+            throw "$description Template URI could not be URL-decoded: $($_.Exception.Message)"
+        }
+        if ($templateUriText.Contains('%')) {
+            throw "$description Template URI contains nested or ambiguous percent-encoding."
+        }
+    }
+    else {
+        throw "$description Template URI must be either a raw or fully percent-encoded HTTPS URI."
+    }
+
+    if ($templateUriText -match '[\x00-\x20\x7f\\]') {
+        throw "$description Template URI contains whitespace, control characters, or backslashes."
+    }
+    if ($templateUriText.Contains('?') -or $templateUriText.Contains('#')) {
+        throw "$description Template URI must not contain a query string or fragment."
+    }
+
+    $rawPathMatch = [regex]::Match(
+        $templateUriText,
+        '(?i)^https://[^/]+/(?<path>[^?#]+)$')
+    if (-not $rawPathMatch.Success) {
+        throw "$description Template URI is malformed."
+    }
+
+    $segments = @($rawPathMatch.Groups['path'].Value.Split('/'))
+    if ($segments.Count -lt 4 -or
+        @($segments | Where-Object { $_ -in @('', '.', '..') }).Count -gt 0) {
+        throw "$description Template URI contains an empty or traversal path segment."
+    }
+
+    $templateUri = $null
+    if (-not [System.Uri]::TryCreate(
+            $templateUriText,
+            [System.UriKind]::Absolute,
+            [ref]$templateUri)) {
+        throw "$description Template URI is not a well-formed absolute URI."
+    }
+    if ($templateUri.Scheme -ne 'https' -or
+        $templateUri.Host -ne 'raw.githubusercontent.com' -or
+        -not [string]::IsNullOrEmpty($templateUri.UserInfo) -or
+        -not $templateUri.IsDefaultPort) {
+        throw "$description Template URI must use https://raw.githubusercontent.com with no user information or custom port."
+    }
+    if (-not [string]::IsNullOrEmpty($templateUri.Query) -or
+        -not [string]::IsNullOrEmpty($templateUri.Fragment)) {
+        throw "$description Template URI must not contain a query string or fragment."
+    }
+
+    $owner = $segments[0]
+    $repository = $segments[1]
+    $ref = $segments[2]
+    $artifactPath = $segments[3..($segments.Count - 1)] -join '/'
+    if ($owner -ine 'Azure') {
+        throw "$description Template URI owner '$owner' is not 'Azure'."
+    }
+    if ($repository -ine 'enclave') {
+        throw "$description Template URI repository '$repository' is not 'enclave'."
+    }
+    if ($ref -cne 'main') {
+        throw "$description Template URI ref '$ref' is not 'main'."
+    }
+    if ($artifactPath -cnotin $MappedArtifacts) {
+        throw "$description Template URI artifact path '$artifactPath' is not an explicit generated artifact mapping."
+    }
+
+    return $artifactPath
+}
+
+function Assert-ReadmeDeploymentPaths {
+    param(
+        [string] $Readme,
+        [string] $ReadmeName = 'README.md'
+    )
+
+    if ([string]::IsNullOrEmpty($Readme)) {
+        $Readme = Get-Content -LiteralPath (Join-Path $repoRoot 'README.md') -Raw
     }
 
     $mappedArtifacts = @($config.templates | ForEach-Object { [string]$_.artifact })
-    foreach ($path in $paths) {
-        if ($path -notin $mappedArtifacts) {
-            throw "README.md deployment path '$path' is not a generated artifact mapping."
-        }
-        if (-not (Test-Path -LiteralPath (Join-Path $repoRoot $path) -PathType Leaf)) {
-            throw "README.md deployment path '$path' does not exist locally."
+    $deploymentLinks = @(Get-ReadmeDeploymentLinks -Readme $Readme -ReadmeName $ReadmeName)
+    for ($index = 0; $index -lt $deploymentLinks.Count; $index++) {
+        $artifactPath = Get-DeploymentTemplateArtifactPath `
+            -DeploymentLink $deploymentLinks[$index] `
+            -ReadmeName $ReadmeName `
+            -LinkNumber ($index + 1) `
+            -MappedArtifacts $mappedArtifacts
+        if (-not (Test-Path -LiteralPath (Join-Path $repoRoot $artifactPath) -PathType Leaf)) {
+            throw "$ReadmeName deployment link #$($index + 1) artifact '$artifactPath' does not exist locally."
         }
     }
 
-    Write-Host "Validated $($paths.Count) README deployment-button path(s) locally."
+    Write-Host "Validated all $($deploymentLinks.Count) $ReadmeName deployment button/link Template URI(s) locally."
+}
+
+function Invoke-ReadmeDeploymentLinkTests {
+    $badge = 'https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg'
+    function New-DeploymentButton {
+        param([Parameter(Mandatory)][string] $DeploymentLink)
+
+        return "[![Deploy To Azure]($badge)]($DeploymentLink)"
+    }
+    function New-PortalLink {
+        param([Parameter(Mandatory)][string] $TemplateUri)
+
+        return "https://portal.azure.com/#create/Microsoft.Template/uri/$TemplateUri"
+    }
+    function ConvertTo-EncodedTemplateUri {
+        param([Parameter(Mandatory)][string] $TemplateUri)
+
+        return [System.Uri]::EscapeDataString($TemplateUri)
+    }
+
+    Assert-ReadmeDeploymentPaths
+
+    $validTemplateUri = ConvertTo-EncodedTemplateUri `
+        'https://raw.githubusercontent.com/Azure/enclave/main/quickstart-templates/azure-enclave-saca.json'
+    $validButton = New-DeploymentButton (New-PortalLink $validTemplateUri)
+    Assert-ReadmeDeploymentPaths `
+        -Readme (New-DeploymentButton (New-PortalLink `
+            'https://raw.githubusercontent.com/Azure/enclave/main/quickstart-templates/azure-enclave-saca.json')) `
+        -ReadmeName 'valid raw Template URI case'
+
+    $failureCases = @(
+        @{
+            Name = 'unexpected Template URI scheme'
+            Readme = New-DeploymentButton (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                'http://raw.githubusercontent.com/Azure/enclave/main/quickstart-templates/azure-enclave-saca.json'))
+            Error = 'HTTPS URI'
+        },
+        @{
+            Name = 'changed owner'
+            Readme = New-DeploymentButton (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                'https://raw.githubusercontent.com/Contoso/enclave/main/quickstart-templates/azure-enclave-saca.json'))
+            Error = 'owner'
+        },
+        @{
+            Name = 'changed repository'
+            Readme = New-DeploymentButton (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                'https://raw.githubusercontent.com/Azure/not-enclave/main/quickstart-templates/azure-enclave-saca.json'))
+            Error = 'repository'
+        },
+        @{
+            Name = 'changed branch'
+            Readme = New-DeploymentButton (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                'https://raw.githubusercontent.com/Azure/enclave/develop/quickstart-templates/azure-enclave-saca.json'))
+            Error = 'ref'
+        },
+        @{
+            Name = 'non-GitHub host'
+            Readme = New-DeploymentButton (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                'https://templates.example.com/Azure/enclave/main/quickstart-templates/azure-enclave-saca.json'))
+            Error = 'raw\.githubusercontent\.com'
+        },
+        @{
+            Name = 'unmapped JSON'
+            Readme = New-DeploymentButton (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                'https://raw.githubusercontent.com/Azure/enclave/main/quickstart-templates/unmapped.json'))
+            Error = 'explicit generated artifact mapping'
+        },
+        @{
+            Name = 'encoded traversal'
+            Readme = New-DeploymentButton (New-PortalLink `
+                'https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fenclave%2Fmain%2Fquickstart-templates%2F%2E%2E%2Fazure-enclave-saca.json')
+            Error = 'traversal'
+        },
+        @{
+            Name = 'malformed Template URI'
+            Readme = New-DeploymentButton (New-PortalLink `
+                'https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fenclave%2Fmain%2Fquickstart-templates%2Fbad%ZZ.json')
+            Error = 'malformed percent-encoding'
+        },
+        @{
+            Name = 'duplicate template parameter'
+            Readme = New-DeploymentButton `
+                "https://portal.azure.com/?template=one&template=two#create/Microsoft.Template/uri/$validTemplateUri"
+            Error = 'duplicate or ambiguous template parameters'
+        },
+        @{
+            Name = 'Template URI query trick'
+            Readme = New-DeploymentButton (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                'https://raw.githubusercontent.com/Azure/enclave/main/quickstart-templates/azure-enclave-saca.json?ref=other'))
+            Error = 'query string or fragment'
+        },
+        @{
+            Name = 'Template URI fragment trick'
+            Readme = New-DeploymentButton (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                'https://raw.githubusercontent.com/Azure/enclave/main/quickstart-templates/azure-enclave-saca.json#other'))
+            Error = 'query string or fragment'
+        },
+        @{
+            Name = 'invalid link alongside valid links'
+            Readme = "$validButton`n`n$(New-DeploymentButton (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                'https://raw.githubusercontent.com/Contoso/enclave/main/quickstart-templates/azure-enclave-saca.json')))"
+            Error = 'owner'
+        }
+    )
+
+    foreach ($case in $failureCases) {
+        $failedAsExpected = $false
+        try {
+            Assert-ReadmeDeploymentPaths `
+                -Readme ([string]$case.Readme) `
+                -ReadmeName "regression case '$($case.Name)'"
+        }
+        catch {
+            if ($_.Exception.Message -notmatch [string]$case.Error) {
+                throw "Regression case '$($case.Name)' failed for the wrong reason: $($_.Exception.Message)"
+            }
+            $failedAsExpected = $true
+        }
+
+        if (-not $failedAsExpected) {
+            throw "Regression case '$($case.Name)' unexpectedly passed."
+        }
+        Write-Host "Passed: rejected $($case.Name)."
+    }
+
+    Write-Host "Passed all $($failureCases.Count) README deployment-link regression tests."
 }
 
 $templateMappings = @($config.templates)
@@ -290,6 +601,11 @@ foreach ($source in $mappedSources) {
     if (-not (Test-Path -LiteralPath (Join-Path $repoRoot $source) -PathType Leaf)) {
         throw "Mapped Bicep source '$source' does not exist."
     }
+}
+
+if ($TestReadmeDeploymentLinks) {
+    Invoke-ReadmeDeploymentLinkTests
+    return
 }
 
 $quickstartRoot = Join-Path $repoRoot 'quickstart-templates'
