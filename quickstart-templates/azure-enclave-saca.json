@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "7705180323402650652"
+      "templateHash": "9573837772627159251"
     }
   },
   "definitions": {
@@ -2215,7 +2215,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "15919543781419052963"
+              "templateHash": "5832050067387916600"
             }
           },
           "definitions": {
@@ -2338,7 +2338,7 @@
             },
             "workloadResourceGroupName": {
               "type": "string",
-              "defaultValue": ""
+              "defaultValue": "rg-wl-default-name"
             },
             "tags": {
               "type": "object",
@@ -2522,7 +2522,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "15919543781419052963"
+              "templateHash": "5832050067387916600"
             }
           },
           "definitions": {
@@ -2645,7 +2645,7 @@
             },
             "workloadResourceGroupName": {
               "type": "string",
-              "defaultValue": ""
+              "defaultValue": "rg-wl-default-name"
             },
             "tags": {
               "type": "object",
@@ -2829,7 +2829,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "15919543781419052963"
+              "templateHash": "5832050067387916600"
             }
           },
           "definitions": {
@@ -2952,7 +2952,7 @@
             },
             "workloadResourceGroupName": {
               "type": "string",
-              "defaultValue": ""
+              "defaultValue": "rg-wl-default-name"
             },
             "tags": {
               "type": "object",
@@ -3140,7 +3140,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "15919543781419052963"
+              "templateHash": "5832050067387916600"
             }
           },
           "definitions": {
@@ -3263,7 +3263,7 @@
             },
             "workloadResourceGroupName": {
               "type": "string",
-              "defaultValue": ""
+              "defaultValue": "rg-wl-default-name"
             },
             "tags": {
               "type": "object",
