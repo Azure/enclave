@@ -252,37 +252,315 @@ function Assert-WellFormedPercentEncoding {
     }
 }
 
+function Find-MarkdownClosingBracket {
+    param(
+        [Parameter(Mandatory)][string] $Text,
+        [Parameter(Mandatory)][int] $OpenIndex
+    )
+
+    $depth = 0
+    for ($index = $OpenIndex; $index -lt $Text.Length; $index++) {
+        if ($Text[$index] -eq '\' -and $index + 1 -lt $Text.Length) {
+            $index++
+            continue
+        }
+        if ($Text[$index] -eq '[') {
+            $depth++
+        }
+        elseif ($Text[$index] -eq ']') {
+            $depth--
+            if ($depth -eq 0) {
+                return $index
+            }
+        }
+    }
+
+    return -1
+}
+
+function Read-MarkdownInlineTarget {
+    param(
+        [Parameter(Mandatory)][string] $Text,
+        [Parameter(Mandatory)][int] $OpenParenthesisIndex
+    )
+
+    $failure = {
+        param([string] $Message)
+
+        return [pscustomobject]@{
+            Success  = $false
+            Value    = ''
+            EndIndex = -1
+            Error    = $Message
+        }
+    }
+
+    if ($OpenParenthesisIndex -ge $Text.Length -or
+        $Text[$OpenParenthesisIndex] -ne '(') {
+        return & $failure 'missing opening parenthesis'
+    }
+
+    $index = $OpenParenthesisIndex + 1
+    while ($index -lt $Text.Length -and [char]::IsWhiteSpace($Text[$index])) {
+        $index++
+    }
+    if ($index -ge $Text.Length) {
+        return & $failure 'missing target and closing parenthesis'
+    }
+
+    if ($Text[$index] -eq '<') {
+        $targetStart = ++$index
+        while ($index -lt $Text.Length -and $Text[$index] -ne '>') {
+            if ($Text[$index] -eq '\' -and $index + 1 -lt $Text.Length) {
+                $index += 2
+                continue
+            }
+            $index++
+        }
+        if ($index -ge $Text.Length) {
+            return & $failure 'unterminated angle-bracket target'
+        }
+        $target = $Text.Substring($targetStart, $index - $targetStart)
+        $index++
+    }
+    else {
+        $targetStart = $index
+        $parenthesisDepth = 0
+        while ($index -lt $Text.Length) {
+            $character = $Text[$index]
+            if ($character -eq '\' -and $index + 1 -lt $Text.Length) {
+                $index += 2
+                continue
+            }
+            if ([char]::IsWhiteSpace($character)) {
+                break
+            }
+            if ($character -eq '(') {
+                $parenthesisDepth++
+            }
+            elseif ($character -eq ')') {
+                if ($parenthesisDepth -eq 0) {
+                    break
+                }
+                $parenthesisDepth--
+            }
+            $index++
+        }
+        $target = $Text.Substring($targetStart, $index - $targetStart)
+    }
+
+    if ([string]::IsNullOrEmpty($target)) {
+        return & $failure 'empty target'
+    }
+    $hadTrailingWhitespace = $false
+    while ($index -lt $Text.Length -and [char]::IsWhiteSpace($Text[$index])) {
+        $hadTrailingWhitespace = $true
+        $index++
+    }
+    if ($hadTrailingWhitespace -and $index -lt $Text.Length -and
+        $Text[$index] -in @('"', "'", '(')) {
+        $titleOpen = $Text[$index]
+        $titleClose = if ($titleOpen -eq '(') { ')' } else { $titleOpen }
+        $index++
+        while ($index -lt $Text.Length -and $Text[$index] -ne $titleClose) {
+            if ($Text[$index] -eq '\' -and $index + 1 -lt $Text.Length) {
+                $index += 2
+                continue
+            }
+            $index++
+        }
+        if ($index -ge $Text.Length) {
+            return & $failure 'unterminated target title'
+        }
+        $index++
+        while ($index -lt $Text.Length -and [char]::IsWhiteSpace($Text[$index])) {
+            $index++
+        }
+    }
+    if ($index -ge $Text.Length -or $Text[$index] -ne ')') {
+        return & $failure 'missing closing parenthesis or target contains unescaped whitespace'
+    }
+
+    return [pscustomobject]@{
+        Success  = $true
+        Value    = $target
+        EndIndex = $index
+        Error    = ''
+    }
+}
+
+function ConvertFrom-MarkdownBackslashEscapes {
+    param([Parameter(Mandatory)][string] $Value)
+
+    $result = [System.Text.StringBuilder]::new()
+    for ($index = 0; $index -lt $Value.Length; $index++) {
+        $character = $Value[$index]
+        if ($character -eq '\' -and $index + 1 -lt $Value.Length) {
+            $next = [int][char]$Value[$index + 1]
+            $isAsciiPunctuation =
+                ($next -ge 0x21 -and $next -le 0x2f) -or
+                ($next -ge 0x3a -and $next -le 0x40) -or
+                ($next -ge 0x5b -and $next -le 0x60) -or
+                ($next -ge 0x7b -and $next -le 0x7e)
+            if ($isAsciiPunctuation) {
+                [void]$result.Append($Value[++$index])
+                continue
+            }
+        }
+        [void]$result.Append($character)
+    }
+
+    return $result.ToString()
+}
+
+function Test-LooksLikeDeployToAzureBadge {
+    param([Parameter(Mandatory)][string] $Value)
+
+    $candidate = (ConvertFrom-MarkdownBackslashEscapes -Value $Value).Trim()
+    if ($candidate -match '(?i)(?:^|[/\\]|%2f)deploytoazure\.svg(?:[\s"''()?#]|$)') {
+        return $true
+    }
+
+    $uri = $null
+    return [System.Uri]::TryCreate($candidate, [System.UriKind]::Absolute, [ref]$uri) -and
+        $uri.Host -ieq 'raw.githubusercontent.com' -and
+        $uri.AbsolutePath -ieq '/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg'
+}
+
+function Test-LooksLikeAzureDeploymentPortal {
+    param([Parameter(Mandatory)][string] $Value)
+
+    $candidate = (ConvertFrom-MarkdownBackslashEscapes -Value $Value).Trim()
+    $uri = $null
+    if ([System.Uri]::TryCreate($candidate, [System.UriKind]::Absolute, [ref]$uri) -and
+        $uri.Host -ieq 'portal.azure.com') {
+        return $true
+    }
+
+    if ($candidate -notmatch '%(?![0-9A-Fa-f]{2})') {
+        try {
+            $decoded = [System.Uri]::UnescapeDataString($candidate)
+            return $decoded -match '(?i)^https://portal\.azure\.com(?:[/:?#]|$)'
+        }
+        catch {
+            return $false
+        }
+    }
+
+    return $false
+}
+
+function Assert-DeployToAzureBadge {
+    param(
+        [Parameter(Mandatory)][string] $BadgeSource,
+        [Parameter(Mandatory)][string] $Description
+    )
+
+    $badgePattern = '^https://raw\.githubusercontent\.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure\.svg(?:\?sanitize=true)?$'
+    if ($BadgeSource -cnotmatch $badgePattern) {
+        throw "$Description must use the exact official Deploy-to-Azure badge image URL."
+    }
+}
+
 function Get-ReadmeDeploymentLinks {
     param(
         [Parameter(Mandatory)][string] $Readme,
         [Parameter(Mandatory)][string] $ReadmeName
     )
 
-    $labelPattern = '(?i)Deploy\s+To\s+Azure'
-    $linkPattern = @'
-(?isx)
-\[
-    (?:
-        !\[\s*Deploy\s+To\s+Azure\s*\]\([^)]+\)
-        |
-        \s*Deploy\s+To\s+Azure\s*
-    )
-\]
-\(
-    \s*(?<href>[^)\s]+)\s*
-\)
-'@
+    $deploymentLinks = [System.Collections.Generic.List[object]]::new()
+    $searchIndex = 0
+    while (($imageStart = $Readme.IndexOf('![', $searchIndex, [System.StringComparison]::Ordinal)) -ge 0) {
+        $altOpen = $imageStart + 1
+        $altClose = Find-MarkdownClosingBracket -Text $Readme -OpenIndex $altOpen
+        if ($altClose -lt 0) {
+            break
+        }
 
-    $labelCount = [regex]::Matches($Readme, $labelPattern).Count
-    $linkMatches = [regex]::Matches($Readme, $linkPattern)
-    if ($labelCount -eq 0) {
-        throw "$ReadmeName contains no Deploy To Azure buttons or links."
-    }
-    if ($linkMatches.Count -ne $labelCount) {
-        throw "$ReadmeName contains $labelCount Deploy To Azure label(s), but only $($linkMatches.Count) use a supported Markdown button/link form."
+        $imageTargetOpen = $altClose + 1
+        while ($imageTargetOpen -lt $Readme.Length -and
+            [char]::IsWhiteSpace($Readme[$imageTargetOpen])) {
+            $imageTargetOpen++
+        }
+        if ($imageTargetOpen -ge $Readme.Length -or $Readme[$imageTargetOpen] -ne '(') {
+            $searchIndex = $altClose + 1
+            continue
+        }
+
+        $imageTarget = Read-MarkdownInlineTarget `
+            -Text $Readme `
+            -OpenParenthesisIndex $imageTargetOpen
+        if (-not $imageTarget.Success) {
+            $searchIndex = $imageTargetOpen + 1
+            continue
+        }
+
+        $badgeSource = [string]$imageTarget.Value
+        $outerOpen = $imageStart - 1
+        while ($outerOpen -ge 0 -and [char]::IsWhiteSpace($Readme[$outerOpen])) {
+            $outerOpen--
+        }
+        if ($outerOpen -lt 0 -or $Readme[$outerOpen] -ne '[') {
+            $searchIndex = $imageTarget.EndIndex + 1
+            continue
+        }
+
+        $outerLabelClose = $imageTarget.EndIndex + 1
+        while ($outerLabelClose -lt $Readme.Length -and
+            [char]::IsWhiteSpace($Readme[$outerLabelClose])) {
+            $outerLabelClose++
+        }
+        if ($outerLabelClose -ge $Readme.Length -or $Readme[$outerLabelClose] -ne ']') {
+            if (Test-LooksLikeDeployToAzureBadge -Value $badgeSource) {
+                throw "$ReadmeName contains an official Deploy-to-Azure badge in a malformed Markdown image-link."
+            }
+            $searchIndex = $imageTarget.EndIndex + 1
+            continue
+        }
+
+        $outerTargetOpen = $outerLabelClose + 1
+        while ($outerTargetOpen -lt $Readme.Length -and
+            [char]::IsWhiteSpace($Readme[$outerTargetOpen])) {
+            $outerTargetOpen++
+        }
+        if ($outerTargetOpen -ge $Readme.Length -or $Readme[$outerTargetOpen] -ne '(') {
+            if (Test-LooksLikeDeployToAzureBadge -Value $badgeSource) {
+                throw "$ReadmeName contains an official Deploy-to-Azure badge without a supported inline Markdown destination."
+            }
+            $searchIndex = $outerLabelClose + 1
+            continue
+        }
+
+        $outerTarget = Read-MarkdownInlineTarget `
+            -Text $Readme `
+            -OpenParenthesisIndex $outerTargetOpen
+        if (-not $outerTarget.Success) {
+            $targetRemainder = $Readme.Substring($outerTargetOpen + 1)
+            if ((Test-LooksLikeDeployToAzureBadge -Value $badgeSource) -or
+                (Test-LooksLikeAzureDeploymentPortal -Value $targetRemainder)) {
+                throw "$ReadmeName contains a deployment button with a malformed Markdown target: $($outerTarget.Error)."
+            }
+            $searchIndex = $outerTargetOpen + 1
+            continue
+        }
+
+        $destination = [string]$outerTarget.Value
+        if ((Test-LooksLikeDeployToAzureBadge -Value $badgeSource) -or
+            (Test-LooksLikeAzureDeploymentPortal -Value $destination)) {
+            $deploymentLinks.Add([pscustomobject]@{
+                    BadgeSource = $badgeSource
+                    Destination = $destination
+                })
+        }
+
+        $searchIndex = $outerTarget.EndIndex + 1
     }
 
-    return @($linkMatches | ForEach-Object { $_.Groups['href'].Value })
+    if ($deploymentLinks.Count -eq 0) {
+        throw "$ReadmeName contains no recognized Deploy-to-Azure Markdown image-links."
+    }
+
+    return @($deploymentLinks)
 }
 
 function Get-DeploymentTemplateArtifactPath {
@@ -307,6 +585,13 @@ function Get-DeploymentTemplateArtifactPath {
     }
     if ($templateParameters.Count -eq 1) {
         throw "$description uses an unsupported template query parameter in addition to, or instead of, the Template URI route."
+    }
+
+    $portalRoutePrefix = 'https://portal.azure.com/#create/Microsoft.Template/uri/'
+    if (-not $DeploymentLink.StartsWith(
+            $portalRoutePrefix,
+            [System.StringComparison]::Ordinal)) {
+        throw "$description must use the exact '$portalRoutePrefix<Template URI>' URL, including casing and spacing."
     }
 
     $portalUri = $null
@@ -443,8 +728,12 @@ function Assert-ReadmeDeploymentPaths {
     $mappedArtifacts = @($config.templates | ForEach-Object { [string]$_.artifact })
     $deploymentLinks = @(Get-ReadmeDeploymentLinks -Readme $Readme -ReadmeName $ReadmeName)
     for ($index = 0; $index -lt $deploymentLinks.Count; $index++) {
+        $description = "$ReadmeName deployment link #$($index + 1)"
+        Assert-DeployToAzureBadge `
+            -BadgeSource ([string]$deploymentLinks[$index].BadgeSource) `
+            -Description $description
         $artifactPath = Get-DeploymentTemplateArtifactPath `
-            -DeploymentLink $deploymentLinks[$index] `
+            -DeploymentLink ([string]$deploymentLinks[$index].Destination) `
             -ReadmeName $ReadmeName `
             -LinkNumber ($index + 1) `
             -MappedArtifacts $mappedArtifacts
@@ -459,9 +748,13 @@ function Assert-ReadmeDeploymentPaths {
 function Invoke-ReadmeDeploymentLinkTests {
     $badge = 'https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg'
     function New-DeploymentButton {
-        param([Parameter(Mandatory)][string] $DeploymentLink)
+        param(
+            [Parameter(Mandatory)][string] $DeploymentLink,
+            [AllowEmptyString()][string] $AltText = 'Deploy To Azure',
+            [string] $BadgeSource = $badge
+        )
 
-        return "[![Deploy To Azure]($badge)]($DeploymentLink)"
+        return "[![$AltText]($BadgeSource)]($DeploymentLink)"
     }
     function New-PortalLink {
         param([Parameter(Mandatory)][string] $TemplateUri)
@@ -483,8 +776,50 @@ function Invoke-ReadmeDeploymentLinkTests {
         -Readme (New-DeploymentButton (New-PortalLink `
             'https://raw.githubusercontent.com/Azure/enclave/main/quickstart-templates/azure-enclave-saca.json')) `
         -ReadmeName 'valid raw Template URI case'
+    Assert-ReadmeDeploymentPaths `
+        -Readme "$validButton`n`n[Documentation](https://learn.microsoft.com/)`n`n![Architecture](images/architecture.svg)`n`n[![Build](https://example.com/build.svg)](https://github.com/Azure/enclave/actions)" `
+        -ReadmeName 'valid button with unrelated links and images'
 
     $failureCases = @(
+        @{
+            Name = 'official badge with short alt text and attacker template'
+            Readme = New-DeploymentButton `
+                (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                    'https://raw.githubusercontent.com/Contoso/enclave/main/quickstart-templates/azure-enclave-saca.json')) `
+                -AltText 'Deploy'
+            Error = 'owner'
+        },
+        @{
+            Name = 'official badge with empty alt text and attacker template'
+            Readme = New-DeploymentButton `
+                (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                    'https://raw.githubusercontent.com/Contoso/enclave/main/quickstart-templates/azure-enclave-saca.json')) `
+                -AltText ''
+            Error = 'owner'
+        },
+        @{
+            Name = 'official badge with arbitrary alt text and attacker template'
+            Readme = New-DeploymentButton `
+                (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                    'https://raw.githubusercontent.com/Contoso/enclave/main/quickstart-templates/azure-enclave-saca.json')) `
+                -AltText 'Launch this environment'
+            Error = 'owner'
+        },
+        @{
+            Name = 'official portal destination with nonstandard badge'
+            Readme = New-DeploymentButton `
+                (New-PortalLink $validTemplateUri) `
+                -AltText 'Deploy' `
+                -BadgeSource 'https://example.com/deploy.svg'
+            Error = 'official Deploy-to-Azure badge'
+        },
+        @{
+            Name = 'official badge pointed at non-portal destination'
+            Readme = New-DeploymentButton `
+                'https://example.com/redirect' `
+                -AltText 'Deploy'
+            Error = 'exact .*portal\.azure\.com'
+        },
         @{
             Name = 'unexpected Template URI scheme'
             Readme = New-DeploymentButton (New-PortalLink (ConvertTo-EncodedTemplateUri `
@@ -553,9 +888,57 @@ function Invoke-ReadmeDeploymentLinkTests {
         },
         @{
             Name = 'invalid link alongside valid links'
-            Readme = "$validButton`n`n$(New-DeploymentButton (New-PortalLink (ConvertTo-EncodedTemplateUri `
+            Readme = "$validButton`n`n$(New-DeploymentButton `
+                (New-PortalLink (ConvertTo-EncodedTemplateUri `
+                    'https://raw.githubusercontent.com/Contoso/enclave/main/quickstart-templates/azure-enclave-saca.json')) `
+                -AltText 'Deploy')"
+            Error = 'owner'
+        },
+        @{
+            Name = 'mixed-case portal destination'
+            Readme = New-DeploymentButton `
+                "https://PORTAL.AZURE.COM/#create/Microsoft.Template/uri/$validTemplateUri" `
+                -AltText 'Deploy'
+            Error = 'including casing and spacing'
+        },
+        @{
+            Name = 'backslash-escaped portal destination'
+            Readme = New-DeploymentButton `
+                "https://portal\.azure\.com/#create/Microsoft.Template/uri/$validTemplateUri" `
+                -AltText 'Deploy'
+            Error = 'including casing and spacing'
+        },
+        @{
+            Name = 'mixed-case official badge path'
+            Readme = New-DeploymentButton `
+                (New-PortalLink $validTemplateUri) `
+                -AltText 'Deploy' `
+                -BadgeSource 'https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/DeployToAzure.svg'
+            Error = 'official Deploy-to-Azure badge'
+        },
+        @{
+            Name = 'fully encoded portal destination'
+            Readme = New-DeploymentButton `
+                (ConvertTo-EncodedTemplateUri (New-PortalLink $validTemplateUri)) `
+                -AltText 'Deploy'
+            Error = 'including casing and spacing'
+        },
+        @{
+            Name = 'render-equivalent Markdown whitespace around attacker target'
+            Readme = "[  ![Deploy]($badge)  ](`n  $(New-PortalLink (ConvertTo-EncodedTemplateUri `
+                'https://raw.githubusercontent.com/Contoso/enclave/main/quickstart-templates/azure-enclave-saca.json'))`n)"
+            Error = 'owner'
+        },
+        @{
+            Name = 'badge image title with attacker target'
+            Readme = "[![Deploy]($badge `"Official badge`")]($(New-PortalLink (ConvertTo-EncodedTemplateUri `
                 'https://raw.githubusercontent.com/Contoso/enclave/main/quickstart-templates/azure-enclave-saca.json')))"
             Error = 'owner'
+        },
+        @{
+            Name = 'malformed Markdown target'
+            Readme = "[![Deploy]($badge)]($(New-PortalLink $validTemplateUri)"
+            Error = 'malformed Markdown target'
         }
     )
 
