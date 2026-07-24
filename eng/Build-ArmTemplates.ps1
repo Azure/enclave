@@ -12,6 +12,9 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $configPath = Join-Path $PSScriptRoot 'arm-template-generation.json'
 $config = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json -Depth 100
+$script:MaxReadmeCharacters = 1024 * 1024
+$script:MaxMarkdownDelimiterNesting = 128
+$script:MarkdownParserOperationsPerCharacter = 24
 
 function Get-RepositoryRelativePath {
     param([Parameter(Mandatory)][string] $Path)
@@ -252,36 +255,417 @@ function Assert-WellFormedPercentEncoding {
     }
 }
 
-function Find-MarkdownClosingBracket {
+function Add-MarkdownParserOperations {
     param(
-        [Parameter(Mandatory)][string] $Text,
-        [Parameter(Mandatory)][int] $OpenIndex
+        [Parameter(Mandatory)][pscustomobject] $State,
+        [Parameter(Mandatory)][long] $Count
     )
 
-    $depth = 0
-    for ($index = $OpenIndex; $index -lt $Text.Length; $index++) {
-        if ($Text[$index] -eq '\' -and $index + 1 -lt $Text.Length) {
+    $State.Operations = [long]$State.Operations + $Count
+    if ($State.Operations -gt $State.OperationLimit) {
+        throw "$($State.ReadmeName) exceeded the bounded Markdown parser operation budget."
+    }
+}
+
+function Test-MarkdownCharacterEscaped {
+    param(
+        [Parameter(Mandatory)][string] $Text,
+        [Parameter(Mandatory)][int] $Index
+    )
+
+    $backslashCount = 0
+    for ($candidate = $Index - 1;
+        $candidate -ge 0 -and $Text[$candidate] -eq '\';
+        $candidate--) {
+        $backslashCount++
+    }
+    return ($backslashCount % 2) -eq 1
+}
+
+function Set-MarkdownHiddenRange {
+    param(
+        [Parameter(Mandatory)][char[]] $Characters,
+        [Parameter(Mandatory)][int] $Start,
+        [Parameter(Mandatory)][int] $EndExclusive
+    )
+
+    for ($index = $Start;
+        $index -lt [Math]::Min($EndExclusive, $Characters.Length);
+        $index++) {
+        if ($Characters[$index] -notin @("`r", "`n")) {
+            $Characters[$index] = ' '
+        }
+    }
+}
+
+function Get-MarkdownFence {
+    param(
+        [Parameter(Mandatory)][AllowEmptyString()][string] $Line,
+        [char] $ExpectedCharacter = [char]0,
+        [int] $MinimumLength = 3,
+        [switch] $Closing
+    )
+
+    $index = 0
+    while ($index -lt $Line.Length -and $index -lt 3 -and $Line[$index] -eq ' ') {
+        $index++
+    }
+    if ($index -ge $Line.Length) {
+        return $null
+    }
+
+    $fenceCharacter = $Line[$index]
+    if ($ExpectedCharacter -ne [char]0 -and $fenceCharacter -ne $ExpectedCharacter) {
+        return $null
+    }
+    if ($fenceCharacter -notin @([char]0x60, '~')) {
+        return $null
+    }
+
+    $fenceStart = $index
+    while ($index -lt $Line.Length -and $Line[$index] -eq $fenceCharacter) {
+        $index++
+    }
+    $fenceLength = $index - $fenceStart
+    if ($fenceLength -lt $MinimumLength) {
+        return $null
+    }
+
+    $remainder = $Line.Substring($index)
+    if ($Closing) {
+        if ($remainder.Trim(' ', "`t").Length -ne 0) {
+            return $null
+        }
+    }
+    elseif ($fenceCharacter -eq [char]0x60 -and $remainder.Contains([char]0x60)) {
+        return $null
+    }
+
+    return [pscustomobject]@{
+        Character = $fenceCharacter
+        Length    = $fenceLength
+    }
+}
+
+function Test-MarkdownIndentedCodeLine {
+    param([Parameter(Mandatory)][AllowEmptyString()][string] $Line)
+
+    $columns = 0
+    for ($index = 0; $index -lt $Line.Length; $index++) {
+        if ($Line[$index] -eq ' ') {
+            $columns++
+        }
+        elseif ($Line[$index] -eq "`t") {
+            $columns += 4 - ($columns % 4)
+        }
+        else {
+            break
+        }
+        if ($columns -ge 4) {
+            return $Line.Trim().Length -gt 0
+        }
+    }
+    return $false
+}
+
+function Get-MarkdownContainerContent {
+    param([Parameter(Mandatory)][AllowEmptyString()][string] $Line)
+
+    $index = 0
+    while ($index -lt $Line.Length -and $index -lt 3 -and $Line[$index] -eq ' ') {
+        $index++
+    }
+    $containerFound = $false
+
+    while ($index -lt $Line.Length -and $Line[$index] -eq '>') {
+        $containerFound = $true
+        $index++
+        if ($index -lt $Line.Length -and $Line[$index] -in @(' ', "`t")) {
             $index++
-            continue
-        }
-        if ($Text[$index] -eq '[') {
-            $depth++
-        }
-        elseif ($Text[$index] -eq ']') {
-            $depth--
-            if ($depth -eq 0) {
-                return $index
-            }
         }
     }
 
-    return -1
+    $markerStart = $index
+    if ($index -lt $Line.Length -and $Line[$index] -in @('-', '+', '*')) {
+        $index++
+    }
+    else {
+        while ($index -lt $Line.Length -and
+            $index - $markerStart -lt 9 -and [char]::IsDigit($Line[$index])) {
+            $index++
+        }
+        if ($index -eq $markerStart -or $index -ge $Line.Length -or
+            $Line[$index] -notin @('.', ')')) {
+            $index = $markerStart
+        }
+        else {
+            $index++
+        }
+    }
+    if ($index -gt $markerStart) {
+        if ($index -ge $Line.Length -or $Line[$index] -notin @(' ', "`t")) {
+            $index = $markerStart
+        }
+        else {
+            $containerFound = $true
+            $index++
+        }
+    }
+
+    if ($containerFound) {
+        return $Line.Substring($index)
+    }
+    return $Line
+}
+
+function ConvertTo-RenderedMarkdownView {
+    param(
+        [Parameter(Mandatory)][string] $Readme,
+        [Parameter(Mandatory)][string] $ReadmeName
+    )
+
+    if ($Readme.Length -gt $script:MaxReadmeCharacters) {
+        throw "$ReadmeName exceeds the maximum supported README size of $script:MaxReadmeCharacters characters."
+    }
+
+    $operationLimit = [Math]::Max(
+        4096,
+        [long]$Readme.Length * $script:MarkdownParserOperationsPerCharacter)
+    $state = [pscustomobject]@{
+        ReadmeName     = $ReadmeName
+        Operations     = [long]0
+        OperationLimit = $operationLimit
+    }
+    $characters = $Readme.ToCharArray()
+    $lineStarts = [System.Collections.Generic.List[int]]::new()
+    $lineStarts.Add(0)
+    $fenceCharacter = [char]0
+    $fenceLength = 0
+    $lineStart = 0
+    $blockScanOperations = 0
+
+    while ($lineStart -le $Readme.Length) {
+        $lineEnd = $Readme.IndexOf("`n", $lineStart, [System.StringComparison]::Ordinal)
+        if ($lineEnd -lt 0) {
+            $lineEnd = $Readme.Length
+        }
+        $contentEnd = $lineEnd
+        if ($contentEnd -gt $lineStart -and $Readme[$contentEnd - 1] -eq "`r") {
+            $contentEnd--
+        }
+        $line = $Readme.Substring($lineStart, $contentEnd - $lineStart)
+        $containerContent = Get-MarkdownContainerContent -Line $line
+        $blockScanOperations += $line.Length + 1
+        $hideLine = $false
+
+        if ($fenceCharacter -ne [char]0) {
+            $hideLine = $true
+            $closingFence = Get-MarkdownFence `
+                -Line $containerContent `
+                -ExpectedCharacter $fenceCharacter `
+                -MinimumLength $fenceLength `
+                -Closing
+            if ($null -ne $closingFence) {
+                $fenceCharacter = [char]0
+                $fenceLength = 0
+            }
+        }
+        else {
+            $openingFence = Get-MarkdownFence -Line $containerContent
+            if ($null -ne $openingFence) {
+                $hideLine = $true
+                $fenceCharacter = $openingFence.Character
+                $fenceLength = $openingFence.Length
+            }
+            elseif (Test-MarkdownIndentedCodeLine -Line $containerContent) {
+                $hideLine = $true
+            }
+        }
+
+        if ($hideLine) {
+            Set-MarkdownHiddenRange `
+                -Characters $characters `
+                -Start $lineStart `
+                -EndExclusive $contentEnd
+        }
+
+        if ($lineEnd -ge $Readme.Length) {
+            break
+        }
+        $lineStart = $lineEnd + 1
+        $lineStarts.Add($lineStart)
+    }
+    Add-MarkdownParserOperations -State $state -Count $blockScanOperations
+
+    $blockVisibleText = -join $characters
+    $nextBacktickRun = @{}
+    $lastBacktickRunByLength = @{}
+    $index = 0
+    $backtickScanOperations = 0
+    while ($index -lt $blockVisibleText.Length) {
+        $backtickScanOperations++
+        if ($blockVisibleText[$index] -ne [char]0x60 -or
+            (Test-MarkdownCharacterEscaped -Text $blockVisibleText -Index $index)) {
+            $index++
+            continue
+        }
+
+        $runStart = $index
+        while ($index -lt $blockVisibleText.Length -and
+            $blockVisibleText[$index] -eq [char]0x60) {
+            $index++
+            $backtickScanOperations++
+        }
+        $runLength = $index - $runStart
+        if ($lastBacktickRunByLength.ContainsKey($runLength)) {
+            $nextBacktickRun[[int]$lastBacktickRunByLength[$runLength]] = $runStart
+        }
+        $lastBacktickRunByLength[$runLength] = $runStart
+    }
+    Add-MarkdownParserOperations -State $state -Count $backtickScanOperations
+
+    $index = 0
+    $inlineScanOperations = 0
+    while ($index -lt $blockVisibleText.Length) {
+        $inlineScanOperations++
+        if ($index + 3 -lt $blockVisibleText.Length -and
+            [string]::CompareOrdinal($blockVisibleText, $index, '<!--', 0, 4) -eq 0 -and
+            -not (Test-MarkdownCharacterEscaped -Text $blockVisibleText -Index $index)) {
+            $commentEnd = $blockVisibleText.IndexOf(
+                '-->',
+                $index + 4,
+                [System.StringComparison]::Ordinal)
+            $endExclusive = if ($commentEnd -lt 0) {
+                $blockVisibleText.Length
+            }
+            else {
+                $commentEnd + 3
+            }
+            Set-MarkdownHiddenRange `
+                -Characters $characters `
+                -Start $index `
+                -EndExclusive $endExclusive
+            $inlineScanOperations += $endExclusive - $index
+            $index = $endExclusive
+            continue
+        }
+
+        if ($blockVisibleText[$index] -eq [char]0x60 -and
+            -not (Test-MarkdownCharacterEscaped -Text $blockVisibleText -Index $index)) {
+            $runStart = $index
+            while ($index -lt $blockVisibleText.Length -and
+                $blockVisibleText[$index] -eq [char]0x60) {
+                $index++
+            }
+            if ($nextBacktickRun.ContainsKey($runStart)) {
+                $closingRunStart = [int]$nextBacktickRun[$runStart]
+                $runLength = $index - $runStart
+                $endExclusive = $closingRunStart + $runLength
+                Set-MarkdownHiddenRange `
+                    -Characters $characters `
+                    -Start $runStart `
+                    -EndExclusive $endExclusive
+                $inlineScanOperations += $endExclusive - $runStart
+                $index = $endExclusive
+            }
+            continue
+        }
+        $index++
+    }
+    Add-MarkdownParserOperations -State $state -Count $inlineScanOperations
+
+    return [pscustomobject]@{
+        Text       = -join $characters
+        LineStarts = $lineStarts
+        State      = $state
+    }
+}
+
+function Get-MarkdownLocation {
+    param(
+        [Parameter(Mandatory)][System.Collections.Generic.List[int]] $LineStarts,
+        [Parameter(Mandatory)][int] $Index
+    )
+
+    $low = 0
+    $high = $LineStarts.Count - 1
+    while ($low -le $high) {
+        $middle = [int](($low + $high) / 2)
+        if ($LineStarts[$middle] -le $Index) {
+            $low = $middle + 1
+        }
+        else {
+            $high = $middle - 1
+        }
+    }
+    $lineIndex = [Math]::Max(0, $high)
+    return "line $($lineIndex + 1), column $($Index - $LineStarts[$lineIndex] + 1)"
+}
+
+function Get-MarkdownDelimiterMaps {
+    param(
+        [Parameter(Mandatory)][string] $Text,
+        [Parameter(Mandatory)][pscustomobject] $State,
+        [Parameter(Mandatory)][System.Collections.Generic.List[int]] $LineStarts
+    )
+
+    $bracketStack = [System.Collections.Generic.Stack[int]]::new()
+    $parenthesisStack = [System.Collections.Generic.Stack[int]]::new()
+    $bracketPairs = @{}
+    $parenthesisPairs = @{}
+    $operations = 0
+
+    for ($index = 0; $index -lt $Text.Length; $index++) {
+        $operations++
+        if ($Text[$index] -eq '\' -and $index + 1 -lt $Text.Length) {
+            $index++
+            $operations++
+            continue
+        }
+
+        switch ($Text[$index]) {
+            '[' {
+                if ($bracketStack.Count -ge $script:MaxMarkdownDelimiterNesting) {
+                    $location = Get-MarkdownLocation -LineStarts $LineStarts -Index $index
+                    throw "$($State.ReadmeName) exceeds the Markdown bracket nesting limit at $location."
+                }
+                $bracketStack.Push($index)
+            }
+            ']' {
+                if ($bracketStack.Count -gt 0) {
+                    $openIndex = $bracketStack.Pop()
+                    $bracketPairs[$openIndex] = $index
+                }
+            }
+            '(' {
+                if ($parenthesisStack.Count -ge $script:MaxMarkdownDelimiterNesting) {
+                    $location = Get-MarkdownLocation -LineStarts $LineStarts -Index $index
+                    throw "$($State.ReadmeName) exceeds the Markdown parenthesis nesting limit at $location."
+                }
+                $parenthesisStack.Push($index)
+            }
+            ')' {
+                if ($parenthesisStack.Count -gt 0) {
+                    $openIndex = $parenthesisStack.Pop()
+                    $parenthesisPairs[$openIndex] = $index
+                }
+            }
+        }
+    }
+    Add-MarkdownParserOperations -State $State -Count $operations
+
+    return [pscustomobject]@{
+        Brackets    = $bracketPairs
+        Parentheses = $parenthesisPairs
+    }
 }
 
 function Read-MarkdownInlineTarget {
     param(
         [Parameter(Mandatory)][string] $Text,
-        [Parameter(Mandatory)][int] $OpenParenthesisIndex
+        [Parameter(Mandatory)][int] $OpenParenthesisIndex,
+        [Parameter(Mandatory)][hashtable] $ParenthesisPairs,
+        [Parameter(Mandatory)][pscustomobject] $State
     )
 
     $failure = {
@@ -299,25 +683,34 @@ function Read-MarkdownInlineTarget {
         $Text[$OpenParenthesisIndex] -ne '(') {
         return & $failure 'missing opening parenthesis'
     }
-
-    $index = $OpenParenthesisIndex + 1
-    while ($index -lt $Text.Length -and [char]::IsWhiteSpace($Text[$index])) {
-        $index++
+    if (-not $ParenthesisPairs.ContainsKey($OpenParenthesisIndex)) {
+        return & $failure 'missing closing parenthesis'
     }
-    if ($index -ge $Text.Length) {
+
+    $closingParenthesisIndex = [int]$ParenthesisPairs[$OpenParenthesisIndex]
+    $index = $OpenParenthesisIndex + 1
+    $operations = 0
+    while ($index -lt $closingParenthesisIndex -and [char]::IsWhiteSpace($Text[$index])) {
+        $index++
+        $operations++
+    }
+    if ($index -ge $closingParenthesisIndex) {
+        Add-MarkdownParserOperations -State $State -Count $operations
         return & $failure 'missing target and closing parenthesis'
     }
 
     if ($Text[$index] -eq '<') {
         $targetStart = ++$index
-        while ($index -lt $Text.Length -and $Text[$index] -ne '>') {
+        while ($index -lt $closingParenthesisIndex -and $Text[$index] -ne '>') {
+            $operations++
             if ($Text[$index] -eq '\' -and $index + 1 -lt $Text.Length) {
                 $index += 2
                 continue
             }
             $index++
         }
-        if ($index -ge $Text.Length) {
+        if ($index -ge $closingParenthesisIndex) {
+            Add-MarkdownParserOperations -State $State -Count $operations
             return & $failure 'unterminated angle-bracket target'
         }
         $target = $Text.Substring($targetStart, $index - $targetStart)
@@ -326,7 +719,8 @@ function Read-MarkdownInlineTarget {
     else {
         $targetStart = $index
         $parenthesisDepth = 0
-        while ($index -lt $Text.Length) {
+        while ($index -lt $closingParenthesisIndex) {
+            $operations++
             $character = $Text[$index]
             if ($character -eq '\' -and $index + 1 -lt $Text.Length) {
                 $index += 2
@@ -350,41 +744,47 @@ function Read-MarkdownInlineTarget {
     }
 
     if ([string]::IsNullOrEmpty($target)) {
+        Add-MarkdownParserOperations -State $State -Count $operations
         return & $failure 'empty target'
     }
     $hadTrailingWhitespace = $false
-    while ($index -lt $Text.Length -and [char]::IsWhiteSpace($Text[$index])) {
+    while ($index -lt $closingParenthesisIndex -and [char]::IsWhiteSpace($Text[$index])) {
         $hadTrailingWhitespace = $true
         $index++
+        $operations++
     }
-    if ($hadTrailingWhitespace -and $index -lt $Text.Length -and
+    if ($hadTrailingWhitespace -and $index -lt $closingParenthesisIndex -and
         $Text[$index] -in @('"', "'", '(')) {
         $titleOpen = $Text[$index]
         $titleClose = if ($titleOpen -eq '(') { ')' } else { $titleOpen }
         $index++
-        while ($index -lt $Text.Length -and $Text[$index] -ne $titleClose) {
+        while ($index -lt $closingParenthesisIndex -and $Text[$index] -ne $titleClose) {
+            $operations++
             if ($Text[$index] -eq '\' -and $index + 1 -lt $Text.Length) {
                 $index += 2
                 continue
             }
             $index++
         }
-        if ($index -ge $Text.Length) {
+        if ($index -ge $closingParenthesisIndex) {
+            Add-MarkdownParserOperations -State $State -Count $operations
             return & $failure 'unterminated target title'
         }
         $index++
-        while ($index -lt $Text.Length -and [char]::IsWhiteSpace($Text[$index])) {
+        while ($index -lt $closingParenthesisIndex -and [char]::IsWhiteSpace($Text[$index])) {
             $index++
+            $operations++
         }
     }
-    if ($index -ge $Text.Length -or $Text[$index] -ne ')') {
+    Add-MarkdownParserOperations -State $State -Count $operations
+    if ($index -ne $closingParenthesisIndex) {
         return & $failure 'missing closing parenthesis or target contains unescaped whitespace'
     }
 
     return [pscustomobject]@{
         Success  = $true
         Value    = $target
-        EndIndex = $index
+        EndIndex = $closingParenthesisIndex
         Error    = ''
     }
 }
@@ -424,7 +824,10 @@ function Read-MarkdownTarget {
     param(
         [Parameter(Mandatory)][string] $Text,
         [Parameter(Mandatory)][int] $StartIndex,
-        [Parameter(Mandatory)][AllowEmptyString()][string] $FallbackLabel
+        [Parameter(Mandatory)][AllowEmptyString()][string] $FallbackLabel,
+        [Parameter(Mandatory)][hashtable] $BracketPairs,
+        [Parameter(Mandatory)][hashtable] $ParenthesisPairs,
+        [Parameter(Mandatory)][pscustomobject] $State
     )
 
     $index = $StartIndex
@@ -433,7 +836,11 @@ function Read-MarkdownTarget {
     }
 
     if ($index -lt $Text.Length -and $Text[$index] -eq '(') {
-        $inlineTarget = Read-MarkdownInlineTarget -Text $Text -OpenParenthesisIndex $index
+        $inlineTarget = Read-MarkdownInlineTarget `
+            -Text $Text `
+            -OpenParenthesisIndex $index `
+            -ParenthesisPairs $ParenthesisPairs `
+            -State $State
         return [pscustomobject]@{
             Success  = $inlineTarget.Success
             Kind     = 'Inline'
@@ -445,8 +852,7 @@ function Read-MarkdownTarget {
     }
 
     if ($index -lt $Text.Length -and $Text[$index] -eq '[') {
-        $referenceClose = Find-MarkdownClosingBracket -Text $Text -OpenIndex $index
-        if ($referenceClose -lt 0) {
+        if (-not $BracketPairs.ContainsKey($index)) {
             return [pscustomobject]@{
                 Success  = $false
                 Kind     = 'Reference'
@@ -456,6 +862,7 @@ function Read-MarkdownTarget {
                 Error    = 'unterminated reference label'
             }
         }
+        $referenceClose = [int]$BracketPairs[$index]
 
         $label = $Text.Substring($index + 1, $referenceClose - $index - 1)
         if ([string]::IsNullOrEmpty($label)) {
@@ -493,38 +900,154 @@ function Read-MarkdownTarget {
     }
 }
 
+function Read-MarkdownReferenceDefinitionTarget {
+    param(
+        [Parameter(Mandatory)][string] $TargetText,
+        [Parameter(Mandatory)][pscustomobject] $State
+    )
+
+    $failure = {
+        param([string] $Message)
+
+        return [pscustomobject]@{
+            Success = $false
+            Value   = ''
+            Error   = $Message
+        }
+    }
+
+    $index = 0
+    $operations = 0
+    while ($index -lt $TargetText.Length -and [char]::IsWhiteSpace($TargetText[$index])) {
+        $index++
+        $operations++
+    }
+    if ($index -ge $TargetText.Length) {
+        Add-MarkdownParserOperations -State $State -Count $operations
+        return & $failure 'empty reference target'
+    }
+
+    if ($TargetText[$index] -eq '<') {
+        $targetStart = ++$index
+        while ($index -lt $TargetText.Length -and $TargetText[$index] -ne '>') {
+            $operations++
+            if ($TargetText[$index] -eq '\' -and $index + 1 -lt $TargetText.Length) {
+                $index += 2
+                continue
+            }
+            $index++
+        }
+        if ($index -ge $TargetText.Length) {
+            Add-MarkdownParserOperations -State $State -Count $operations
+            return & $failure 'unterminated angle-bracket target'
+        }
+        $target = $TargetText.Substring($targetStart, $index - $targetStart)
+        $index++
+    }
+    else {
+        $targetStart = $index
+        while ($index -lt $TargetText.Length -and
+            -not [char]::IsWhiteSpace($TargetText[$index])) {
+            $operations++
+            if ($TargetText[$index] -eq '\' -and $index + 1 -lt $TargetText.Length) {
+                $index += 2
+                continue
+            }
+            $index++
+        }
+        $target = $TargetText.Substring($targetStart, $index - $targetStart)
+    }
+
+    if ([string]::IsNullOrEmpty($target)) {
+        Add-MarkdownParserOperations -State $State -Count $operations
+        return & $failure 'empty reference target'
+    }
+
+    while ($index -lt $TargetText.Length -and [char]::IsWhiteSpace($TargetText[$index])) {
+        $index++
+        $operations++
+    }
+    if ($index -lt $TargetText.Length) {
+        if ($TargetText[$index] -notin @('"', "'", '(')) {
+            Add-MarkdownParserOperations -State $State -Count $operations
+            return & $failure 'unsupported reference definition content'
+        }
+        $titleOpen = $TargetText[$index]
+        $titleClose = if ($titleOpen -eq '(') { ')' } else { $titleOpen }
+        $index++
+        while ($index -lt $TargetText.Length -and $TargetText[$index] -ne $titleClose) {
+            $operations++
+            if ($TargetText[$index] -eq '\' -and $index + 1 -lt $TargetText.Length) {
+                $index += 2
+                continue
+            }
+            $index++
+        }
+        if ($index -ge $TargetText.Length) {
+            Add-MarkdownParserOperations -State $State -Count $operations
+            return & $failure 'unterminated reference title'
+        }
+        $index++
+        while ($index -lt $TargetText.Length -and [char]::IsWhiteSpace($TargetText[$index])) {
+            $index++
+            $operations++
+        }
+    }
+    Add-MarkdownParserOperations -State $State -Count $operations
+
+    if ($index -ne $TargetText.Length) {
+        return & $failure 'unsupported reference definition content'
+    }
+    return [pscustomobject]@{
+        Success = $true
+        Value   = $target
+        Error   = ''
+    }
+}
+
 function Get-MarkdownReferenceDefinitions {
-    param([Parameter(Mandatory)][string] $Readme)
+    param(
+        [Parameter(Mandatory)][string] $Readme,
+        [Parameter(Mandatory)][hashtable] $BracketPairs,
+        [Parameter(Mandatory)][pscustomobject] $State
+    )
 
     $definitions = @{}
     $lineStart = 0
+    $operations = 0
     while ($lineStart -le $Readme.Length) {
         $lineEnd = $Readme.IndexOf("`n", $lineStart, [System.StringComparison]::Ordinal)
         if ($lineEnd -lt 0) {
             $lineEnd = $Readme.Length
         }
         $line = $Readme.Substring($lineStart, $lineEnd - $lineStart).TrimEnd("`r")
+        $operations += $line.Length + 1
         $index = 0
         while ($index -lt $line.Length -and $index -lt 4 -and $line[$index] -eq ' ') {
             $index++
         }
 
         if ($index -le 3 -and $index -lt $line.Length -and $line[$index] -eq '[') {
-            $labelClose = Find-MarkdownClosingBracket -Text $line -OpenIndex $index
-            if ($labelClose -gt $index -and
+            $absoluteOpen = $lineStart + $index
+            $absoluteClose = if ($BracketPairs.ContainsKey($absoluteOpen)) {
+                [int]$BracketPairs[$absoluteOpen]
+            }
+            else {
+                -1
+            }
+            $labelClose = $absoluteClose - $lineStart
+            if ($labelClose -gt $index -and $absoluteClose -le $lineStart + $line.Length -and
                 $labelClose + 1 -lt $line.Length -and
                 $line[$labelClose + 1] -eq ':') {
                 $label = Get-NormalizedMarkdownReferenceLabel `
                     -Label $line.Substring($index + 1, $labelClose - $index - 1)
                 if (-not [string]::IsNullOrEmpty($label)) {
-                    $targetText = $line.Substring($labelClose + 2).Trim()
-                    $syntheticTarget = "($targetText)"
-                    $target = Read-MarkdownInlineTarget `
-                        -Text $syntheticTarget `
-                        -OpenParenthesisIndex 0
+                    $targetText = $line.Substring($labelClose + 2)
+                    $target = Read-MarkdownReferenceDefinitionTarget `
+                        -TargetText $targetText `
+                        -State $State
                     $entry = [pscustomobject]@{
-                        Success = $target.Success -and
-                            $target.EndIndex -eq $syntheticTarget.Length - 1
+                        Success = $target.Success
                         Value   = if ($target.Success) { [string]$target.Value } else { '' }
                         Error   = if ($target.Success) { '' } else { [string]$target.Error }
                         Start   = $lineStart
@@ -543,6 +1066,7 @@ function Get-MarkdownReferenceDefinitions {
         }
         $lineStart = $lineEnd + 1
     }
+    Add-MarkdownParserOperations -State $State -Count $operations
 
     return $definitions
 }
@@ -701,6 +1225,84 @@ function Read-HtmlTag {
     return & $failure 'unterminated tag'
 }
 
+function Get-HtmlTagTokens {
+    param(
+        [Parameter(Mandatory)][string] $Text,
+        [Parameter(Mandatory)][pscustomobject] $State
+    )
+
+    $tokens = [System.Collections.Generic.List[object]]::new()
+    $index = 0
+    $operations = 0
+    while ($index -lt $Text.Length) {
+        $operations++
+        if ($Text[$index] -ne '<') {
+            $index++
+            continue
+        }
+
+        $tagStart = $index
+        $candidate = $index + 1
+        $closing = $false
+        if ($candidate -lt $Text.Length -and $Text[$candidate] -eq '/') {
+            $closing = $true
+            $candidate++
+        }
+        $nameStart = $candidate
+        while ($candidate -lt $Text.Length -and
+            ([char]::IsLetterOrDigit($Text[$candidate]) -or
+                $Text[$candidate] -eq '-')) {
+            $candidate++
+            $operations++
+        }
+        if ($candidate -eq $nameStart) {
+            $index++
+            continue
+        }
+        $name = $Text.Substring($nameStart, $candidate - $nameStart).ToLowerInvariant()
+        if ($candidate -lt $Text.Length -and
+            -not [char]::IsWhiteSpace($Text[$candidate]) -and
+            $Text[$candidate] -notin @('>', '/')) {
+            $index++
+            continue
+        }
+
+        $quote = [char]0
+        while ($candidate -lt $Text.Length) {
+            $operations++
+            $character = $Text[$candidate]
+            if ($quote -ne [char]0) {
+                if ($character -eq $quote) {
+                    $quote = [char]0
+                }
+            }
+            elseif ($character -in @('"', "'")) {
+                $quote = $character
+            }
+            elseif ($character -eq '>') {
+                break
+            }
+            $candidate++
+        }
+
+        $complete = $candidate -lt $Text.Length -and $Text[$candidate] -eq '>'
+        $tagEnd = if ($complete) { $candidate } else { $Text.Length - 1 }
+        $tokens.Add([pscustomobject]@{
+                Name     = $name
+                Closing  = $closing
+                Complete = $complete
+                Start    = $tagStart
+                End      = $tagEnd
+            })
+        if (-not $complete) {
+            break
+        }
+        $index = $candidate + 1
+    }
+    Add-MarkdownParserOperations -State $State -Count $operations
+    return $tokens
+}
+
 function Assert-SafeDeploymentHtml {
     param(
         [Parameter(Mandatory)][hashtable] $AnchorAttributes,
@@ -807,60 +1409,100 @@ function Assert-DeployToAzureBadge {
     }
 }
 
-function Get-ReadmeDeploymentLinks {
+function Get-ReadmeDeploymentParseResult {
     param(
         [Parameter(Mandatory)][string] $Readme,
         [Parameter(Mandatory)][string] $ReadmeName
     )
 
-    $definitions = Get-MarkdownReferenceDefinitions -Readme $Readme
+    $renderedView = ConvertTo-RenderedMarkdownView `
+        -Readme $Readme `
+        -ReadmeName $ReadmeName
+    $state = $renderedView.State
+    $renderedText = [string]$renderedView.Text
+    $htmlTokens = @(Get-HtmlTagTokens -Text $renderedText -State $state)
+    $markdownCharacters = $renderedText.ToCharArray()
+    $htmlMaskOperations = 0
+    foreach ($token in $htmlTokens) {
+        Set-MarkdownHiddenRange `
+            -Characters $markdownCharacters `
+            -Start ([int]$token.Start) `
+            -EndExclusive ([int]$token.End + 1)
+        $htmlMaskOperations += [int]$token.End - [int]$token.Start + 1
+    }
+    Add-MarkdownParserOperations -State $state -Count $htmlMaskOperations
+    $markdownText = -join $markdownCharacters
+    $delimiterMaps = Get-MarkdownDelimiterMaps `
+        -Text $markdownText `
+        -State $state `
+        -LineStarts $renderedView.LineStarts
+    $definitions = Get-MarkdownReferenceDefinitions `
+        -Readme $markdownText `
+        -BracketPairs $delimiterMaps.Brackets `
+        -State $state
     $deploymentLinks = [System.Collections.Generic.List[object]]::new()
     $handledSpans = [System.Collections.Generic.List[object]]::new()
-    $searchIndex = 0
-    while (($imageStart = $Readme.IndexOf('![', $searchIndex, [System.StringComparison]::Ordinal)) -ge 0) {
-        $altOpen = $imageStart + 1
-        $altClose = Find-MarkdownClosingBracket -Text $Readme -OpenIndex $altOpen
-        if ($altClose -lt 0) {
-            $searchIndex = $imageStart + 2
+    $markdownScanOperations = 0
+    for ($imageStart = 0; $imageStart + 1 -lt $markdownText.Length; $imageStart++) {
+        $markdownScanOperations++
+        if ($markdownText[$imageStart] -ne '!' -or
+            $markdownText[$imageStart + 1] -ne '[' -or
+            (Test-MarkdownCharacterEscaped -Text $markdownText -Index $imageStart)) {
             continue
         }
 
-        $altText = $Readme.Substring($altOpen + 1, $altClose - $altOpen - 1)
+        $altOpen = $imageStart + 1
+        if (-not $delimiterMaps.Brackets.ContainsKey($altOpen)) {
+            continue
+        }
+        $altClose = [int]$delimiterMaps.Brackets[$altOpen]
+
+        $altText = $markdownText.Substring($altOpen + 1, $altClose - $altOpen - 1)
         $imageTarget = Read-MarkdownTarget `
-            -Text $Readme `
+            -Text $markdownText `
             -StartIndex ($altClose + 1) `
-            -FallbackLabel $altText
+            -FallbackLabel $altText `
+            -BracketPairs $delimiterMaps.Brackets `
+            -ParenthesisPairs $delimiterMaps.Parentheses `
+            -State $state
         if (-not $imageTarget.Success) {
-            $searchIndex = $altClose + 1
             continue
         }
 
         $outerOpen = $imageStart - 1
-        while ($outerOpen -ge 0 -and [char]::IsWhiteSpace($Readme[$outerOpen])) {
+        while ($outerOpen -ge 0 -and [char]::IsWhiteSpace($markdownText[$outerOpen])) {
             $outerOpen--
+            $markdownScanOperations++
         }
-        if ($outerOpen -lt 0 -or $Readme[$outerOpen] -ne '[') {
-            $searchIndex = [Math]::Max($altClose + 1, $imageTarget.EndIndex + 1)
+        if ($outerOpen -lt 0 -or $markdownText[$outerOpen] -ne '[') {
+            $imageStart = [Math]::Max($imageStart, $imageTarget.EndIndex)
             continue
         }
 
         $outerLabelClose = $imageTarget.EndIndex + 1
-        while ($outerLabelClose -lt $Readme.Length -and
-            [char]::IsWhiteSpace($Readme[$outerLabelClose])) {
+        while ($outerLabelClose -lt $markdownText.Length -and
+            [char]::IsWhiteSpace($markdownText[$outerLabelClose])) {
             $outerLabelClose++
+            $markdownScanOperations++
         }
-        if ($outerLabelClose -ge $Readme.Length -or $Readme[$outerLabelClose] -ne ']') {
-            $searchIndex = [Math]::Max($altClose + 1, $imageTarget.EndIndex + 1)
+        if ($outerLabelClose -ge $markdownText.Length -or
+            $markdownText[$outerLabelClose] -ne ']' -or
+            -not $delimiterMaps.Brackets.ContainsKey($outerOpen) -or
+            [int]$delimiterMaps.Brackets[$outerOpen] -ne $outerLabelClose) {
+            $imageStart = [Math]::Max($imageStart, $imageTarget.EndIndex)
             continue
         }
 
-        $outerLabel = $Readme.Substring($outerOpen + 1, $outerLabelClose - $outerOpen - 1)
+        $outerLabel = $markdownText.Substring($outerOpen + 1, $outerLabelClose - $outerOpen - 1)
         $outerTarget = Read-MarkdownTarget `
-            -Text $Readme `
+            -Text $markdownText `
             -StartIndex ($outerLabelClose + 1) `
-            -FallbackLabel $outerLabel
+            -FallbackLabel $outerLabel `
+            -BracketPairs $delimiterMaps.Brackets `
+            -ParenthesisPairs $delimiterMaps.Parentheses `
+            -State $state
         if (-not $outerTarget.Success) {
-            $searchIndex = $outerLabelClose + 1
+            $imageStart = $outerLabelClose
             continue
         }
 
@@ -926,9 +1568,14 @@ function Get-ReadmeDeploymentLinks {
 
             $badgeSource = [string]$imageResolution.Value
             $destination = [string]$outerResolution.Value
+            $location = Get-MarkdownLocation `
+                -LineStarts $renderedView.LineStarts `
+                -Index $outerOpen
             $deploymentLinks.Add([pscustomobject]@{
                     BadgeSource = $badgeSource
                     Destination = $destination
+                    StartIndex  = $outerOpen
+                    Location    = $location
                 })
             $handledSpans.Add([pscustomobject]@{
                     Start = $outerOpen
@@ -942,42 +1589,106 @@ function Get-ReadmeDeploymentLinks {
             }
         }
 
-        $searchIndex = [Math]::Max($outerLabelClose + 1, $outerTarget.EndIndex + 1)
+        $imageStart = [Math]::Max($imageStart, $outerTarget.EndIndex)
     }
+    Add-MarkdownParserOperations -State $state -Count $markdownScanOperations
 
-    for ($index = 0; $index -lt $Readme.Length; $index++) {
-        if ($Readme[$index] -ne '<') {
+    $htmlScanOperations = 0
+    for ($tokenIndex = 0; $tokenIndex -lt $htmlTokens.Count; $tokenIndex++) {
+        $htmlScanOperations++
+        $anchorToken = $htmlTokens[$tokenIndex]
+        if (-not $anchorToken.Complete -or $anchorToken.Closing -or
+            $anchorToken.Name -ne 'a') {
             continue
         }
 
-        $anchor = Read-HtmlTag -Text $Readme -StartIndex $index -ExpectedName 'a'
+        $anchor = Read-HtmlTag `
+            -Text $renderedText `
+            -StartIndex ([int]$anchorToken.Start) `
+            -ExpectedName 'a'
+        $htmlScanOperations += [int]$anchorToken.End - [int]$anchorToken.Start + 1
         if (-not $anchor.Success) {
             continue
         }
-        $contentIndex = $anchor.EndIndex + 1
-        while ($contentIndex -lt $Readme.Length -and [char]::IsWhiteSpace($Readme[$contentIndex])) {
-            $contentIndex++
-        }
-        $image = Read-HtmlTag -Text $Readme -StartIndex $contentIndex -ExpectedName 'img'
-        $afterImage = if ($image.Success) { $image.EndIndex + 1 } else { $contentIndex }
-        while ($afterImage -lt $Readme.Length -and [char]::IsWhiteSpace($Readme[$afterImage])) {
-            $afterImage++
-        }
-        $closingAnchor = Read-HtmlTag `
-            -Text $Readme `
-            -StartIndex $afterImage `
-            -ExpectedName 'a' `
-            -Closing
 
         $href = [string]$anchor.Attributes['href']
-        $source = if ($image.Success) { [string]$image.Attributes['src'] } else { '' }
+        $imageToken = if ($tokenIndex + 1 -lt $htmlTokens.Count) {
+            $htmlTokens[$tokenIndex + 1]
+        }
+        else {
+            $null
+        }
+        $imageGapIsWhitespace = $null -ne $imageToken
+        if ($imageGapIsWhitespace) {
+            for ($index = $anchor.EndIndex + 1; $index -lt [int]$imageToken.Start; $index++) {
+                    $htmlScanOperations++
+                    if (-not [char]::IsWhiteSpace($renderedText[$index])) {
+                        $imageGapIsWhitespace = $false
+                        break
+                    }
+            }
+        }
+
+        $image = if ($imageGapIsWhitespace -and $imageToken.Complete -and
+            -not $imageToken.Closing -and $imageToken.Name -eq 'img') {
+            Read-HtmlTag `
+                    -Text $renderedText `
+                    -StartIndex ([int]$imageToken.Start) `
+                    -ExpectedName 'img'
+        }
+        else {
+            $null
+        }
+        if ($null -ne $imageToken) {
+            $htmlScanOperations += [int]$imageToken.End - [int]$imageToken.Start + 1
+        }
+        $source = if ($null -ne $image -and $image.Success) {
+            [string]$image.Attributes['src']
+        }
+        else {
+            ''
+        }
+
+        $closingToken = if ($tokenIndex + 2 -lt $htmlTokens.Count) {
+            $htmlTokens[$tokenIndex + 2]
+        }
+        else {
+            $null
+        }
+        $closingGapIsWhitespace = $null -ne $image -and $image.Success -and
+            $null -ne $closingToken
+        if ($closingGapIsWhitespace) {
+            for ($index = $image.EndIndex + 1; $index -lt [int]$closingToken.Start; $index++) {
+                    $htmlScanOperations++
+                    if (-not [char]::IsWhiteSpace($renderedText[$index])) {
+                        $closingGapIsWhitespace = $false
+                        break
+                    }
+            }
+        }
+        $closingAnchor = if ($closingGapIsWhitespace -and $closingToken.Complete -and
+            $closingToken.Closing -and $closingToken.Name -eq 'a') {
+            Read-HtmlTag `
+                    -Text $renderedText `
+                    -StartIndex ([int]$closingToken.Start) `
+                    -ExpectedName 'a' `
+                    -Closing
+        }
+        else {
+            $null
+        }
+        if ($null -ne $closingToken) {
+            $htmlScanOperations += [int]$closingToken.End - [int]$closingToken.Start + 1
+        }
+
         $isDeploymentButton =
             (Test-LooksLikeAzureDeploymentPortal -Value $href) -or
             (Test-LooksLikeDeployToAzureBadge -Value $source)
         if (-not $isDeploymentButton) {
             continue
         }
-        if (-not $image.Success -or -not $closingAnchor.Success) {
+        if ($null -eq $image -or -not $image.Success -or
+            $null -eq $closingAnchor -or -not $closingAnchor.Success) {
             throw "$ReadmeName contains a malformed HTML deployment button."
         }
         if ($anchor.SelfClosing -or $closingAnchor.SelfClosing) {
@@ -995,25 +1706,32 @@ function Get-ReadmeDeploymentLinks {
         $deploymentLinks.Add([pscustomobject]@{
                 BadgeSource = $source
                 Destination = $href
+                StartIndex  = [int]$anchorToken.Start
+                Location    = Get-MarkdownLocation `
+                    -LineStarts $renderedView.LineStarts `
+                    -Index ([int]$anchorToken.Start)
             })
         $handledSpans.Add([pscustomobject]@{
-                Start = $index
+                Start = [int]$anchorToken.Start
                 End   = $closingAnchor.EndIndex
             })
-        $index = $closingAnchor.EndIndex
+        $tokenIndex += 2
     }
+    Add-MarkdownParserOperations -State $state -Count $htmlScanOperations
 
-    $remainingCharacters = $Readme.ToCharArray()
+    $remainingCharacters = $renderedText.ToCharArray()
+    $handledMaskOperations = 0
     foreach ($span in $handledSpans) {
         if ($span.Start -lt 0 -or $span.End -lt $span.Start) {
             continue
         }
-        for ($index = $span.Start;
-            $index -le [Math]::Min($span.End, $remainingCharacters.Length - 1);
-            $index++) {
-            $remainingCharacters[$index] = ' '
-        }
+        Set-MarkdownHiddenRange `
+            -Characters $remainingCharacters `
+            -Start ([int]$span.Start) `
+            -EndExclusive ([int]$span.End + 1)
+        $handledMaskOperations += [int]$span.End - [int]$span.Start + 1
     }
+    Add-MarkdownParserOperations -State $state -Count $handledMaskOperations
     $unhandled = -join $remainingCharacters
     if ((Test-LooksLikeDeployToAzureBadge -Value $unhandled) -or
         (Test-LooksLikeAzureDeploymentPortal -Value $unhandled)) {
@@ -1024,7 +1742,24 @@ function Get-ReadmeDeploymentLinks {
         throw "$ReadmeName contains no recognized Deploy-to-Azure Markdown or HTML image-links."
     }
 
-    return @($deploymentLinks)
+    return [pscustomobject]@{
+        Links          = @($deploymentLinks)
+        OperationCount = [long]$state.Operations
+        OperationLimit = [long]$state.OperationLimit
+    }
+}
+
+function Get-ReadmeDeploymentLinks {
+    param(
+        [Parameter(Mandatory)][string] $Readme,
+        [Parameter(Mandatory)][string] $ReadmeName
+    )
+
+    return @(
+        (Get-ReadmeDeploymentParseResult `
+            -Readme $Readme `
+            -ReadmeName $ReadmeName).Links
+    )
 }
 
 function Get-DeploymentTemplateArtifactPath {
@@ -1192,7 +1927,8 @@ function Assert-ReadmeDeploymentPaths {
     $mappedArtifacts = @($config.templates | ForEach-Object { [string]$_.artifact })
     $deploymentLinks = @(Get-ReadmeDeploymentLinks -Readme $Readme -ReadmeName $ReadmeName)
     for ($index = 0; $index -lt $deploymentLinks.Count; $index++) {
-        $description = "$ReadmeName deployment link #$($index + 1)"
+        $location = [string]$deploymentLinks[$index].Location
+        $description = "$ReadmeName deployment link #$($index + 1) ($location)"
         Assert-DeployToAzureBadge `
             -BadgeSource ([string]$deploymentLinks[$index].BadgeSource) `
             -Description $description
@@ -1230,6 +1966,59 @@ function Invoke-ReadmeDeploymentLinkTests {
 
         return [System.Uri]::EscapeDataString($TemplateUri)
     }
+    function Assert-RenderedDeploymentCase {
+        param(
+            [Parameter(Mandatory)][string] $Name,
+            [Parameter(Mandatory)][string] $Readme,
+            [Parameter(Mandatory)][int] $ExpectedCount
+        )
+
+        $result = Get-ReadmeDeploymentParseResult `
+            -Readme $Readme `
+            -ReadmeName $Name
+        if ($result.Links.Count -ne $ExpectedCount) {
+            throw "$Name discovered $($result.Links.Count) rendered deployment buttons; expected $ExpectedCount."
+        }
+        Assert-ReadmeDeploymentPaths -Readme $Readme -ReadmeName $Name
+    }
+    function Assert-BoundedParserRejection {
+        param(
+            [Parameter(Mandatory)][string] $Name,
+            [Parameter(Mandatory)][string] $Readme,
+            [Parameter(Mandatory)][string] $Error
+        )
+
+        try {
+            [void](Get-ReadmeDeploymentParseResult -Readme $Readme -ReadmeName $Name)
+        }
+        catch {
+            if ($_.Exception.Message -notmatch $Error) {
+                throw "$Name failed for the wrong reason: $($_.Exception.Message)"
+            }
+            Write-Host "Passed: bounded rejection for $Name."
+            return
+        }
+        throw "$Name unexpectedly passed."
+    }
+    function Assert-ParserOperationBound {
+        param(
+            [Parameter(Mandatory)][string] $Name,
+            [Parameter(Mandatory)][string] $Readme,
+            [Parameter(Mandatory)][int] $ExpectedCount
+        )
+
+        $result = Get-ReadmeDeploymentParseResult `
+            -Readme $Readme `
+            -ReadmeName $Name
+        if ($result.Links.Count -ne $ExpectedCount) {
+            throw "$Name discovered $($result.Links.Count) buttons; expected $ExpectedCount."
+        }
+        $conservativeBound = [long]$Readme.Length * 20 + 4096
+        if ($result.OperationCount -gt $conservativeBound) {
+            throw "$Name used $($result.OperationCount) parser operations; bound was $conservativeBound."
+        }
+        Write-Host "Passed: $Name used $($result.OperationCount) bounded parser operations for $($Readme.Length) characters."
+    }
 
     Assert-ReadmeDeploymentPaths
 
@@ -1261,6 +2050,110 @@ function Invoke-ReadmeDeploymentLinkTests {
     Assert-ReadmeDeploymentPaths `
         -Readme "$validButton`n`n[Documentation][docs]`n`n[docs]: https://learn.microsoft.com/`n`n![Architecture](images/architecture.svg)`n`n<a href=`"https://learn.microsoft.com/`"><img src=`"images/architecture.svg`" alt=`"Architecture`"></a>" `
         -ReadmeName 'valid button with unrelated Markdown and HTML constructs'
+
+    $attackerButton = New-DeploymentButton `
+        (New-PortalLink (ConvertTo-EncodedTemplateUri `
+            'https://raw.githubusercontent.com/Contoso/enclave/main/quickstart-templates/azure-enclave-saca.json'))
+    $htmlAttackerButton = "<a href=`"https://example.com/redirect`"><img src=`"$badge`" alt=`"Deploy`"></a>"
+    $backtickFence = [string]::new([char]0x60, 4)
+    $tildeFence = '~~~~~'
+    $singleBacktick = [string]::new([char]0x60, 1)
+    $tripleBacktick = [string]::new([char]0x60, 3)
+    $shortBackticks = [string]::new([char]0x60, 2)
+    $hiddenBrackets = [string]::new('[', 256)
+    Assert-RenderedDeploymentCase `
+        -Name 'backtick fence with hidden valid and attacker buttons' `
+        -Readme "$backtickFence powershell`n$tripleBacktick`n$hiddenBrackets`n$validButton`n$attackerButton`n$backtickFence`n`n$validButton" `
+        -ExpectedCount 1
+    Assert-RenderedDeploymentCase `
+        -Name 'tilde fence with hidden valid and attacker buttons' `
+        -Readme "$tildeFence markdown`n~~~`n$hiddenBrackets`n$validButton`n$attackerButton`n$tildeFence`n`n$validButton" `
+        -ExpectedCount 1
+
+    Assert-RenderedDeploymentCase `
+        -Name 'single-backtick inline code hides button' `
+        -Readme "${singleBacktick}${attackerButton}${singleBacktick}`n`n$validButton" `
+        -ExpectedCount 1
+    Assert-RenderedDeploymentCase `
+        -Name 'variable-backtick inline code hides shorter delimiters and button' `
+        -Readme "${tripleBacktick}x${singleBacktick}a${shortBackticks}b${attackerButton}${tripleBacktick}`n`n$validButton" `
+        -ExpectedCount 1
+    Assert-RenderedDeploymentCase `
+        -Name 'HTML comment hides Markdown and HTML buttons' `
+        -Readme "<!--`n${singleBacktick}$hiddenBrackets`n$attackerButton`n$htmlAttackerButton`n-->`n`n$validButton" `
+        -ExpectedCount 1
+    Assert-RenderedDeploymentCase `
+        -Name 'indented code hides deployment button' `
+        -Readme "    $attackerButton`n`n$validButton" `
+        -ExpectedCount 1
+    Assert-RenderedDeploymentCase `
+        -Name 'blockquote fenced example hides deployment button' `
+        -Readme "> $backtickFence markdown`n> $attackerButton`n> $backtickFence`n`n$validButton" `
+        -ExpectedCount 1
+    Assert-RenderedDeploymentCase `
+        -Name 'list fenced example hides deployment button' `
+        -Readme "- $tildeFence markdown`n  $attackerButton`n  $tildeFence`n`n$validButton" `
+        -ExpectedCount 1
+    Assert-RenderedDeploymentCase `
+        -Name 'blockquote indented code hides deployment button' `
+        -Readme ">     $attackerButton`n`n$validButton" `
+        -ExpectedCount 1
+
+    $hiddenOnlyReadme = @"
+$backtickFence example
+$validButton
+$backtickFence
+
+$tildeFence
+$attackerButton
+$tildeFence
+
+${singleBacktick}${validButton}${singleBacktick}
+
+<!-- $htmlAttackerButton -->
+"@
+    Assert-BoundedParserRejection `
+        -Name 'mixed hidden examples with zero rendered buttons' `
+        -Readme $hiddenOnlyReadme `
+        -Error 'no recognized Deploy-to-Azure'
+    Assert-RenderedDeploymentCase `
+        -Name 'mixed hidden examples with exactly one rendered button' `
+        -Readme "$hiddenOnlyReadme`n`n$validButton" `
+        -ExpectedCount 1
+
+    $unterminatedImages16Kb = ('![x' * 5462) -join ''
+    Assert-BoundedParserRejection `
+        -Name '16 KB repeated unterminated image delimiters' `
+        -Readme $unterminatedImages16Kb `
+        -Error 'bracket nesting limit'
+    $unterminatedBrackets64Kb = [string]::new('[', 65536)
+    Assert-BoundedParserRejection `
+        -Name '64 KB repeated unterminated brackets' `
+        -Readme $unterminatedBrackets64Kb `
+        -Error 'bracket nesting limit'
+
+    $unterminatedBackticks64Kb = (
+        1..362 | ForEach-Object {
+            [string]::new([char]0x60, $_) + 'x'
+        }) -join ''
+    Assert-ParserOperationBound `
+        -Name '64 KB repeated unterminated backtick runs' `
+        -Readme "$validButton`n$unterminatedBackticks64Kb" `
+        -ExpectedCount 1
+    $unterminatedComments = ('<!--' * 4096) -join ''
+    Assert-ParserOperationBound `
+        -Name 'repeated unterminated HTML comments' `
+        -Readme "$validButton`n$unterminatedComments" `
+        -ExpectedCount 1
+    $unterminatedFencePayload = ('![x[' * 4096) -join ''
+    Assert-ParserOperationBound `
+        -Name 'unterminated tilde fence with repeated delimiters' `
+        -Readme "$validButton`n~~~ example`n$unterminatedFencePayload" `
+        -ExpectedCount 1
+    Assert-BoundedParserRejection `
+        -Name 'README maximum input size' `
+        -Readme ('x' * ($script:MaxReadmeCharacters + 1)) `
+        -Error 'maximum supported README size'
 
     $failureCases = @(
         @{
