@@ -292,66 +292,22 @@ function Set-MarkdownHiddenRange {
     for ($index = $Start;
         $index -lt [Math]::Min($EndExclusive, $Characters.Length);
         $index++) {
-        if ($Characters[$index] -notin @("`r", "`n")) {
+        if ($Characters[$index] -ne "`r" -and $Characters[$index] -ne "`n") {
             $Characters[$index] = ' '
         }
     }
 }
 
-function Get-MarkdownFence {
+function Get-MarkdownIndent {
     param(
         [Parameter(Mandatory)][AllowEmptyString()][string] $Line,
-        [char] $ExpectedCharacter = [char]0,
-        [int] $MinimumLength = 3,
-        [switch] $Closing
+        [Parameter(Mandatory)][int] $Start,
+        [Parameter(Mandatory)][int] $End
     )
 
-    $index = 0
-    while ($index -lt $Line.Length -and $index -lt 3 -and $Line[$index] -eq ' ') {
-        $index++
-    }
-    if ($index -ge $Line.Length) {
-        return $null
-    }
-
-    $fenceCharacter = $Line[$index]
-    if ($ExpectedCharacter -ne [char]0 -and $fenceCharacter -ne $ExpectedCharacter) {
-        return $null
-    }
-    if ($fenceCharacter -notin @([char]0x60, '~')) {
-        return $null
-    }
-
-    $fenceStart = $index
-    while ($index -lt $Line.Length -and $Line[$index] -eq $fenceCharacter) {
-        $index++
-    }
-    $fenceLength = $index - $fenceStart
-    if ($fenceLength -lt $MinimumLength) {
-        return $null
-    }
-
-    $remainder = $Line.Substring($index)
-    if ($Closing) {
-        if ($remainder.Trim(' ', "`t").Length -ne 0) {
-            return $null
-        }
-    }
-    elseif ($fenceCharacter -eq [char]0x60 -and $remainder.Contains([char]0x60)) {
-        return $null
-    }
-
-    return [pscustomobject]@{
-        Character = $fenceCharacter
-        Length    = $fenceLength
-    }
-}
-
-function Test-MarkdownIndentedCodeLine {
-    param([Parameter(Mandatory)][AllowEmptyString()][string] $Line)
-
+    $index = $Start
     $columns = 0
-    for ($index = 0; $index -lt $Line.Length; $index++) {
+    while ($index -lt $End) {
         if ($Line[$index] -eq ' ') {
             $columns++
         }
@@ -361,61 +317,203 @@ function Test-MarkdownIndentedCodeLine {
         else {
             break
         }
-        if ($columns -ge 4) {
-            return $Line.Trim().Length -gt 0
-        }
+        $index++
     }
-    return $false
+
+    return [pscustomobject]@{
+        Columns = $columns
+        Index   = $index
+    }
 }
 
-function Get-MarkdownContainerContent {
-    param([Parameter(Mandatory)][AllowEmptyString()][string] $Line)
+function Get-MarkdownIndexAfterIndent {
+    param(
+        [Parameter(Mandatory)][AllowEmptyString()][string] $Line,
+        [Parameter(Mandatory)][int] $Start,
+        [Parameter(Mandatory)][int] $End,
+        [Parameter(Mandatory)][int] $RequiredColumns
+    )
+
+    $index = $Start
+    $columns = 0
+    while ($index -lt $End -and $columns -lt $RequiredColumns) {
+        if ($Line[$index] -eq ' ') {
+            $columns++
+        }
+        elseif ($Line[$index] -eq "`t") {
+            $columns += 4 - ($columns % 4)
+        }
+        else {
+            break
+        }
+        $index++
+    }
+
+    if ($columns -lt $RequiredColumns) {
+        return -1
+    }
+    return $index
+}
+
+function Get-MarkdownBlockquotePrefix {
+    param(
+        [Parameter(Mandatory)][AllowEmptyString()][string] $Line,
+        [Parameter(Mandatory)][int] $End,
+        [int] $RequiredDepth = -1
+    )
 
     $index = 0
-    while ($index -lt $Line.Length -and $index -lt 3 -and $Line[$index] -eq ' ') {
-        $index++
-    }
-    $containerFound = $false
-
-    while ($index -lt $Line.Length -and $Line[$index] -eq '>') {
-        $containerFound = $true
-        $index++
-        if ($index -lt $Line.Length -and $Line[$index] -in @(' ', "`t")) {
+    $depth = 0
+    while ($index -lt $End -and ($RequiredDepth -lt 0 -or $depth -lt $RequiredDepth)) {
+        $candidate = $index
+        $spaces = 0
+        while ($candidate -lt $End -and $spaces -lt 3 -and $Line[$candidate] -eq ' ') {
+            $candidate++
+            $spaces++
+        }
+        if ($candidate -ge $End -or $Line[$candidate] -ne '>') {
+            break
+        }
+        $depth++
+        $index = $candidate + 1
+        if ($index -lt $End -and $Line[$index] -in @(' ', "`t")) {
             $index++
         }
     }
 
-    $markerStart = $index
-    if ($index -lt $Line.Length -and $Line[$index] -in @('-', '+', '*')) {
+    if ($RequiredDepth -ge 0 -and $depth -ne $RequiredDepth) {
+        return $null
+    }
+    return [pscustomobject]@{
+        Depth = $depth
+        Index = $index
+    }
+}
+
+function Get-MarkdownLineStructure {
+    param(
+        [Parameter(Mandatory)][AllowEmptyString()][string] $Line,
+        [Parameter(Mandatory)][int] $End
+    )
+
+    $blockquote = Get-MarkdownBlockquotePrefix -Line $Line -End $End
+    $containerStart = [int]$blockquote.Index
+    $indent = Get-MarkdownIndent -Line $Line -Start $containerStart -End $End
+    $markerStart = [int]$indent.Index
+    $markerEnd = $markerStart
+
+    if ($markerStart -lt $End -and $indent.Columns -le 3) {
+        if ($Line[$markerStart] -in @('-', '+', '*')) {
+            $markerEnd = $markerStart + 1
+        }
+        elseif ([char]::IsDigit($Line[$markerStart])) {
+            while ($markerEnd -lt $End -and
+                $markerEnd - $markerStart -lt 9 -and
+                [char]::IsDigit($Line[$markerEnd])) {
+                $markerEnd++
+            }
+            if ($markerEnd -eq $markerStart -or $markerEnd -ge $End -or
+                $Line[$markerEnd] -notin @('.', ')')) {
+                $markerEnd = $markerStart
+            }
+            else {
+                $markerEnd++
+            }
+        }
+    }
+
+    $hasListMarker = $false
+    $listContentStart = $containerStart
+    $listIndent = 0
+    if ($markerEnd -gt $markerStart -and
+        $markerEnd -lt $End -and
+        $Line[$markerEnd] -in @(' ', "`t")) {
+        $paddingStart = $markerEnd
+        $paddingColumns = 0
+        while ($markerEnd -lt $End -and $paddingColumns -lt 4 -and
+            $Line[$markerEnd] -in @(' ', "`t")) {
+            if ($Line[$markerEnd] -eq ' ') {
+                $paddingColumns++
+            }
+            else {
+                $paddingColumns += 4 - ($paddingColumns % 4)
+            }
+            $markerEnd++
+        }
+        if ($paddingColumns -gt 4) {
+            $markerEnd = $paddingStart + 1
+        }
+        $hasListMarker = $true
+        $listContentStart = $markerEnd
+        $listIndent = [int]$indent.Columns +
+            ($paddingStart - $markerStart) +
+            [Math]::Min($paddingColumns, 4)
+    }
+
+    return [pscustomobject]@{
+        QuoteDepth          = [int]$blockquote.Depth
+        QuoteContentStart   = $containerStart
+        LeadingIndent       = [int]$indent.Columns
+        FirstNonWhitespace  = [int]$indent.Index
+        HasListMarker       = $hasListMarker
+        ListContentStart    = $listContentStart
+        ListIndent          = $listIndent
+        IsBlank             = [int]$indent.Index -ge $End
+    }
+}
+
+function Get-MarkdownFence {
+    param(
+        [Parameter(Mandatory)][AllowEmptyString()][string] $Line,
+        [Parameter(Mandatory)][int] $Start,
+        [Parameter(Mandatory)][int] $End,
+        [char] $ExpectedCharacter = [char]0,
+        [int] $MinimumLength = 3,
+        [switch] $Closing
+    )
+
+    $indent = Get-MarkdownIndent -Line $Line -Start $Start -End $End
+    if ($indent.Columns -gt 3 -or $indent.Index -ge $End) {
+        return $null
+    }
+
+    $index = [int]$indent.Index
+    $fenceCharacter = $Line[$index]
+    if (($ExpectedCharacter -ne [char]0 -and $fenceCharacter -ne $ExpectedCharacter) -or
+        $fenceCharacter -notin @([char]0x60, '~')) {
+        return $null
+    }
+
+    $fenceStart = $index
+    while ($index -lt $End -and $Line[$index] -eq $fenceCharacter) {
         $index++
     }
-    else {
-        while ($index -lt $Line.Length -and
-            $index - $markerStart -lt 9 -and [char]::IsDigit($Line[$index])) {
-            $index++
-        }
-        if ($index -eq $markerStart -or $index -ge $Line.Length -or
-            $Line[$index] -notin @('.', ')')) {
-            $index = $markerStart
-        }
-        else {
+    $fenceLength = $index - $fenceStart
+    if ($fenceLength -lt $MinimumLength) {
+        return $null
+    }
+
+    if ($Closing) {
+        while ($index -lt $End) {
+            if ($Line[$index] -notin @(' ', "`t")) {
+                return $null
+            }
             $index++
         }
     }
-    if ($index -gt $markerStart) {
-        if ($index -ge $Line.Length -or $Line[$index] -notin @(' ', "`t")) {
-            $index = $markerStart
-        }
-        else {
-            $containerFound = $true
+    elseif ($fenceCharacter -eq [char]0x60) {
+        while ($index -lt $End) {
+            if ($Line[$index] -eq [char]0x60) {
+                return $null
+            }
             $index++
         }
     }
 
-    if ($containerFound) {
-        return $Line.Substring($index)
+    return [pscustomobject]@{
+        Character = $fenceCharacter
+        Length    = $fenceLength
     }
-    return $Line
 }
 
 function ConvertTo-RenderedMarkdownView {
@@ -441,6 +539,14 @@ function ConvertTo-RenderedMarkdownView {
     $lineStarts.Add(0)
     $fenceCharacter = [char]0
     $fenceLength = 0
+    $fenceQuoteDepth = 0
+    $fenceListIndent = 0
+    $activeListQuoteDepth = -1
+    $activeListIndent = 0
+    $paragraphActive = $false
+    $indentedCodeActive = $false
+    $indentedCodeQuoteDepth = 0
+    $indentedCodeListIndent = 0
     $lineStart = 0
     $blockScanOperations = 0
 
@@ -454,31 +560,146 @@ function ConvertTo-RenderedMarkdownView {
             $contentEnd--
         }
         $line = $Readme.Substring($lineStart, $contentEnd - $lineStart)
-        $containerContent = Get-MarkdownContainerContent -Line $line
+        $lineLength = $line.Length
+        $structure = Get-MarkdownLineStructure -Line $line -End $lineLength
         $blockScanOperations += $line.Length + 1
         $hideLine = $false
+        $processedAsFence = $false
 
         if ($fenceCharacter -ne [char]0) {
-            $hideLine = $true
-            $closingFence = Get-MarkdownFence `
-                -Line $containerContent `
-                -ExpectedCharacter $fenceCharacter `
-                -MinimumLength $fenceLength `
-                -Closing
-            if ($null -ne $closingFence) {
+            $requiredQuote = Get-MarkdownBlockquotePrefix `
+                -Line $line `
+                -End $lineLength `
+                -RequiredDepth $fenceQuoteDepth
+            $fenceContentStart = -1
+            if ($null -ne $requiredQuote) {
+                $fenceContentStart = [int]$requiredQuote.Index
+                if ($fenceListIndent -gt 0) {
+                    $indent = Get-MarkdownIndent `
+                        -Line $line `
+                        -Start $fenceContentStart `
+                        -End $lineLength
+                    if ($indent.Index -ge $lineLength) {
+                        $fenceContentStart = $lineLength
+                    }
+                    elseif ($indent.Columns -lt $fenceListIndent) {
+                        $fenceContentStart = -1
+                    }
+                    else {
+                        $fenceContentStart = Get-MarkdownIndexAfterIndent `
+                            -Line $line `
+                            -Start $fenceContentStart `
+                            -End $lineLength `
+                            -RequiredColumns $fenceListIndent
+                    }
+                }
+            }
+
+            if ($fenceContentStart -ge 0) {
+                $hideLine = $true
+                $processedAsFence = $true
+                $closingFence = Get-MarkdownFence `
+                    -Line $line `
+                    -Start $fenceContentStart `
+                    -End $lineLength `
+                    -ExpectedCharacter $fenceCharacter `
+                    -MinimumLength $fenceLength `
+                    -Closing
+                if ($null -ne $closingFence) {
+                    $fenceCharacter = [char]0
+                    $fenceLength = 0
+                    $fenceQuoteDepth = 0
+                    $fenceListIndent = 0
+                }
+            }
+            else {
                 $fenceCharacter = [char]0
                 $fenceLength = 0
+                $fenceQuoteDepth = 0
+                $fenceListIndent = 0
             }
         }
-        else {
-            $openingFence = Get-MarkdownFence -Line $containerContent
+
+        if (-not $processedAsFence) {
+            $currentListIndent = 0
+            $effectiveContentStart = [int]$structure.QuoteContentStart
+            if ($structure.HasListMarker) {
+                $currentListIndent = [int]$structure.ListIndent
+                $effectiveContentStart = [int]$structure.ListContentStart
+                $activeListQuoteDepth = [int]$structure.QuoteDepth
+                $activeListIndent = $currentListIndent
+            }
+            elseif ($activeListIndent -gt 0 -and
+                $activeListQuoteDepth -eq [int]$structure.QuoteDepth) {
+                if ($structure.IsBlank) {
+                    $currentListIndent = $activeListIndent
+                    $effectiveContentStart = $lineLength
+                }
+                elseif ($structure.LeadingIndent -ge $activeListIndent) {
+                    $currentListIndent = $activeListIndent
+                    $effectiveContentStart = Get-MarkdownIndexAfterIndent `
+                        -Line $line `
+                        -Start ([int]$structure.QuoteContentStart) `
+                        -End $lineLength `
+                        -RequiredColumns $activeListIndent
+                }
+                else {
+                    $activeListQuoteDepth = -1
+                    $activeListIndent = 0
+                }
+            }
+            elseif (-not $structure.IsBlank) {
+                $activeListQuoteDepth = -1
+                $activeListIndent = 0
+            }
+
+            $openingFence = Get-MarkdownFence `
+                -Line $line `
+                -Start $effectiveContentStart `
+                -End $lineLength
             if ($null -ne $openingFence) {
                 $hideLine = $true
                 $fenceCharacter = $openingFence.Character
                 $fenceLength = $openingFence.Length
+                $fenceQuoteDepth = [int]$structure.QuoteDepth
+                $fenceListIndent = $currentListIndent
+                $paragraphActive = $false
+                $indentedCodeActive = $false
             }
-            elseif (Test-MarkdownIndentedCodeLine -Line $containerContent) {
-                $hideLine = $true
+            else {
+                $contentIndent = Get-MarkdownIndent `
+                    -Line $line `
+                    -Start $effectiveContentStart `
+                    -End $lineLength
+                $isBlank = $contentIndent.Index -ge $lineLength
+
+                if ($indentedCodeActive) {
+                    $sameIndentedContainer =
+                        $indentedCodeQuoteDepth -eq [int]$structure.QuoteDepth -and
+                        $indentedCodeListIndent -eq $currentListIndent
+                    if ($sameIndentedContainer -and
+                        ($isBlank -or $contentIndent.Columns -ge 4)) {
+                        $hideLine = $true
+                    }
+                    else {
+                        $indentedCodeActive = $false
+                    }
+                }
+
+                if (-not $hideLine) {
+                    if ($isBlank) {
+                        $paragraphActive = $false
+                    }
+                    elseif ($contentIndent.Columns -ge 4 -and -not $paragraphActive) {
+                        $hideLine = $true
+                        $indentedCodeActive = $true
+                        $indentedCodeQuoteDepth = [int]$structure.QuoteDepth
+                        $indentedCodeListIndent = $currentListIndent
+                    }
+                    else {
+                        $paragraphActive = $true
+                    }
+                }
             }
         }
 
@@ -528,26 +749,44 @@ function ConvertTo-RenderedMarkdownView {
     $inlineScanOperations = 0
     while ($index -lt $blockVisibleText.Length) {
         $inlineScanOperations++
-        if ($index + 3 -lt $blockVisibleText.Length -and
-            [string]::CompareOrdinal($blockVisibleText, $index, '<!--', 0, 4) -eq 0 -and
+        $isCommentStart =
+            $index + 3 -lt $blockVisibleText.Length -and
+            $blockVisibleText[$index] -eq '<' -and
+            $blockVisibleText[$index + 1] -eq '!' -and
+            $blockVisibleText[$index + 2] -eq '-' -and
+            $blockVisibleText[$index + 3] -eq '-'
+        if ($isCommentStart -and
             -not (Test-MarkdownCharacterEscaped -Text $blockVisibleText -Index $index)) {
-            $commentEnd = $blockVisibleText.IndexOf(
-                '-->',
-                $index + 4,
-                [System.StringComparison]::Ordinal)
-            $endExclusive = if ($commentEnd -lt 0) {
-                $blockVisibleText.Length
+            $commentContentStart = $index + 4
+            $invalidOpener =
+                ($commentContentStart -lt $blockVisibleText.Length -and
+                    $blockVisibleText[$commentContentStart] -eq '>') -or
+                ($commentContentStart + 1 -lt $blockVisibleText.Length -and
+                    $blockVisibleText[$commentContentStart] -eq '-' -and
+                    $blockVisibleText[$commentContentStart + 1] -eq '>')
+            if (-not $invalidOpener) {
+                $commentEnd = $commentContentStart
+                while ($commentEnd + 2 -lt $blockVisibleText.Length -and
+                    -not ($blockVisibleText[$commentEnd] -eq '-' -and
+                        $blockVisibleText[$commentEnd + 1] -eq '-' -and
+                        $blockVisibleText[$commentEnd + 2] -eq '>')) {
+                    $commentEnd++
+                    $inlineScanOperations++
+                }
+                $endExclusive = if ($commentEnd + 2 -ge $blockVisibleText.Length) {
+                    $blockVisibleText.Length
+                }
+                else {
+                    $commentEnd + 3
+                }
+                Set-MarkdownHiddenRange `
+                    -Characters $characters `
+                    -Start $index `
+                    -EndExclusive $endExclusive
+                $inlineScanOperations += $endExclusive - $index
+                $index = $endExclusive
+                continue
             }
-            else {
-                $commentEnd + 3
-            }
-            Set-MarkdownHiddenRange `
-                -Characters $characters `
-                -Start $index `
-                -EndExclusive $endExclusive
-            $inlineScanOperations += $endExclusive - $index
-            $index = $endExclusive
-            continue
         }
 
         if ($blockVisibleText[$index] -eq [char]0x60 -and
@@ -2019,6 +2258,71 @@ function Invoke-ReadmeDeploymentLinkTests {
         }
         Write-Host "Passed: $Name used $($result.OperationCount) bounded parser operations for $($Readme.Length) characters."
     }
+    function New-PathologicalCommentReadme {
+        param(
+            [Parameter(Mandatory)][int] $Length,
+            [Parameter(Mandatory)][string] $RenderedButton
+        )
+
+        $suffix = "`n$RenderedButton"
+        if ($Length -lt $suffix.Length) {
+            throw "Pathological README length $Length is smaller than its rendered button suffix."
+        }
+        $payloadLength = $Length - $suffix.Length
+        $unit = '<!-->'
+        $repeatCount = [int][Math]::Floor($payloadLength / $unit.Length)
+        $remainder = $payloadLength % $unit.Length
+        return ($unit * $repeatCount) + ('x' * $remainder) + $suffix
+    }
+    function Assert-PathologicalParserScaling {
+        param([Parameter(Mandatory)][string] $RenderedButton)
+
+        $sizes = @(7680, 14950, 29696, 58982, $script:MaxReadmeCharacters)
+        $previousLength = 0
+        $previousOperations = [long]0
+        $totalStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+        foreach ($size in $sizes) {
+            $readme = New-PathologicalCommentReadme `
+                -Length $size `
+                -RenderedButton $RenderedButton
+            $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+            $result = Get-ReadmeDeploymentParseResult `
+                -Readme $readme `
+                -ReadmeName "pathological invalid comment input $size"
+            $stopwatch.Stop()
+
+            if ($result.Links.Count -ne 1) {
+                throw "Pathological input $size discovered $($result.Links.Count) buttons; expected 1."
+            }
+            $operationBound = [long]$readme.Length * 20 + 4096
+            if ($result.OperationCount -gt $operationBound) {
+                throw "Pathological input $size used $($result.OperationCount) operations; bound was $operationBound."
+            }
+            if ($previousLength -gt 0) {
+                $deltaCharacters = $readme.Length - $previousLength
+                $deltaOperations = [long]$result.OperationCount - $previousOperations
+                if ($deltaOperations -gt ([long]$deltaCharacters * 20 + 4096)) {
+                    throw "Pathological parser work grew faster than its deterministic linear bound between $previousLength and $($readme.Length) characters."
+                }
+            }
+            $sanityMilliseconds = if ($size -eq $script:MaxReadmeCharacters) {
+                120000
+            }
+            else {
+                30000
+            }
+            if ($stopwatch.ElapsedMilliseconds -gt $sanityMilliseconds) {
+                throw "Pathological input $size took $($stopwatch.ElapsedMilliseconds) ms; sanity bound was $sanityMilliseconds ms."
+            }
+            Write-Host "Passed: pathological input $size used $($result.OperationCount) operations in $($stopwatch.ElapsedMilliseconds) ms."
+            $previousLength = $readme.Length
+            $previousOperations = [long]$result.OperationCount
+        }
+        $totalStopwatch.Stop()
+        if ($totalStopwatch.ElapsedMilliseconds -gt 180000) {
+            throw "Pathological scaling suite took $($totalStopwatch.ElapsedMilliseconds) ms; sanity bound was 180000 ms."
+        }
+    }
 
     Assert-ReadmeDeploymentPaths
 
@@ -2081,6 +2385,10 @@ function Invoke-ReadmeDeploymentLinkTests {
     Assert-RenderedDeploymentCase `
         -Name 'HTML comment hides Markdown and HTML buttons' `
         -Readme "<!--`n${singleBacktick}$hiddenBrackets`n$attackerButton`n$htmlAttackerButton`n-->`n`n$validButton" `
+        -ExpectedCount 1
+    Assert-RenderedDeploymentCase `
+        -Name 'valid unclosed HTML comment hides following buttons' `
+        -Readme "$validButton`n`n<!--`n$attackerButton`n$htmlAttackerButton" `
         -ExpectedCount 1
     Assert-RenderedDeploymentCase `
         -Name 'indented code hides deployment button' `
@@ -2150,6 +2458,7 @@ ${singleBacktick}${validButton}${singleBacktick}
         -Name 'unterminated tilde fence with repeated delimiters' `
         -Readme "$validButton`n~~~ example`n$unterminatedFencePayload" `
         -ExpectedCount 1
+    Assert-PathologicalParserScaling -RenderedButton $validButton
     Assert-BoundedParserRejection `
         -Name 'README maximum input size' `
         -Readme ('x' * ($script:MaxReadmeCharacters + 1)) `
@@ -2364,6 +2673,56 @@ ${singleBacktick}${validButton}${singleBacktick}
             Name = 'valid inline plus invalid HTML button'
             Readme = "$validButton`n`n<a href=`"https://example.com/redirect`"><img src=`"$badge`" alt=`"Deploy`"></a>"
             Error = 'exact .*portal\.azure\.com'
+        },
+        @{
+            Name = 'blockquote fence container transition exposes attacker button'
+            Readme = "> ~~~`n$attackerButton`n~~~"
+            Error = 'owner'
+        },
+        @{
+            Name = 'paragraph continuation exposes four-space attacker button'
+            Readme = "paragraph`n    $attackerButton"
+            Error = 'owner'
+        },
+        @{
+            Name = 'list continuation paragraph exposes attacker button'
+            Readme = "- paragraph`n    $attackerButton"
+            Error = 'owner'
+        },
+        @{
+            Name = 'invalid short HTML comment opener exposes attacker button'
+            Readme = "<!-->`n$attackerButton`n-->"
+            Error = 'owner'
+        },
+        @{
+            Name = 'invalid dash HTML comment opener exposes attacker button'
+            Readme = "<!--->`n$attackerButton`n-->"
+            Error = 'owner'
+        },
+        @{
+            Name = 'valid button plus blockquote fence transition attacker'
+            Readme = "$validButton`n`n> ~~~`n$attackerButton`n~~~"
+            Error = 'owner'
+        },
+        @{
+            Name = 'valid button plus paragraph continuation attacker'
+            Readme = "$validButton`n`nparagraph`n    $attackerButton"
+            Error = 'owner'
+        },
+        @{
+            Name = 'valid button plus list continuation attacker'
+            Readme = "$validButton`n`n- paragraph`n    $attackerButton"
+            Error = 'owner'
+        },
+        @{
+            Name = 'valid button plus invalid short comment opener attacker'
+            Readme = "$validButton`n`n<!-->`n$attackerButton`n-->"
+            Error = 'owner'
+        },
+        @{
+            Name = 'valid button plus invalid dash comment opener attacker'
+            Readme = "$validButton`n`n<!--->`n$attackerButton`n-->"
+            Error = 'owner'
         }
     )
 
