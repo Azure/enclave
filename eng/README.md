@@ -6,7 +6,7 @@ Run the repository-pinned Bicep compiler from the repository root:
 pwsh ./eng/Build-ArmTemplates.ps1
 ```
 
-The script verifies the standalone compiler checksum, builds and lints all Bicep files, regenerates the five published ARM JSON files, and validates their scopes, metadata, mappings, and every README deployment button. Buttons are discovered from the official badge identity or Azure portal destination, independent of alt text; both the badge and Template URI are then validated structurally and locally without fetching private or public raw GitHub content. Use `-Check` to reproduce the read-only CI drift check.
+The script verifies the standalone compiler checksum, builds and lints all Bicep files, regenerates the five published ARM JSON files, and validates their scopes, metadata, mappings, and every README deployment button. A bounded parser discovers inline, full-reference, collapsed-reference, and shortcut-reference Markdown image links plus direct HTML `<a><img></a>` buttons, independent of alt text. Any supported construct containing the official badge or an Azure deployment portal destination is validated; malformed, ambiguous, encoded, or unsupported constructs containing those markers fail closed. The badge and Template URI are then validated structurally and locally without fetching private or public raw GitHub content. Use `-Check` to reproduce the read-only CI drift check.
 
 Run the focused adversarial deployment-link tests with:
 

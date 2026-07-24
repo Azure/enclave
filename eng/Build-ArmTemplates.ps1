@@ -390,7 +390,7 @@ function Read-MarkdownInlineTarget {
 }
 
 function ConvertFrom-MarkdownBackslashEscapes {
-    param([Parameter(Mandatory)][string] $Value)
+    param([Parameter(Mandatory)][AllowEmptyString()][string] $Value)
 
     $result = [System.Text.StringBuilder]::new()
     for ($index = 0; $index -lt $Value.Length; $index++) {
@@ -413,37 +413,382 @@ function ConvertFrom-MarkdownBackslashEscapes {
     return $result.ToString()
 }
 
-function Test-LooksLikeDeployToAzureBadge {
-    param([Parameter(Mandatory)][string] $Value)
+function Get-NormalizedMarkdownReferenceLabel {
+    param([Parameter(Mandatory)][AllowEmptyString()][string] $Label)
 
-    $candidate = (ConvertFrom-MarkdownBackslashEscapes -Value $Value).Trim()
-    if ($candidate -match '(?i)(?:^|[/\\]|%2f)deploytoazure\.svg(?:[\s"''()?#]|$)') {
-        return $true
+    $unescaped = (ConvertFrom-MarkdownBackslashEscapes -Value $Label).Trim()
+    return ([regex]::Replace($unescaped, '\s+', ' ')).ToLowerInvariant()
+}
+
+function Read-MarkdownTarget {
+    param(
+        [Parameter(Mandatory)][string] $Text,
+        [Parameter(Mandatory)][int] $StartIndex,
+        [Parameter(Mandatory)][AllowEmptyString()][string] $FallbackLabel
+    )
+
+    $index = $StartIndex
+    while ($index -lt $Text.Length -and [char]::IsWhiteSpace($Text[$index])) {
+        $index++
+    }
+
+    if ($index -lt $Text.Length -and $Text[$index] -eq '(') {
+        $inlineTarget = Read-MarkdownInlineTarget -Text $Text -OpenParenthesisIndex $index
+        return [pscustomobject]@{
+            Success  = $inlineTarget.Success
+            Kind     = 'Inline'
+            Value    = $inlineTarget.Value
+            Label    = ''
+            EndIndex = $inlineTarget.EndIndex
+            Error    = $inlineTarget.Error
+        }
+    }
+
+    if ($index -lt $Text.Length -and $Text[$index] -eq '[') {
+        $referenceClose = Find-MarkdownClosingBracket -Text $Text -OpenIndex $index
+        if ($referenceClose -lt 0) {
+            return [pscustomobject]@{
+                Success  = $false
+                Kind     = 'Reference'
+                Value    = ''
+                Label    = ''
+                EndIndex = -1
+                Error    = 'unterminated reference label'
+            }
+        }
+
+        $label = $Text.Substring($index + 1, $referenceClose - $index - 1)
+        if ([string]::IsNullOrEmpty($label)) {
+            $label = $FallbackLabel
+        }
+        $normalizedLabel = Get-NormalizedMarkdownReferenceLabel -Label $label
+        return [pscustomobject]@{
+            Success  = -not [string]::IsNullOrEmpty($normalizedLabel)
+            Kind     = 'Reference'
+            Value    = ''
+            Label    = $normalizedLabel
+            EndIndex = $referenceClose
+            Error    = if ([string]::IsNullOrEmpty($normalizedLabel)) {
+                'empty reference label'
+            }
+            else {
+                ''
+            }
+        }
+    }
+
+    $shortcutLabel = Get-NormalizedMarkdownReferenceLabel -Label $FallbackLabel
+    return [pscustomobject]@{
+        Success  = -not [string]::IsNullOrEmpty($shortcutLabel)
+        Kind     = 'Reference'
+        Value    = ''
+        Label    = $shortcutLabel
+        EndIndex = $StartIndex - 1
+        Error    = if ([string]::IsNullOrEmpty($shortcutLabel)) {
+            'empty shortcut reference label'
+        }
+        else {
+            ''
+        }
+    }
+}
+
+function Get-MarkdownReferenceDefinitions {
+    param([Parameter(Mandatory)][string] $Readme)
+
+    $definitions = @{}
+    $lineStart = 0
+    while ($lineStart -le $Readme.Length) {
+        $lineEnd = $Readme.IndexOf("`n", $lineStart, [System.StringComparison]::Ordinal)
+        if ($lineEnd -lt 0) {
+            $lineEnd = $Readme.Length
+        }
+        $line = $Readme.Substring($lineStart, $lineEnd - $lineStart).TrimEnd("`r")
+        $index = 0
+        while ($index -lt $line.Length -and $index -lt 4 -and $line[$index] -eq ' ') {
+            $index++
+        }
+
+        if ($index -le 3 -and $index -lt $line.Length -and $line[$index] -eq '[') {
+            $labelClose = Find-MarkdownClosingBracket -Text $line -OpenIndex $index
+            if ($labelClose -gt $index -and
+                $labelClose + 1 -lt $line.Length -and
+                $line[$labelClose + 1] -eq ':') {
+                $label = Get-NormalizedMarkdownReferenceLabel `
+                    -Label $line.Substring($index + 1, $labelClose - $index - 1)
+                if (-not [string]::IsNullOrEmpty($label)) {
+                    $targetText = $line.Substring($labelClose + 2).Trim()
+                    $syntheticTarget = "($targetText)"
+                    $target = Read-MarkdownInlineTarget `
+                        -Text $syntheticTarget `
+                        -OpenParenthesisIndex 0
+                    $entry = [pscustomobject]@{
+                        Success = $target.Success -and
+                            $target.EndIndex -eq $syntheticTarget.Length - 1
+                        Value   = if ($target.Success) { [string]$target.Value } else { '' }
+                        Error   = if ($target.Success) { '' } else { [string]$target.Error }
+                        Start   = $lineStart
+                        End     = if ($lineEnd -lt $Readme.Length) { $lineEnd } else { $lineEnd - 1 }
+                    }
+                    if (-not $definitions.ContainsKey($label)) {
+                        $definitions[$label] = [System.Collections.Generic.List[object]]::new()
+                    }
+                    $definitions[$label].Add($entry)
+                }
+            }
+        }
+
+        if ($lineEnd -ge $Readme.Length) {
+            break
+        }
+        $lineStart = $lineEnd + 1
+    }
+
+    return $definitions
+}
+
+function Resolve-MarkdownReference {
+    param(
+        [Parameter(Mandatory)][hashtable] $Definitions,
+        [Parameter(Mandatory)][string] $Label
+    )
+
+    if (-not $Definitions.ContainsKey($Label)) {
+        return [pscustomobject]@{
+            Status  = 'Unresolved'
+            Value   = ''
+            Entries = @()
+        }
+    }
+
+    $entries = @($Definitions[$Label])
+    if ($entries.Count -ne 1) {
+        return [pscustomobject]@{
+            Status  = 'Duplicate'
+            Value   = ''
+            Entries = $entries
+        }
+    }
+    if (-not $entries[0].Success) {
+        return [pscustomobject]@{
+            Status  = 'Malformed'
+            Value   = ''
+            Entries = $entries
+        }
+    }
+
+    return [pscustomobject]@{
+        Status  = 'Resolved'
+        Value   = [string]$entries[0].Value
+        Entries = $entries
+    }
+}
+
+function Read-HtmlTag {
+    param(
+        [Parameter(Mandatory)][string] $Text,
+        [Parameter(Mandatory)][int] $StartIndex,
+        [Parameter(Mandatory)][string] $ExpectedName,
+        [switch] $Closing
+    )
+
+    $failure = {
+        param([string] $Message)
+
+        return [pscustomobject]@{
+            Success     = $false
+            Attributes  = @{}
+            EndIndex    = -1
+            SelfClosing = $false
+            Error       = $Message
+        }
+    }
+
+    if ($StartIndex -ge $Text.Length -or $Text[$StartIndex] -ne '<') {
+        return & $failure 'missing opening angle bracket'
+    }
+
+    $index = $StartIndex + 1
+    if ($Closing) {
+        if ($index -ge $Text.Length -or $Text[$index] -ne '/') {
+            return & $failure 'missing closing-tag slash'
+        }
+        $index++
+    }
+    elseif ($index -lt $Text.Length -and $Text[$index] -eq '/') {
+        return & $failure 'unexpected closing tag'
+    }
+
+    $nameStart = $index
+    while ($index -lt $Text.Length -and
+        ([char]::IsLetterOrDigit($Text[$index]) -or $Text[$index] -in @('-', ':'))) {
+        $index++
+    }
+    $name = $Text.Substring($nameStart, $index - $nameStart)
+    if ($name -ine $ExpectedName) {
+        return & $failure "expected <$ExpectedName> tag"
+    }
+
+    $attributes = @{}
+    while ($index -lt $Text.Length) {
+        while ($index -lt $Text.Length -and [char]::IsWhiteSpace($Text[$index])) {
+            $index++
+        }
+        if ($index -ge $Text.Length) {
+            return & $failure 'unterminated tag'
+        }
+        if ($Text[$index] -eq '>') {
+            return [pscustomobject]@{
+                Success     = $true
+                Attributes  = $attributes
+                EndIndex    = $index
+                SelfClosing = $false
+                Error       = ''
+            }
+        }
+        if (-not $Closing -and $Text[$index] -eq '/' -and
+            $index + 1 -lt $Text.Length -and $Text[$index + 1] -eq '>') {
+            return [pscustomobject]@{
+                Success     = $true
+                Attributes  = $attributes
+                EndIndex    = $index + 1
+                SelfClosing = $true
+                Error       = ''
+            }
+        }
+        if ($Closing) {
+            return & $failure 'closing tag contains unexpected content'
+        }
+
+        $attributeStart = $index
+        while ($index -lt $Text.Length -and
+            ([char]::IsLetterOrDigit($Text[$index]) -or
+                $Text[$index] -in @('-', '_', ':'))) {
+            $index++
+        }
+        if ($index -eq $attributeStart) {
+            return & $failure 'invalid attribute name'
+        }
+        $attributeName = $Text.Substring($attributeStart, $index - $attributeStart).ToLowerInvariant()
+        while ($index -lt $Text.Length -and [char]::IsWhiteSpace($Text[$index])) {
+            $index++
+        }
+        if ($index -ge $Text.Length -or $Text[$index] -ne '=') {
+            return & $failure "attribute '$attributeName' must have a quoted value"
+        }
+        $index++
+        while ($index -lt $Text.Length -and [char]::IsWhiteSpace($Text[$index])) {
+            $index++
+        }
+        if ($index -ge $Text.Length -or $Text[$index] -notin @('"', "'")) {
+            return & $failure "attribute '$attributeName' must use quotes"
+        }
+        $quote = $Text[$index++]
+        $valueStart = $index
+        while ($index -lt $Text.Length -and $Text[$index] -ne $quote) {
+            $index++
+        }
+        if ($index -ge $Text.Length) {
+            return & $failure "attribute '$attributeName' has an unterminated value"
+        }
+        if ($attributes.ContainsKey($attributeName)) {
+            return & $failure "duplicate attribute '$attributeName'"
+        }
+        $attributes[$attributeName] = $Text.Substring($valueStart, $index - $valueStart)
+        $index++
+    }
+
+    return & $failure 'unterminated tag'
+}
+
+function Assert-SafeDeploymentHtml {
+    param(
+        [Parameter(Mandatory)][hashtable] $AnchorAttributes,
+        [Parameter(Mandatory)][hashtable] $ImageAttributes,
+        [Parameter(Mandatory)][string] $Description
+    )
+
+    foreach ($name in $AnchorAttributes.Keys) {
+        if ($name -notin @('href', 'title', 'aria-label')) {
+            throw "$Description contains unsafe or unsupported HTML anchor attribute '$name'."
+        }
+    }
+    foreach ($name in $ImageAttributes.Keys) {
+        if ($name -notin @('src', 'alt', 'title', 'width', 'height')) {
+            throw "$Description contains unsafe or unsupported HTML image attribute '$name'."
+        }
+    }
+    foreach ($attribute in @(
+            @{ Name = 'href'; Value = [string]$AnchorAttributes['href'] },
+            @{ Name = 'src'; Value = [string]$ImageAttributes['src'] })) {
+        $decoded = [System.Net.WebUtility]::HtmlDecode([string]$attribute.Value)
+        if ($decoded -cne [string]$attribute.Value) {
+            throw "$Description $($attribute.Name) must not use HTML entity encoding."
+        }
+        if ([string]$attribute.Value -match '[\x00-\x20\x7f\\]') {
+            throw "$Description $($attribute.Name) contains whitespace, control characters, or backslashes."
+        }
+    }
+}
+
+function Get-UrlInspectionVariants {
+    param([Parameter(Mandatory)][AllowEmptyString()][string] $Value)
+
+    $variants = [System.Collections.Generic.List[string]]::new()
+    $candidate = [System.Net.WebUtility]::HtmlDecode(
+        (ConvertFrom-MarkdownBackslashEscapes -Value $Value)).Trim()
+    $variants.Add($candidate)
+    for ($decodePass = 0; $decodePass -lt 2; $decodePass++) {
+        if ($candidate -match '%(?![0-9A-Fa-f]{2})') {
+            break
+        }
+        try {
+            $decoded = [System.Uri]::UnescapeDataString($candidate)
+        }
+        catch {
+            break
+        }
+        if ($decoded -ceq $candidate) {
+            break
+        }
+        $variants.Add($decoded)
+        $candidate = $decoded
+    }
+
+    return @($variants)
+}
+
+function Test-LooksLikeDeployToAzureBadge {
+    param([Parameter(Mandatory)][AllowEmptyString()][string] $Value)
+
+    $variants = @(Get-UrlInspectionVariants -Value $Value)
+    foreach ($variant in $variants) {
+        if ($variant -match '(?i)(?:^|[/\\])deploytoazure\.svg(?:[\s"''()?#]|$)') {
+            return $true
+        }
     }
 
     $uri = $null
+    $candidate = [string]$variants[0]
     return [System.Uri]::TryCreate($candidate, [System.UriKind]::Absolute, [ref]$uri) -and
         $uri.Host -ieq 'raw.githubusercontent.com' -and
         $uri.AbsolutePath -ieq '/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg'
 }
 
 function Test-LooksLikeAzureDeploymentPortal {
-    param([Parameter(Mandatory)][string] $Value)
+    param([Parameter(Mandatory)][AllowEmptyString()][string] $Value)
 
-    $candidate = (ConvertFrom-MarkdownBackslashEscapes -Value $Value).Trim()
+    $variants = @(Get-UrlInspectionVariants -Value $Value)
+    $candidate = [string]$variants[0]
     $uri = $null
     if ([System.Uri]::TryCreate($candidate, [System.UriKind]::Absolute, [ref]$uri) -and
         $uri.Host -ieq 'portal.azure.com') {
         return $true
     }
 
-    if ($candidate -notmatch '%(?![0-9A-Fa-f]{2})') {
-        try {
-            $decoded = [System.Uri]::UnescapeDataString($candidate)
-            return $decoded -match '(?i)^https://portal\.azure\.com(?:[/:?#]|$)'
-        }
-        catch {
-            return $false
+    foreach ($variant in $variants) {
+        if ($variant -match '(?i)https://portal\.azure\.com(?:[/:?#]|$)') {
+            return $true
         }
     }
 
@@ -468,40 +813,34 @@ function Get-ReadmeDeploymentLinks {
         [Parameter(Mandatory)][string] $ReadmeName
     )
 
+    $definitions = Get-MarkdownReferenceDefinitions -Readme $Readme
     $deploymentLinks = [System.Collections.Generic.List[object]]::new()
+    $handledSpans = [System.Collections.Generic.List[object]]::new()
     $searchIndex = 0
     while (($imageStart = $Readme.IndexOf('![', $searchIndex, [System.StringComparison]::Ordinal)) -ge 0) {
         $altOpen = $imageStart + 1
         $altClose = Find-MarkdownClosingBracket -Text $Readme -OpenIndex $altOpen
         if ($altClose -lt 0) {
-            break
+            $searchIndex = $imageStart + 2
+            continue
         }
 
-        $imageTargetOpen = $altClose + 1
-        while ($imageTargetOpen -lt $Readme.Length -and
-            [char]::IsWhiteSpace($Readme[$imageTargetOpen])) {
-            $imageTargetOpen++
-        }
-        if ($imageTargetOpen -ge $Readme.Length -or $Readme[$imageTargetOpen] -ne '(') {
+        $altText = $Readme.Substring($altOpen + 1, $altClose - $altOpen - 1)
+        $imageTarget = Read-MarkdownTarget `
+            -Text $Readme `
+            -StartIndex ($altClose + 1) `
+            -FallbackLabel $altText
+        if (-not $imageTarget.Success) {
             $searchIndex = $altClose + 1
             continue
         }
 
-        $imageTarget = Read-MarkdownInlineTarget `
-            -Text $Readme `
-            -OpenParenthesisIndex $imageTargetOpen
-        if (-not $imageTarget.Success) {
-            $searchIndex = $imageTargetOpen + 1
-            continue
-        }
-
-        $badgeSource = [string]$imageTarget.Value
         $outerOpen = $imageStart - 1
         while ($outerOpen -ge 0 -and [char]::IsWhiteSpace($Readme[$outerOpen])) {
             $outerOpen--
         }
         if ($outerOpen -lt 0 -or $Readme[$outerOpen] -ne '[') {
-            $searchIndex = $imageTarget.EndIndex + 1
+            $searchIndex = [Math]::Max($altClose + 1, $imageTarget.EndIndex + 1)
             continue
         }
 
@@ -511,53 +850,178 @@ function Get-ReadmeDeploymentLinks {
             $outerLabelClose++
         }
         if ($outerLabelClose -ge $Readme.Length -or $Readme[$outerLabelClose] -ne ']') {
-            if (Test-LooksLikeDeployToAzureBadge -Value $badgeSource) {
-                throw "$ReadmeName contains an official Deploy-to-Azure badge in a malformed Markdown image-link."
-            }
-            $searchIndex = $imageTarget.EndIndex + 1
+            $searchIndex = [Math]::Max($altClose + 1, $imageTarget.EndIndex + 1)
             continue
         }
 
-        $outerTargetOpen = $outerLabelClose + 1
-        while ($outerTargetOpen -lt $Readme.Length -and
-            [char]::IsWhiteSpace($Readme[$outerTargetOpen])) {
-            $outerTargetOpen++
-        }
-        if ($outerTargetOpen -ge $Readme.Length -or $Readme[$outerTargetOpen] -ne '(') {
-            if (Test-LooksLikeDeployToAzureBadge -Value $badgeSource) {
-                throw "$ReadmeName contains an official Deploy-to-Azure badge without a supported inline Markdown destination."
-            }
+        $outerLabel = $Readme.Substring($outerOpen + 1, $outerLabelClose - $outerOpen - 1)
+        $outerTarget = Read-MarkdownTarget `
+            -Text $Readme `
+            -StartIndex ($outerLabelClose + 1) `
+            -FallbackLabel $outerLabel
+        if (-not $outerTarget.Success) {
             $searchIndex = $outerLabelClose + 1
             continue
         }
 
-        $outerTarget = Read-MarkdownInlineTarget `
-            -Text $Readme `
-            -OpenParenthesisIndex $outerTargetOpen
-        if (-not $outerTarget.Success) {
-            $targetRemainder = $Readme.Substring($outerTargetOpen + 1)
-            if ((Test-LooksLikeDeployToAzureBadge -Value $badgeSource) -or
-                (Test-LooksLikeAzureDeploymentPortal -Value $targetRemainder)) {
-                throw "$ReadmeName contains a deployment button with a malformed Markdown target: $($outerTarget.Error)."
+        $imageResolution = if ($imageTarget.Kind -eq 'Inline') {
+            [pscustomobject]@{
+                Status  = 'Resolved'
+                Value   = [string]$imageTarget.Value
+                Entries = @()
             }
-            $searchIndex = $outerTargetOpen + 1
-            continue
+        }
+        else {
+            Resolve-MarkdownReference -Definitions $definitions -Label $imageTarget.Label
+        }
+        $outerResolution = if ($outerTarget.Kind -eq 'Inline') {
+            [pscustomobject]@{
+                Status  = 'Resolved'
+                Value   = [string]$outerTarget.Value
+                Entries = @()
+            }
+        }
+        else {
+            Resolve-MarkdownReference -Definitions $definitions -Label $outerTarget.Label
         }
 
-        $destination = [string]$outerTarget.Value
-        if ((Test-LooksLikeDeployToAzureBadge -Value $badgeSource) -or
-            (Test-LooksLikeAzureDeploymentPortal -Value $destination)) {
+        $possibleBadgeSources = @(
+            if ($imageResolution.Status -eq 'Resolved') {
+                [string]$imageResolution.Value
+            }
+            else {
+                $imageResolution.Entries | ForEach-Object { [string]$_.Value }
+            }
+        )
+        $possibleDestinations = @(
+            if ($outerResolution.Status -eq 'Resolved') {
+                [string]$outerResolution.Value
+            }
+            else {
+                $outerResolution.Entries | ForEach-Object { [string]$_.Value }
+            }
+        )
+        $isDeploymentButton =
+            @($possibleBadgeSources | Where-Object {
+                    Test-LooksLikeDeployToAzureBadge -Value $_
+                }).Count -gt 0 -or
+            @($possibleDestinations | Where-Object {
+                    Test-LooksLikeAzureDeploymentPortal -Value $_
+                }).Count -gt 0
+
+        if ($isDeploymentButton) {
+            foreach ($resolution in @(
+                    @{ Name = 'image'; Value = $imageResolution },
+                    @{ Name = 'destination'; Value = $outerResolution })) {
+                if ($resolution.Value.Status -eq 'Unresolved') {
+                    throw "$ReadmeName contains a deployment button with unresolved Markdown $($resolution.Name) reference."
+                }
+                if ($resolution.Value.Status -eq 'Duplicate') {
+                    throw "$ReadmeName contains a deployment button with duplicate or ambiguous Markdown $($resolution.Name) reference."
+                }
+                if ($resolution.Value.Status -eq 'Malformed') {
+                    throw "$ReadmeName contains a deployment button with malformed Markdown $($resolution.Name) reference definition."
+                }
+            }
+
+            $badgeSource = [string]$imageResolution.Value
+            $destination = [string]$outerResolution.Value
             $deploymentLinks.Add([pscustomobject]@{
                     BadgeSource = $badgeSource
                     Destination = $destination
                 })
+            $handledSpans.Add([pscustomobject]@{
+                    Start = $outerOpen
+                    End   = $outerTarget.EndIndex
+                })
+            foreach ($entry in @($imageResolution.Entries + $outerResolution.Entries)) {
+                $handledSpans.Add([pscustomobject]@{
+                        Start = [int]$entry.Start
+                        End   = [int]$entry.End
+                    })
+            }
         }
 
-        $searchIndex = $outerTarget.EndIndex + 1
+        $searchIndex = [Math]::Max($outerLabelClose + 1, $outerTarget.EndIndex + 1)
+    }
+
+    for ($index = 0; $index -lt $Readme.Length; $index++) {
+        if ($Readme[$index] -ne '<') {
+            continue
+        }
+
+        $anchor = Read-HtmlTag -Text $Readme -StartIndex $index -ExpectedName 'a'
+        if (-not $anchor.Success) {
+            continue
+        }
+        $contentIndex = $anchor.EndIndex + 1
+        while ($contentIndex -lt $Readme.Length -and [char]::IsWhiteSpace($Readme[$contentIndex])) {
+            $contentIndex++
+        }
+        $image = Read-HtmlTag -Text $Readme -StartIndex $contentIndex -ExpectedName 'img'
+        $afterImage = if ($image.Success) { $image.EndIndex + 1 } else { $contentIndex }
+        while ($afterImage -lt $Readme.Length -and [char]::IsWhiteSpace($Readme[$afterImage])) {
+            $afterImage++
+        }
+        $closingAnchor = Read-HtmlTag `
+            -Text $Readme `
+            -StartIndex $afterImage `
+            -ExpectedName 'a' `
+            -Closing
+
+        $href = [string]$anchor.Attributes['href']
+        $source = if ($image.Success) { [string]$image.Attributes['src'] } else { '' }
+        $isDeploymentButton =
+            (Test-LooksLikeAzureDeploymentPortal -Value $href) -or
+            (Test-LooksLikeDeployToAzureBadge -Value $source)
+        if (-not $isDeploymentButton) {
+            continue
+        }
+        if (-not $image.Success -or -not $closingAnchor.Success) {
+            throw "$ReadmeName contains a malformed HTML deployment button."
+        }
+        if ($anchor.SelfClosing -or $closingAnchor.SelfClosing) {
+            throw "$ReadmeName contains invalid HTML anchor nesting for a deployment button."
+        }
+        if (-not $anchor.Attributes.ContainsKey('href') -or
+            -not $image.Attributes.ContainsKey('src')) {
+            throw "$ReadmeName HTML deployment button must contain href and src attributes."
+        }
+
+        Assert-SafeDeploymentHtml `
+            -AnchorAttributes $anchor.Attributes `
+            -ImageAttributes $image.Attributes `
+            -Description "$ReadmeName HTML deployment button"
+        $deploymentLinks.Add([pscustomobject]@{
+                BadgeSource = $source
+                Destination = $href
+            })
+        $handledSpans.Add([pscustomobject]@{
+                Start = $index
+                End   = $closingAnchor.EndIndex
+            })
+        $index = $closingAnchor.EndIndex
+    }
+
+    $remainingCharacters = $Readme.ToCharArray()
+    foreach ($span in $handledSpans) {
+        if ($span.Start -lt 0 -or $span.End -lt $span.Start) {
+            continue
+        }
+        for ($index = $span.Start;
+            $index -le [Math]::Min($span.End, $remainingCharacters.Length - 1);
+            $index++) {
+            $remainingCharacters[$index] = ' '
+        }
+    }
+    $unhandled = -join $remainingCharacters
+    if ((Test-LooksLikeDeployToAzureBadge -Value $unhandled) -or
+        (Test-LooksLikeAzureDeploymentPortal -Value $unhandled)) {
+        throw "$ReadmeName contains an unsupported or malformed deployment-button construct."
     }
 
     if ($deploymentLinks.Count -eq 0) {
-        throw "$ReadmeName contains no recognized Deploy-to-Azure Markdown image-links."
+        throw "$ReadmeName contains no recognized Deploy-to-Azure Markdown or HTML image-links."
     }
 
     return @($deploymentLinks)
@@ -779,6 +1243,24 @@ function Invoke-ReadmeDeploymentLinkTests {
     Assert-ReadmeDeploymentPaths `
         -Readme "$validButton`n`n[Documentation](https://learn.microsoft.com/)`n`n![Architecture](images/architecture.svg)`n`n[![Build](https://example.com/build.svg)](https://github.com/Azure/enclave/actions)" `
         -ReadmeName 'valid button with unrelated links and images'
+    Assert-ReadmeDeploymentPaths `
+        -Readme "[![Deploy][BadgeRef]][DeployRef]`n`n[badgeref]: <$badge>`n[DEPLOYREF]: <$(New-PortalLink $validTemplateUri)>" `
+        -ReadmeName 'valid case-insensitive full references'
+    Assert-ReadmeDeploymentPaths `
+        -Readme "[![Deploy][]]($(New-PortalLink $validTemplateUri))`n`n[deploy]: <$badge>" `
+        -ReadmeName 'valid collapsed image reference'
+    Assert-ReadmeDeploymentPaths `
+        -Readme "[![Deploy]]($(New-PortalLink $validTemplateUri))`n`n[deploy]: <$badge>" `
+        -ReadmeName 'valid shortcut image reference'
+    Assert-ReadmeDeploymentPaths `
+        -Readme "<a href=`"$(New-PortalLink $validTemplateUri)`"><img alt=`"Deploy`" src=`"$badge`"></a>" `
+        -ReadmeName 'valid HTML deployment button'
+    Assert-ReadmeDeploymentPaths `
+        -Readme "<A`n  ARIA-LABEL = 'Deploy' HREF = '$(New-PortalLink $validTemplateUri)'>`n  <IMG WIDTH = '200' SRC = '$badge' ALT = 'Deploy' />`n</A>" `
+        -ReadmeName 'valid HTML casing whitespace and attribute order'
+    Assert-ReadmeDeploymentPaths `
+        -Readme "$validButton`n`n[Documentation][docs]`n`n[docs]: https://learn.microsoft.com/`n`n![Architecture](images/architecture.svg)`n`n<a href=`"https://learn.microsoft.com/`"><img src=`"images/architecture.svg`" alt=`"Architecture`"></a>" `
+        -ReadmeName 'valid button with unrelated Markdown and HTML constructs'
 
     $failureCases = @(
         @{
@@ -939,6 +1421,56 @@ function Invoke-ReadmeDeploymentLinkTests {
             Name = 'malformed Markdown target'
             Readme = "[![Deploy]($badge)]($(New-PortalLink $validTemplateUri)"
             Error = 'malformed Markdown target'
+        },
+        @{
+            Name = 'full reference badge with attacker destination'
+            Readme = "[![Deploy][badge]](<https://example.com/redirect>)`n`n[badge]: <$badge>"
+            Error = 'exact .*portal\.azure\.com'
+        },
+        @{
+            Name = 'duplicate case-insensitive badge reference definitions'
+            Readme = "[![Deploy][badge]]($(New-PortalLink $validTemplateUri))`n`n[badge]: <$badge>`n[BADGE]: <https://example.com/deploy.svg>"
+            Error = 'duplicate or ambiguous Markdown image reference'
+        },
+        @{
+            Name = 'unresolved badge reference with portal destination'
+            Readme = "[![Deploy][missing]]($(New-PortalLink $validTemplateUri))"
+            Error = 'unresolved Markdown image reference'
+        },
+        @{
+            Name = 'HTML entity encoded attacker destination'
+            Readme = "<a href=`"https&#58;//example.com/redirect`"><img src=`"$badge`" alt=`"Deploy`"></a>"
+            Error = 'HTML entity encoding'
+        },
+        @{
+            Name = 'Markdown escaped attacker destination'
+            Readme = "[![Deploy][badge]](<https\://example.com/redirect>)`n`n[badge]: <$badge>"
+            Error = 'exact .*portal\.azure\.com'
+        },
+        @{
+            Name = 'encoded portal redirect with nonstandard HTML badge'
+            Readme = "<a href=`"https://example.com/redirect?next=https%3A%2F%2Fportal.azure.com%2F`"><img src=`"https://example.com/deploy.svg`" alt=`"Deploy`"></a>"
+            Error = 'official Deploy-to-Azure badge'
+        },
+        @{
+            Name = 'unsafe HTML event attribute'
+            Readme = "<a href=`"$(New-PortalLink $validTemplateUri)`"><img src=`"$badge`" alt=`"Deploy`" onerror=`"alert(1)`"></a>"
+            Error = 'unsafe or unsupported HTML image attribute'
+        },
+        @{
+            Name = 'malformed HTML nesting'
+            Readme = "<a href=`"$(New-PortalLink $validTemplateUri)`"><span><img src=`"$badge`"></span></a>"
+            Error = 'malformed HTML deployment button'
+        },
+        @{
+            Name = 'valid inline plus invalid reference button'
+            Readme = "$validButton`n`n[![Deploy][badge]](<https://example.com/redirect>)`n`n[badge]: <$badge>"
+            Error = 'exact .*portal\.azure\.com'
+        },
+        @{
+            Name = 'valid inline plus invalid HTML button'
+            Readme = "$validButton`n`n<a href=`"https://example.com/redirect`"><img src=`"$badge`" alt=`"Deploy`"></a>"
+            Error = 'exact .*portal\.azure\.com'
         }
     )
 
