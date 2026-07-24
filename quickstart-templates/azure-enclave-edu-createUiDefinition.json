@@ -45,7 +45,7 @@
               "name": "description",
               "type": "Microsoft.Common.TextBlock",
               "options": {
-                "text": "Deploy a Trusted Research Environment (TRE) using Azure Enclave. This template creates a community with multiple enclaves for shared services, research projects, and a data coordination center, along with the necessary endpoints and connections for secure collaboration."
+                "text": "Deploy a research environment using Azure Enclave. This template creates a community with multiple enclaves for shared services, research projects, and a data coordination center, along with the necessary endpoints and connections for secure collaboration."
               }
             },
             {

@@ -14,7 +14,7 @@ https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.github
 Research template:
 
 [![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](
-https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fazure%2Fenclave%2Fmain%2Fquickstart-templates%2Fazure-enclave-tre.json)
+https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fazure%2Fenclave%2Fmain%2Fquickstart-templates%2Fazure-enclave-edu.json)
 
 [Learn more](https://learn.microsoft.com/azure/enclave/azure-enclave-templates#research-environment-template)
 
