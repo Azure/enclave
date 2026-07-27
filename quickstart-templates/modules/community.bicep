@@ -67,7 +67,7 @@ param governedServiceList governedServiceType[]
 
 // Disable BCP081 as Microsoft.Mission/communities is a preview resource type
 #disable-next-line BCP081
-resource community 'Microsoft.Mission/communities@2025-05-01-preview' = {
+resource community 'Microsoft.Mission/communities@2026-03-01-preview' = {
   name: communityName
   location: location
   tags: tags

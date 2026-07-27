@@ -93,7 +93,7 @@ param subnetConfigurationsList subnetConfigurationType[]
 
 // Disable BCP081 as Microsoft.Mission/virtualenclaves is a preview resource type
 #disable-next-line BCP081
-resource enclave 'Microsoft.Mission/virtualenclaves@2025-05-01-preview' = {
+resource enclave 'Microsoft.Mission/virtualenclaves@2026-03-01-preview' = {
   name: enclaveName
   location: location
   tags: tags
@@ -109,7 +109,7 @@ resource enclave 'Microsoft.Mission/virtualenclaves@2025-05-01-preview' = {
 
 // Disable BCP081 as Microsoft.Mission/virtualEnclaves/workloads is a preview resource type
 #disable-next-line BCP081
-resource workload 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-preview' = if (deployWorkload) {
+resource workload 'Microsoft.Mission/virtualEnclaves/workloads@2026-03-01-preview' = if (deployWorkload) {
   parent: enclave
   name: workloadName
   location: location
@@ -120,6 +120,7 @@ resource workload 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-previe
     ]
   }
 }
+
 // AVM-compliant outputs
 @description('The resource ID of the enclave.')
 output enclaveResourceId string = enclave.id
@@ -144,4 +145,3 @@ output maintenanceModeConfiguration maintenanceModeConfigurationType = maintenan
 
 @description('The resource ID of the workload (if deployed).')
 output workloadResourceId string = deployWorkload ? workload.id : ''
-
