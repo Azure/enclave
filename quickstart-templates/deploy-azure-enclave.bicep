@@ -78,7 +78,7 @@ param communityMaintenanceModeMode string = 'Off'
 @allowed(['Off', 'Networking', 'Governance'])
 param communityMaintenanceModeJustification string = 'Off'
 
-@description('List of principal objects for community maintenance mode access. Off example: "principals":[]}. On example: "principals":[{"id":"<your-user-object-id>","type":"User"}]}.')
+@description('List of principal objects for community maintenance mode access. Off example: "principals": []. On example: "principals": [{"id":"<your-user-object-id>","type":"User"}].')
 param communityMaintenanceModePrincipals array = []
 
 // ========================================

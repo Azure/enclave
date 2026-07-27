@@ -14,10 +14,10 @@ type endpointRuleType = {
   @description('The name of the rule.')
   endpointRuleName: string
 
-  @description('The type of destination (FQDN, FQDNTag, IP).')
+  @description('The type of destination (FQDN, FQDNTag, IP, IPAddress, PrivateNetwork, ServiceTag).')
   destinationType: string
-
-  @description('The destination value (FQDN, tag name, or IP).')
+  
+  @description('The destination value (FQDN(s), tag name(s), CIDR(s)/IP(s), service tag(s), or private network range).')
   destination: string
 
   @description('The protocols allowed (HTTP, HTTPS, TCP, UDP).')
