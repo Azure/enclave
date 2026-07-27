@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "7705180323402650652"
+      "templateHash": "9908470512637691270"
     }
   },
   "definitions": {
@@ -2215,7 +2215,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "15919543781419052963"
+              "templateHash": "6858646730706830690"
             }
           },
           "definitions": {
@@ -2368,6 +2368,9 @@
               }
             }
           },
+          "variables": {
+            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
+          },
           "resources": {
             "enclave": {
               "type": "Microsoft.Mission/virtualEnclaves",
@@ -2393,7 +2396,7 @@
               "tags": "[parameters('tags')]",
               "properties": {
                 "resourceGroupCollection": [
-                  "[format('{0}/resourcegroups/{1}', subscription().id, parameters('workloadResourceGroupName'))]"
+                  "[format('{0}/resourceGroups/{1}', subscription().id, variables('effectiveWorkloadResourceGroupName'))]"
                 ]
               },
               "dependsOn": [
@@ -2522,7 +2525,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "15919543781419052963"
+              "templateHash": "6858646730706830690"
             }
           },
           "definitions": {
@@ -2675,6 +2678,9 @@
               }
             }
           },
+          "variables": {
+            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
+          },
           "resources": {
             "enclave": {
               "type": "Microsoft.Mission/virtualEnclaves",
@@ -2700,7 +2706,7 @@
               "tags": "[parameters('tags')]",
               "properties": {
                 "resourceGroupCollection": [
-                  "[format('{0}/resourcegroups/{1}', subscription().id, parameters('workloadResourceGroupName'))]"
+                  "[format('{0}/resourceGroups/{1}', subscription().id, variables('effectiveWorkloadResourceGroupName'))]"
                 ]
               },
               "dependsOn": [
@@ -2829,7 +2835,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "15919543781419052963"
+              "templateHash": "6858646730706830690"
             }
           },
           "definitions": {
@@ -2982,6 +2988,9 @@
               }
             }
           },
+          "variables": {
+            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
+          },
           "resources": {
             "enclave": {
               "type": "Microsoft.Mission/virtualEnclaves",
@@ -3007,7 +3016,7 @@
               "tags": "[parameters('tags')]",
               "properties": {
                 "resourceGroupCollection": [
-                  "[format('{0}/resourcegroups/{1}', subscription().id, parameters('workloadResourceGroupName'))]"
+                  "[format('{0}/resourceGroups/{1}', subscription().id, variables('effectiveWorkloadResourceGroupName'))]"
                 ]
               },
               "dependsOn": [
@@ -3140,7 +3149,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "15919543781419052963"
+              "templateHash": "6858646730706830690"
             }
           },
           "definitions": {
@@ -3293,6 +3302,9 @@
               }
             }
           },
+          "variables": {
+            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
+          },
           "resources": {
             "enclave": {
               "type": "Microsoft.Mission/virtualEnclaves",
@@ -3318,7 +3330,7 @@
               "tags": "[parameters('tags')]",
               "properties": {
                 "resourceGroupCollection": [
-                  "[format('{0}/resourcegroups/{1}', subscription().id, parameters('workloadResourceGroupName'))]"
+                  "[format('{0}/resourceGroups/{1}', subscription().id, variables('effectiveWorkloadResourceGroupName'))]"
                 ]
               },
               "dependsOn": [

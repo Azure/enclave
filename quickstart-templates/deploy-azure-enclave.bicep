@@ -658,3 +658,4 @@ output enclaveConnectionIds array = [
   enclaveConnectionWinget.outputs.enclaveConnectionId
   enclaveConnectionWebApp.outputs.enclaveConnectionId
 ]
+

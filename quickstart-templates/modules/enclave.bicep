@@ -68,7 +68,9 @@ param deployWorkload bool = true
 @maxLength(30)
 param workloadName string = 'workload'
 
-param workloadResourceGroupName string = 'rg-wl-default-name'
+param workloadResourceGroupName string = ''
+
+var effectiveWorkloadResourceGroupName = empty(trim(workloadResourceGroupName)) ? 'wl-rg-${toLower(enclaveName)}-${substring(uniqueString(deployment().name, location), 0, 6)}' : trim(workloadResourceGroupName)
 
 @description('Tags to be assigned to the enclave resource.')
 param tags object = {}
@@ -114,11 +116,10 @@ resource workload 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-previe
   tags: tags
   properties: {
     resourceGroupCollection: [
-      '${subscription().id}/resourcegroups/${workloadResourceGroupName}'
+      '${subscription().id}/resourceGroups/${effectiveWorkloadResourceGroupName}'
     ]
   }
 }
-
 // AVM-compliant outputs
 @description('The resource ID of the enclave.')
 output enclaveResourceId string = enclave.id
@@ -143,3 +144,4 @@ output maintenanceModeConfiguration maintenanceModeConfigurationType = maintenan
 
 @description('The resource ID of the workload (if deployed).')
 output workloadResourceId string = deployWorkload ? workload.id : ''
+

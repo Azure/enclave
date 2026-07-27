@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "1864178162585895933"
+      "templateHash": "4460612238229908343"
     },
     "name": "Azure Enclave Tutorial Template",
     "description": "Tutorial template demonstrating Azure Enclave deployment using modular components"
@@ -661,7 +661,7 @@
             ]
           },
           "deployWorkload": {
-            "value": false
+            "value": true
           }
         },
         "template": {
@@ -672,7 +672,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "5832050067387916600"
+              "templateHash": "6858646730706830690"
             }
           },
           "definitions": {
@@ -795,7 +795,7 @@
             },
             "workloadResourceGroupName": {
               "type": "string",
-              "defaultValue": "rg-wl-default-name"
+              "defaultValue": ""
             },
             "tags": {
               "type": "object",
@@ -825,6 +825,9 @@
               }
             }
           },
+          "variables": {
+            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
+          },
           "resources": {
             "enclave": {
               "type": "Microsoft.Mission/virtualEnclaves",
@@ -850,7 +853,7 @@
               "tags": "[parameters('tags')]",
               "properties": {
                 "resourceGroupCollection": [
-                  "[format('{0}/resourcegroups/{1}', subscription().id, parameters('workloadResourceGroupName'))]"
+                  "[format('{0}/resourceGroups/{1}', subscription().id, variables('effectiveWorkloadResourceGroupName'))]"
                 ]
               },
               "dependsOn": [
@@ -960,7 +963,7 @@
             ]
           },
           "deployWorkload": {
-            "value": false
+            "value": true
           }
         },
         "template": {
@@ -971,7 +974,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "5832050067387916600"
+              "templateHash": "6858646730706830690"
             }
           },
           "definitions": {
@@ -1094,7 +1097,7 @@
             },
             "workloadResourceGroupName": {
               "type": "string",
-              "defaultValue": "rg-wl-default-name"
+              "defaultValue": ""
             },
             "tags": {
               "type": "object",
@@ -1124,6 +1127,9 @@
               }
             }
           },
+          "variables": {
+            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
+          },
           "resources": {
             "enclave": {
               "type": "Microsoft.Mission/virtualEnclaves",
@@ -1149,7 +1155,7 @@
               "tags": "[parameters('tags')]",
               "properties": {
                 "resourceGroupCollection": [
-                  "[format('{0}/resourcegroups/{1}', subscription().id, parameters('workloadResourceGroupName'))]"
+                  "[format('{0}/resourceGroups/{1}', subscription().id, variables('effectiveWorkloadResourceGroupName'))]"
                 ]
               },
               "dependsOn": [
