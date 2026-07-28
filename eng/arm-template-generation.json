@@ -32,6 +32,13 @@
     }
   },
   "expectedBicepFileCount": 13,
+  "topLevelJsonExclusions": [
+    {
+      "pattern": "quickstart-templates/*-createUiDefinition.json",
+      "schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json#",
+      "reason": "Azure portal UI form definitions are hand-authored inputs, not Bicep compiler outputs."
+    }
+  ],
   "templates": [
     {
       "source": "quickstart-templates/azure-enclave-demo-env.bicep",
@@ -44,8 +51,8 @@
       "scope": "resourceGroup"
     },
     {
-      "source": "quickstart-templates/azure-enclave-tre.bicep",
-      "artifact": "quickstart-templates/azure-enclave-tre.json",
+      "source": "quickstart-templates/azure-enclave-edu.bicep",
+      "artifact": "quickstart-templates/azure-enclave-edu.json",
       "scope": "resourceGroup"
     },
     {

@@ -50,13 +50,13 @@ param tags object = {}
 
 // Reference to existing parent enclave resource
 #disable-next-line BCP081
-resource enclave 'Microsoft.Mission/virtualEnclaves@2025-05-01-preview' existing = {
+resource enclave 'Microsoft.Mission/virtualEnclaves@2026-03-01-preview' existing = {
   name: enclaveName
 }
 
 // Disable BCP081 as Microsoft.Mission/virtualEnclaves/enclaveEndpoints is a preview resource type
 #disable-next-line BCP081
-resource enclaveEndpoint 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2025-05-01-preview' = {
+resource enclaveEndpoint 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2026-03-01-preview' = {
   parent: enclave
   name: endpointName
   location: location

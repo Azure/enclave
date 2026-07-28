@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 
 // Trusted Research Environment
-@description('Name of the community (e.g. cmt-azure-enclave-tre-template-test1). Also added to the front of community resource names.')
+@description('Name of the community (e.g. cmt-azure-enclave-edu-template-test1). Also added to the front of community resource names.')
 @maxLength(26)
-param communityName string = 'cmt-tre-hub'
-@description('Prefix for the Enclave names (e.g. ve-azure-enclave-tre-template-test1)')
+param communityName string = 'cmt-edu-hub'
+@description('Prefix for the Enclave names (e.g. ve-azure-enclave-edu-template-test1)')
 @maxLength(15)
-param enclaveNamePrefix string = 've-tre'
+param enclaveNamePrefix string = 've-edu'
 @description('A integer unique to make the resources unique within the resource group. This enables easier multiple test deployments.')
 @minLength(1)
 @maxLength(3)
@@ -80,7 +80,7 @@ var governedServices = [
 #disable-next-line no-deployments-resources BCP081
 resource aveTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableTelemetry) {
   name: take(
-    'virtualenclaves.ave-tre.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}',
+    'virtualenclaves.ave-edu.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}',
     64
   )
   properties: {
@@ -401,7 +401,7 @@ module connectionSharedToDefaultPortal 'modules/enclave-connection.bicep' = {
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
     sourceAddressSpace: filter(enclaveShared.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
-    connectionName: 'ec-shared-portal-tre-${uniqueNumber}'
+    connectionName: 'ec-shared-portal-edu-${uniqueNumber}'
     tags: {
       department: 'CommunitySharedServices'
       company: 'CommunityOversight'
@@ -422,7 +422,7 @@ module connectionProj1ToDefaultPortal 'modules/enclave-connection.bicep' = {
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
     sourceAddressSpace: filter(enclaveProj1.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
-    connectionName: 'ec-proj1-portal-tre-${uniqueNumber}'
+    connectionName: 'ec-proj1-portal-edu-${uniqueNumber}'
     tags: {
       department: 'CommunitySharedServices'
       company: 'CommunityOversight'
@@ -443,7 +443,7 @@ module connectionProj2ToDefaultPortal 'modules/enclave-connection.bicep' = {
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
     sourceAddressSpace: filter(enclaveProj2.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
-    connectionName: 'ec-proj2-portal-tre-${uniqueNumber}'
+    connectionName: 'ec-proj2-portal-edu-${uniqueNumber}'
     tags: {
       department: 'mission'
       company: 'TBD'
@@ -464,7 +464,7 @@ module connectionDCCToDefaultPortal 'modules/enclave-connection.bicep' = {
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
     sourceAddressSpace: filter(enclaveDCC.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
-    connectionName: 'ec-dcc-portal-tre-${uniqueNumber}'
+    connectionName: 'ec-dcc-portal-edu-${uniqueNumber}'
     tags: {
       department: 'mission'
       company: 'TBD'
@@ -486,7 +486,7 @@ module connectionDCCToProject1Data 'modules/enclave-connection.bicep' = {
     destinationResourceId: enclaveEndpointProject1.outputs.endpointId
     sourceAddressSpace: filter(enclaveDCC.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
-    connectionName: 'ec-dcc-proj1-tre-${uniqueNumber}'
+    connectionName: 'ec-dcc-proj1-edu-${uniqueNumber}'
     tags: {
       department: 'CommunitySharedServices'
       company: 'CommunityOversight'

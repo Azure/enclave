@@ -158,7 +158,7 @@ module enclaveWebApp 'modules/enclave.bicep' = {
         networkPrefixSize: 26
       }
     ]
-    deployWorkload: false
+    deployWorkload: true
   }
 }
 
@@ -181,7 +181,7 @@ module enclaveDMZ 'modules/enclave.bicep' = {
         networkPrefixSize: 26
       }
     ]
-    deployWorkload: false
+    deployWorkload: true
   }
 }
 
@@ -261,3 +261,4 @@ output enclaveEndpointId string = enclaveEndpoint.outputs.endpointId
 
 @description('The resource ID of the enclave connection.')
 output enclaveConnectionId string = enclaveConnection.outputs.enclaveConnectionId
+

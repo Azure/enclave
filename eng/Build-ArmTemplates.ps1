@@ -1000,8 +1000,48 @@ $rootJsonFiles = @(
     Get-ChildItem -LiteralPath $quickstartRoot -File -Filter '*.json' |
         ForEach-Object { Get-RepositoryRelativePath -Path $_.FullName }
 )
+$topLevelJsonExclusions = @($config.topLevelJsonExclusions)
+$excludedRootJsonFiles = [System.Collections.Generic.List[string]]::new()
+foreach ($exclusion in $topLevelJsonExclusions) {
+    $pattern = ([string]$exclusion.pattern).Replace('\', '/')
+    $schema = [string]$exclusion.schema
+    $reason = [string]$exclusion.reason
+    if ([string]::IsNullOrWhiteSpace($pattern) -or
+        [System.IO.Path]::IsPathRooted($pattern) -or
+        $pattern.Split('/') -contains '..') {
+        throw "Top-level JSON exclusion pattern '$pattern' must remain inside the repository."
+    }
+    if ([string]::IsNullOrWhiteSpace($schema) -or [string]::IsNullOrWhiteSpace($reason)) {
+        throw "Top-level JSON exclusion '$pattern' must declare its expected schema and reason."
+    }
+
+    $matches = @($rootJsonFiles | Where-Object { $_ -like $pattern })
+    if ($matches.Count -eq 0) {
+        throw "Top-level JSON exclusion '$pattern' does not match any files."
+    }
+    foreach ($match in $matches) {
+        if ($excludedRootJsonFiles.Contains($match)) {
+            throw "Top-level JSON file '$match' matches more than one exclusion policy."
+        }
+        try {
+            $document = Get-Content -LiteralPath (Join-Path $repoRoot $match) -Raw |
+                ConvertFrom-Json -Depth 100
+        }
+        catch {
+            throw "Excluded hand-authored JSON '$match' is not valid JSON: $($_.Exception.Message)"
+        }
+        if ([string]$document.'$schema' -ne $schema) {
+            throw "Excluded hand-authored JSON '$match' does not use its policy schema '$schema'."
+        }
+        $excludedRootJsonFiles.Add($match)
+    }
+}
+
+$generatedRootJsonFiles = @(
+    $rootJsonFiles | Where-Object { $_ -cnotin $excludedRootJsonFiles }
+)
 Assert-SamePathSet -Name 'Top-level Bicep source mappings' -Expected $rootBicepFiles -Actual $mappedSources
-Assert-SamePathSet -Name 'Generated ARM artifact mappings' -Expected $rootJsonFiles -Actual $mappedArtifacts
+Assert-SamePathSet -Name 'Generated ARM artifact mappings' -Expected $generatedRootJsonFiles -Actual $mappedArtifacts
 
 $allBicepFiles = @(Get-ChildItem -LiteralPath $quickstartRoot -Recurse -File -Filter '*.bicep' | Sort-Object FullName)
 if ($allBicepFiles.Count -ne [int]$config.expectedBicepFileCount) {
