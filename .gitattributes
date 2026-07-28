@@ -1,0 +1,5 @@
+quickstart-templates/*.json text eol=lf
+eng/*.json text eol=lf
+eng/*.md text eol=lf
+eng/*.ps1 text eol=lf
+.github/workflows/*.yml text eol=lf

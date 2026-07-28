@@ -1,0 +1,69 @@
+{
+  "compiler": {
+    "name": "bicep",
+    "version": "0.45.15",
+    "release": "https://github.com/Azure/bicep/releases/tag/v0.45.15",
+    "digestSource": "https://api.github.com/repos/Azure/bicep/releases/tags/v0.45.15",
+    "platforms": {
+      "linux-arm64": {
+        "asset": "bicep-linux-arm64",
+        "sha256": "204684133b8e64027385e358d31aceda57b3ec00d028df769d9767a54d4dd154"
+      },
+      "linux-x64": {
+        "asset": "bicep-linux-x64",
+        "sha256": "ff5b194b042c220df4a50d6768ed1d6c39a32894bfdc4ff83d62b115d966a7ce"
+      },
+      "osx-arm64": {
+        "asset": "bicep-osx-arm64",
+        "sha256": "59072cc82da704ab45d6bb11133da15b169795e42ef585dedc73d98e19fcf1be"
+      },
+      "osx-x64": {
+        "asset": "bicep-osx-x64",
+        "sha256": "4022cea927256923204f66e0dfb73dca33aaa113f24ab4df35fad5c88b1d8036"
+      },
+      "win-arm64": {
+        "asset": "bicep-win-arm64.exe",
+        "sha256": "671506c0ac9207b56a21edbdeb0059262b3ec2f903c1647821d3cb942746317e"
+      },
+      "win-x64": {
+        "asset": "bicep-win-x64.exe",
+        "sha256": "cae4539a30fd496d126d1cb6fbc077b9c259c79a73306be767ad90fc8d190150"
+      }
+    }
+  },
+  "expectedBicepFileCount": 13,
+  "topLevelJsonExclusions": [
+    {
+      "pattern": "quickstart-templates/*-createUiDefinition.json",
+      "schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json#",
+      "reason": "Azure portal UI form definitions are hand-authored inputs, not Bicep compiler outputs."
+    }
+  ],
+  "templates": [
+    {
+      "source": "quickstart-templates/azure-enclave-demo-env.bicep",
+      "artifact": "quickstart-templates/azure-enclave-demo-env.json",
+      "scope": "resourceGroup"
+    },
+    {
+      "source": "quickstart-templates/azure-enclave-saca.bicep",
+      "artifact": "quickstart-templates/azure-enclave-saca.json",
+      "scope": "resourceGroup"
+    },
+    {
+      "source": "quickstart-templates/azure-enclave-edu.bicep",
+      "artifact": "quickstart-templates/azure-enclave-edu.json",
+      "scope": "resourceGroup"
+    },
+    {
+      "source": "quickstart-templates/azure-enclave-tutorial.bicep",
+      "artifact": "quickstart-templates/azure-enclave-tutorial.json",
+      "scope": "resourceGroup"
+    },
+    {
+      "source": "quickstart-templates/deploy-azure-enclave.bicep",
+      "artifact": "quickstart-templates/deploy-azure-enclave.json",
+      "scope": "subscription"
+    }
+  ]
+}

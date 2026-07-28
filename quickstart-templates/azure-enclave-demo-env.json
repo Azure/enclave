@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "11356453899772617254"
+      "templateHash": "14073585424531008827"
     }
   },
   "definitions": {
@@ -2365,12 +2365,107 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "7195046281524681413"
+              "templateHash": "15211851496822557066"
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
           },
           "definitions": {
+            "mandatoryApproverType": {
+              "type": "object",
+              "properties": {
+                "approverEntraId": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The Entra ID of the approver."
+                  }
+                }
+              }
+            },
+            "approvalSettingConfigurationType": {
+              "type": "object",
+              "properties": {
+                "approvalPolicy": {
+                  "type": "string",
+                  "allowedValues": [
+                    "NotRequired",
+                    "Required"
+                  ],
+                  "metadata": {
+                    "description": "Approval policy (Required or NotRequired)."
+                  }
+                },
+                "mandatoryApprovers": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/mandatoryApproverType"
+                  },
+                  "metadata": {
+                    "description": "List of mandatory approvers for this approval setting."
+                  }
+                },
+                "minimumApproversRequired": {
+                  "type": "int",
+                  "metadata": {
+                    "description": "Minimum number of approvers required for this approval setting."
+                  }
+                }
+              }
+            },
+            "communityApprovalSettingsType": {
+              "type": "object",
+              "properties": {
+                "communityEndpointUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for community endpoint updates."
+                  }
+                },
+                "communityMaintenanceMode": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for community maintenance mode."
+                  }
+                },
+                "connectionCreation": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for connection creation."
+                  }
+                },
+                "connectionUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for connection updates."
+                  }
+                },
+                "enclaveCreation": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave creation."
+                  }
+                },
+                "enclaveEndpointUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave endpoint updates."
+                  }
+                },
+                "enclaveMaintenanceMode": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave maintenance mode."
+                  }
+                }
+              }
+            },
             "maintenanceModeConfigurationType": {
               "type": "object",
               "properties": {
@@ -2487,6 +2582,22 @@
                 "displayName": "Governed Services",
                 "description": "The list of governed services for the community."
               }
+            },
+            "approvalSettings": {
+              "$ref": "#/definitions/communityApprovalSettingsType",
+              "defaultValue": {
+                "communityEndpointUpdate": null,
+                "communityMaintenanceMode": null,
+                "connectionCreation": null,
+                "connectionUpdate": null,
+                "enclaveCreation": null,
+                "enclaveEndpointUpdate": null,
+                "enclaveMaintenanceMode": null
+              },
+              "metadata": {
+                "displayName": "Approval Settings",
+                "description": "Approval settings for various actions on the community resources."
+              }
             }
           },
           "resources": {
@@ -2499,7 +2610,16 @@
               "properties": {
                 "addressSpace": "[parameters('addressSpace')]",
                 "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]",
-                "governedServiceList": "[parameters('governedServiceList')]"
+                "governedServiceList": "[parameters('governedServiceList')]",
+                "approvalSettings": {
+                  "communityEndpointUpdate": "[tryGet(parameters('approvalSettings'), 'communityEndpointUpdate')]",
+                  "communityMaintenanceMode": "[tryGet(parameters('approvalSettings'), 'communityMaintenanceMode')]",
+                  "connectionCreation": "[tryGet(parameters('approvalSettings'), 'connectionCreation')]",
+                  "connectionUpdate": "[tryGet(parameters('approvalSettings'), 'connectionUpdate')]",
+                  "enclaveCreation": "[tryGet(parameters('approvalSettings'), 'enclaveCreation')]",
+                  "enclaveEndpointUpdate": "[tryGet(parameters('approvalSettings'), 'enclaveEndpointUpdate')]",
+                  "enclaveMaintenanceMode": "[tryGet(parameters('approvalSettings'), 'enclaveMaintenanceMode')]"
+                }
               }
             }
           },
@@ -2731,7 +2851,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "9622407626512764700"
+              "templateHash": "8173239528489251168"
             }
           },
           "definitions": {
@@ -2747,13 +2867,13 @@
                 "destinationType": {
                   "type": "string",
                   "metadata": {
-                    "description": "The type of destination (FQDN, FQDNTag, IP)."
+                    "description": "The type of destination (FQDN, FQDNTag, IP, IPAddress, PrivateNetwork, ServiceTag)."
                   }
                 },
                 "destination": {
                   "type": "string",
                   "metadata": {
-                    "description": "The destination value (FQDN, tag name, or IP)."
+                    "description": "The destination value (FQDN(s), tag name(s), CIDR(s)/IP(s), service tag(s), or private network range)."
                   }
                 },
                 "protocols": {

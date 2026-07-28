@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "4460612238229908343"
+      "templateHash": "1336736753445801903"
     },
     "name": "Azure Enclave Tutorial Template",
     "description": "Tutorial template demonstrating Azure Enclave deployment using modular components"
@@ -206,12 +206,107 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "17615243782070886438"
+              "templateHash": "15211851496822557066"
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
           },
           "definitions": {
+            "mandatoryApproverType": {
+              "type": "object",
+              "properties": {
+                "approverEntraId": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The Entra ID of the approver."
+                  }
+                }
+              }
+            },
+            "approvalSettingConfigurationType": {
+              "type": "object",
+              "properties": {
+                "approvalPolicy": {
+                  "type": "string",
+                  "allowedValues": [
+                    "NotRequired",
+                    "Required"
+                  ],
+                  "metadata": {
+                    "description": "Approval policy (Required or NotRequired)."
+                  }
+                },
+                "mandatoryApprovers": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/mandatoryApproverType"
+                  },
+                  "metadata": {
+                    "description": "List of mandatory approvers for this approval setting."
+                  }
+                },
+                "minimumApproversRequired": {
+                  "type": "int",
+                  "metadata": {
+                    "description": "Minimum number of approvers required for this approval setting."
+                  }
+                }
+              }
+            },
+            "communityApprovalSettingsType": {
+              "type": "object",
+              "properties": {
+                "communityEndpointUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for community endpoint updates."
+                  }
+                },
+                "communityMaintenanceMode": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for community maintenance mode."
+                  }
+                },
+                "connectionCreation": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for connection creation."
+                  }
+                },
+                "connectionUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for connection updates."
+                  }
+                },
+                "enclaveCreation": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave creation."
+                  }
+                },
+                "enclaveEndpointUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave endpoint updates."
+                  }
+                },
+                "enclaveMaintenanceMode": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave maintenance mode."
+                  }
+                }
+              }
+            },
             "maintenanceModeConfigurationType": {
               "type": "object",
               "properties": {
@@ -328,19 +423,44 @@
                 "displayName": "Governed Services",
                 "description": "The list of governed services for the community."
               }
+            },
+            "approvalSettings": {
+              "$ref": "#/definitions/communityApprovalSettingsType",
+              "defaultValue": {
+                "communityEndpointUpdate": null,
+                "communityMaintenanceMode": null,
+                "connectionCreation": null,
+                "connectionUpdate": null,
+                "enclaveCreation": null,
+                "enclaveEndpointUpdate": null,
+                "enclaveMaintenanceMode": null
+              },
+              "metadata": {
+                "displayName": "Approval Settings",
+                "description": "Approval settings for various actions on the community resources."
+              }
             }
           },
           "resources": {
             "community": {
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
                 "addressSpace": "[parameters('addressSpace')]",
                 "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]",
-                "governedServiceList": "[parameters('governedServiceList')]"
+                "governedServiceList": "[parameters('governedServiceList')]",
+                "approvalSettings": {
+                  "communityEndpointUpdate": "[tryGet(parameters('approvalSettings'), 'communityEndpointUpdate')]",
+                  "communityMaintenanceMode": "[tryGet(parameters('approvalSettings'), 'communityMaintenanceMode')]",
+                  "connectionCreation": "[tryGet(parameters('approvalSettings'), 'connectionCreation')]",
+                  "connectionUpdate": "[tryGet(parameters('approvalSettings'), 'connectionUpdate')]",
+                  "enclaveCreation": "[tryGet(parameters('approvalSettings'), 'enclaveCreation')]",
+                  "enclaveEndpointUpdate": "[tryGet(parameters('approvalSettings'), 'enclaveEndpointUpdate')]",
+                  "enclaveMaintenanceMode": "[tryGet(parameters('approvalSettings'), 'enclaveMaintenanceMode')]"
+                }
               }
             }
           },
@@ -364,7 +484,7 @@
               "metadata": {
                 "description": "The location where the community was deployed."
               },
-              "value": "[reference('community', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('community', '2026-03-01-preview', 'full').location]"
             },
             "addressPrefixes": {
               "type": "string",
@@ -431,7 +551,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "8579690226755007777"
+              "templateHash": "16775608663396955211"
             }
           },
           "definitions": {
@@ -579,12 +699,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "communityEndpoint": {
               "type": "Microsoft.Mission/communities/communityEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -613,7 +733,7 @@
               "metadata": {
                 "description": "The location where the community endpoint was deployed."
               },
-              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('communityEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -672,7 +792,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "6858646730706830690"
+              "templateHash": "14812321329925731463"
             }
           },
           "definitions": {
@@ -705,6 +825,80 @@
                   "type": "array",
                   "metadata": {
                     "description": "The principals for the maintenance mode configuration."
+                  }
+                }
+              }
+            },
+            "mandatoryApproverType": {
+              "type": "object",
+              "properties": {
+                "approverEntraId": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The Entra ID of the approver."
+                  }
+                }
+              }
+            },
+            "approvalSettingConfigurationType": {
+              "type": "object",
+              "properties": {
+                "approvalPolicy": {
+                  "type": "string",
+                  "allowedValues": [
+                    "NotRequired",
+                    "Required"
+                  ],
+                  "metadata": {
+                    "description": "Approval policy (Required or NotRequired)."
+                  }
+                },
+                "mandatoryApprovers": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/mandatoryApproverType"
+                  },
+                  "metadata": {
+                    "description": "List of mandatory approvers for this approval setting."
+                  }
+                },
+                "minimumApproversRequired": {
+                  "type": "int",
+                  "metadata": {
+                    "description": "Minimum number of approvers required for this approval setting."
+                  }
+                }
+              }
+            },
+            "enclaveApprovalSettingsType": {
+              "type": "object",
+              "properties": {
+                "connectionCreation": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for connection creation."
+                  }
+                },
+                "connectionUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for connection updates."
+                  }
+                },
+                "enclaveEndpointUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave endpoint updates."
+                  }
+                },
+                "enclaveMaintenanceMode": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave maintenance mode."
                   }
                 }
               }
@@ -823,6 +1017,19 @@
                 ],
                 "description": "The list of subnet configurations for the enclave virtual network."
               }
+            },
+            "approvalSettings": {
+              "$ref": "#/definitions/enclaveApprovalSettingsType",
+              "defaultValue": {
+                "connectionCreation": null,
+                "connectionUpdate": null,
+                "enclaveEndpointUpdate": null,
+                "enclaveMaintenanceMode": null
+              },
+              "metadata": {
+                "displayName": "Approval Settings",
+                "description": "Approval settings for various actions on the enclave resources."
+              }
             }
           },
           "variables": {
@@ -831,7 +1038,7 @@
           "resources": {
             "enclave": {
               "type": "Microsoft.Mission/virtualEnclaves",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('enclaveName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -841,13 +1048,19 @@
                   "networkSize": "[parameters('networkSize')]",
                   "subnetConfigurations": "[parameters('subnetConfigurationsList')]"
                 },
-                "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]"
+                "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]",
+                "approvalSettings": {
+                  "connectionCreation": "[tryGet(parameters('approvalSettings'), 'connectionCreation')]",
+                  "connectionUpdate": "[tryGet(parameters('approvalSettings'), 'connectionUpdate')]",
+                  "enclaveEndpointUpdate": "[tryGet(parameters('approvalSettings'), 'enclaveEndpointUpdate')]",
+                  "enclaveMaintenanceMode": "[tryGet(parameters('approvalSettings'), 'enclaveMaintenanceMode')]"
+                }
               }
             },
             "workload": {
               "condition": "[parameters('deployWorkload')]",
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -881,7 +1094,7 @@
               "metadata": {
                 "description": "The location where the enclave was deployed."
               },
-              "value": "[reference('enclave', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('enclave', '2026-03-01-preview', 'full').location]"
             },
             "enclaveAddressSpace": {
               "type": "string",
@@ -974,7 +1187,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "6858646730706830690"
+              "templateHash": "14812321329925731463"
             }
           },
           "definitions": {
@@ -1007,6 +1220,80 @@
                   "type": "array",
                   "metadata": {
                     "description": "The principals for the maintenance mode configuration."
+                  }
+                }
+              }
+            },
+            "mandatoryApproverType": {
+              "type": "object",
+              "properties": {
+                "approverEntraId": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The Entra ID of the approver."
+                  }
+                }
+              }
+            },
+            "approvalSettingConfigurationType": {
+              "type": "object",
+              "properties": {
+                "approvalPolicy": {
+                  "type": "string",
+                  "allowedValues": [
+                    "NotRequired",
+                    "Required"
+                  ],
+                  "metadata": {
+                    "description": "Approval policy (Required or NotRequired)."
+                  }
+                },
+                "mandatoryApprovers": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/mandatoryApproverType"
+                  },
+                  "metadata": {
+                    "description": "List of mandatory approvers for this approval setting."
+                  }
+                },
+                "minimumApproversRequired": {
+                  "type": "int",
+                  "metadata": {
+                    "description": "Minimum number of approvers required for this approval setting."
+                  }
+                }
+              }
+            },
+            "enclaveApprovalSettingsType": {
+              "type": "object",
+              "properties": {
+                "connectionCreation": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for connection creation."
+                  }
+                },
+                "connectionUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for connection updates."
+                  }
+                },
+                "enclaveEndpointUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave endpoint updates."
+                  }
+                },
+                "enclaveMaintenanceMode": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave maintenance mode."
                   }
                 }
               }
@@ -1125,6 +1412,19 @@
                 ],
                 "description": "The list of subnet configurations for the enclave virtual network."
               }
+            },
+            "approvalSettings": {
+              "$ref": "#/definitions/enclaveApprovalSettingsType",
+              "defaultValue": {
+                "connectionCreation": null,
+                "connectionUpdate": null,
+                "enclaveEndpointUpdate": null,
+                "enclaveMaintenanceMode": null
+              },
+              "metadata": {
+                "displayName": "Approval Settings",
+                "description": "Approval settings for various actions on the enclave resources."
+              }
             }
           },
           "variables": {
@@ -1133,7 +1433,7 @@
           "resources": {
             "enclave": {
               "type": "Microsoft.Mission/virtualEnclaves",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('enclaveName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -1143,13 +1443,19 @@
                   "networkSize": "[parameters('networkSize')]",
                   "subnetConfigurations": "[parameters('subnetConfigurationsList')]"
                 },
-                "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]"
+                "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]",
+                "approvalSettings": {
+                  "connectionCreation": "[tryGet(parameters('approvalSettings'), 'connectionCreation')]",
+                  "connectionUpdate": "[tryGet(parameters('approvalSettings'), 'connectionUpdate')]",
+                  "enclaveEndpointUpdate": "[tryGet(parameters('approvalSettings'), 'enclaveEndpointUpdate')]",
+                  "enclaveMaintenanceMode": "[tryGet(parameters('approvalSettings'), 'enclaveMaintenanceMode')]"
+                }
               }
             },
             "workload": {
               "condition": "[parameters('deployWorkload')]",
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -1183,7 +1489,7 @@
               "metadata": {
                 "description": "The location where the enclave was deployed."
               },
-              "value": "[reference('enclave', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('enclave', '2026-03-01-preview', 'full').location]"
             },
             "enclaveAddressSpace": {
               "type": "string",
@@ -1270,7 +1576,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "15575639647144315238"
+              "templateHash": "6250350341902244931"
             }
           },
           "definitions": {
@@ -1359,12 +1665,12 @@
             "enclave": {
               "existing": true,
               "type": "Microsoft.Mission/virtualEnclaves",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('enclaveName')]"
             },
             "enclaveEndpoint": {
               "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('endpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -1393,7 +1699,7 @@
               "metadata": {
                 "description": "The location where the enclave endpoint was deployed."
               },
-              "value": "[reference('enclaveEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('enclaveEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -1441,7 +1747,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -1499,7 +1805,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -1531,21 +1837,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
