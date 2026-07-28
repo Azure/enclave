@@ -4,6 +4,45 @@
 metadata name = 'Community Module'
 metadata description = 'This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture.'
 
+type mandatoryApproverType = {
+  @description('The Entra ID of the approver.')
+  approverEntraId: string
+}
+
+type approvalSettingConfigurationType = {
+  @description('Approval policy (Required or NotRequired).')
+  approvalPolicy: ('Required' | 'NotRequired')
+  
+  @description('List of mandatory approvers for this approval setting.')
+  mandatoryApprovers: mandatoryApproverType[]
+  
+  @description('Minimum number of approvers required for this approval setting.')
+  minimumApproversRequired: int
+}
+
+type communityApprovalSettingsType = {
+  @description('Approval configuration for community endpoint updates.')
+  communityEndpointUpdate: approvalSettingConfigurationType?
+  
+  @description('Approval configuration for community maintenance mode.')
+  communityMaintenanceMode: approvalSettingConfigurationType?
+  
+  @description('Approval configuration for connection creation.')
+  connectionCreation: approvalSettingConfigurationType?
+  
+  @description('Approval configuration for connection updates.')
+  connectionUpdate: approvalSettingConfigurationType?
+  
+  @description('Approval configuration for enclave creation.')
+  enclaveCreation: approvalSettingConfigurationType?
+  
+  @description('Approval configuration for enclave endpoint updates.')
+  enclaveEndpointUpdate: approvalSettingConfigurationType?
+  
+  @description('Approval configuration for enclave maintenance mode.')
+  enclaveMaintenanceMode: approvalSettingConfigurationType?
+}
+
 @description('The name of the community resource.')
 @minLength(3)
 @maxLength(30)
@@ -65,6 +104,20 @@ param maintenanceModeConfiguration maintenanceModeConfigurationType = {
 })
 param governedServiceList governedServiceType[]
 
+@description('Approval settings for various actions on the community resources.')
+@metadata({
+  displayName: 'Approval Settings'
+})
+param approvalSettings communityApprovalSettingsType = {
+  communityEndpointUpdate: null
+  communityMaintenanceMode: null
+  connectionCreation: null
+  connectionUpdate: null
+  enclaveCreation: null
+  enclaveEndpointUpdate: null
+  enclaveMaintenanceMode: null
+}
+
 // Disable BCP081 as Microsoft.Mission/communities is a preview resource type
 #disable-next-line BCP081
 resource community 'Microsoft.Mission/communities@2026-03-01-preview' = {
@@ -75,6 +128,15 @@ resource community 'Microsoft.Mission/communities@2026-03-01-preview' = {
     addressSpace: addressSpace
     maintenanceModeConfiguration: maintenanceModeConfiguration
     governedServiceList: governedServiceList
+    approvalSettings: {
+      communityEndpointUpdate: approvalSettings.?communityEndpointUpdate
+      communityMaintenanceMode: approvalSettings.?communityMaintenanceMode
+      connectionCreation: approvalSettings.?connectionCreation
+      connectionUpdate: approvalSettings.?connectionUpdate
+      enclaveCreation: approvalSettings.?enclaveCreation
+      enclaveEndpointUpdate: approvalSettings.?enclaveEndpointUpdate
+      enclaveMaintenanceMode: approvalSettings.?enclaveMaintenanceMode
+    }
   }
 }
 

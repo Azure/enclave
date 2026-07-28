@@ -13,6 +13,36 @@ type maintenanceModeConfigurationType = {
   principals: array
 }
 
+type mandatoryApproverType = {
+  @description('The Entra ID of the approver.')
+  approverEntraId: string
+}
+
+type approvalSettingConfigurationType = {
+  @description('Approval policy (Required or NotRequired).')
+  approvalPolicy: ('Required' | 'NotRequired')
+  
+  @description('List of mandatory approvers for this approval setting.')
+  mandatoryApprovers: mandatoryApproverType[]
+  
+  @description('Minimum number of approvers required for this approval setting.')
+  minimumApproversRequired: int
+}
+
+type enclaveApprovalSettingsType = {
+  @description('Approval configuration for connection creation.')
+  connectionCreation: approvalSettingConfigurationType?
+  
+  @description('Approval configuration for connection updates.')
+  connectionUpdate: approvalSettingConfigurationType?
+  
+  @description('Approval configuration for enclave endpoint updates.')
+  enclaveEndpointUpdate: approvalSettingConfigurationType?
+  
+  @description('Approval configuration for enclave maintenance mode.')
+  enclaveMaintenanceMode: approvalSettingConfigurationType?
+}
+
 type subnetConfigurationType = {
   @description('The name of the subnet.')
   subnetName: string
@@ -91,6 +121,17 @@ param tags object = {}
 })
 param subnetConfigurationsList subnetConfigurationType[]
 
+@description('Approval settings for various actions on the enclave resources.')
+@metadata({
+  displayName: 'Approval Settings'
+})
+param approvalSettings enclaveApprovalSettingsType = {
+  connectionCreation: null
+  connectionUpdate: null
+  enclaveEndpointUpdate: null
+  enclaveMaintenanceMode: null
+}
+
 // Disable BCP081 as Microsoft.Mission/virtualenclaves is a preview resource type
 #disable-next-line BCP081
 resource enclave 'Microsoft.Mission/virtualenclaves@2026-03-01-preview' = {
@@ -104,6 +145,12 @@ resource enclave 'Microsoft.Mission/virtualenclaves@2026-03-01-preview' = {
       subnetConfigurations: subnetConfigurationsList
     }
     maintenanceModeConfiguration: maintenanceModeConfiguration
+    approvalSettings: {
+      connectionCreation: approvalSettings.?connectionCreation
+      connectionUpdate: approvalSettings.?connectionUpdate
+      enclaveEndpointUpdate: approvalSettings.?enclaveEndpointUpdate
+      enclaveMaintenanceMode: approvalSettings.?enclaveMaintenanceMode
+    }
   }
 }
 
