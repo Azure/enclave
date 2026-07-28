@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "7134258315099424332"
+      "templateHash": "14073585424531008827"
     }
   },
   "definitions": {
@@ -2365,12 +2365,107 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "17615243782070886438"
+              "templateHash": "15211851496822557066"
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
           },
           "definitions": {
+            "mandatoryApproverType": {
+              "type": "object",
+              "properties": {
+                "approverEntraId": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The Entra ID of the approver."
+                  }
+                }
+              }
+            },
+            "approvalSettingConfigurationType": {
+              "type": "object",
+              "properties": {
+                "approvalPolicy": {
+                  "type": "string",
+                  "allowedValues": [
+                    "NotRequired",
+                    "Required"
+                  ],
+                  "metadata": {
+                    "description": "Approval policy (Required or NotRequired)."
+                  }
+                },
+                "mandatoryApprovers": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/mandatoryApproverType"
+                  },
+                  "metadata": {
+                    "description": "List of mandatory approvers for this approval setting."
+                  }
+                },
+                "minimumApproversRequired": {
+                  "type": "int",
+                  "metadata": {
+                    "description": "Minimum number of approvers required for this approval setting."
+                  }
+                }
+              }
+            },
+            "communityApprovalSettingsType": {
+              "type": "object",
+              "properties": {
+                "communityEndpointUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for community endpoint updates."
+                  }
+                },
+                "communityMaintenanceMode": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for community maintenance mode."
+                  }
+                },
+                "connectionCreation": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for connection creation."
+                  }
+                },
+                "connectionUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for connection updates."
+                  }
+                },
+                "enclaveCreation": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave creation."
+                  }
+                },
+                "enclaveEndpointUpdate": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave endpoint updates."
+                  }
+                },
+                "enclaveMaintenanceMode": {
+                  "$ref": "#/definitions/approvalSettingConfigurationType",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Approval configuration for enclave maintenance mode."
+                  }
+                }
+              }
+            },
             "maintenanceModeConfigurationType": {
               "type": "object",
               "properties": {
@@ -2487,19 +2582,44 @@
                 "displayName": "Governed Services",
                 "description": "The list of governed services for the community."
               }
+            },
+            "approvalSettings": {
+              "$ref": "#/definitions/communityApprovalSettingsType",
+              "defaultValue": {
+                "communityEndpointUpdate": null,
+                "communityMaintenanceMode": null,
+                "connectionCreation": null,
+                "connectionUpdate": null,
+                "enclaveCreation": null,
+                "enclaveEndpointUpdate": null,
+                "enclaveMaintenanceMode": null
+              },
+              "metadata": {
+                "displayName": "Approval Settings",
+                "description": "Approval settings for various actions on the community resources."
+              }
             }
           },
           "resources": {
             "community": {
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
                 "addressSpace": "[parameters('addressSpace')]",
                 "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]",
-                "governedServiceList": "[parameters('governedServiceList')]"
+                "governedServiceList": "[parameters('governedServiceList')]",
+                "approvalSettings": {
+                  "communityEndpointUpdate": "[tryGet(parameters('approvalSettings'), 'communityEndpointUpdate')]",
+                  "communityMaintenanceMode": "[tryGet(parameters('approvalSettings'), 'communityMaintenanceMode')]",
+                  "connectionCreation": "[tryGet(parameters('approvalSettings'), 'connectionCreation')]",
+                  "connectionUpdate": "[tryGet(parameters('approvalSettings'), 'connectionUpdate')]",
+                  "enclaveCreation": "[tryGet(parameters('approvalSettings'), 'enclaveCreation')]",
+                  "enclaveEndpointUpdate": "[tryGet(parameters('approvalSettings'), 'enclaveEndpointUpdate')]",
+                  "enclaveMaintenanceMode": "[tryGet(parameters('approvalSettings'), 'enclaveMaintenanceMode')]"
+                }
               }
             }
           },
@@ -2523,7 +2643,7 @@
               "metadata": {
                 "description": "The location where the community was deployed."
               },
-              "value": "[reference('community', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('community', '2026-03-01-preview', 'full').location]"
             },
             "addressPrefixes": {
               "type": "string",
@@ -2583,7 +2703,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "4456110992906823786"
+              "templateHash": "3698052620106389402"
             }
           },
           "definitions": {
@@ -2658,12 +2778,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "transitHub": {
               "type": "Microsoft.Mission/communities/transitHubs",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('transitHubName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -2692,7 +2812,7 @@
               "metadata": {
                 "description": "The location where the transit hub was deployed."
               },
-              "value": "[reference('transitHub', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('transitHub', '2026-03-01-preview', 'full').location]"
             },
             "transitOption": {
               "$ref": "#/definitions/transitOptionType",
@@ -2731,7 +2851,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "9622407626512764700"
+              "templateHash": "8173239528489251168"
             }
           },
           "definitions": {
@@ -2747,13 +2867,13 @@
                 "destinationType": {
                   "type": "string",
                   "metadata": {
-                    "description": "The type of destination (FQDN, FQDNTag, IP)."
+                    "description": "The type of destination (FQDN, FQDNTag, IP, IPAddress, PrivateNetwork, ServiceTag)."
                   }
                 },
                 "destination": {
                   "type": "string",
                   "metadata": {
-                    "description": "The destination value (FQDN, tag name, or IP)."
+                    "description": "The destination value (FQDN(s), tag name(s), CIDR(s)/IP(s), service tag(s), or private network range)."
                   }
                 },
                 "protocols": {
@@ -3129,7 +3249,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "8579690226755007777"
+              "templateHash": "16775608663396955211"
             }
           },
           "definitions": {
@@ -3277,12 +3397,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "communityEndpoint": {
               "type": "Microsoft.Mission/communities/communityEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -3311,7 +3431,7 @@
               "metadata": {
                 "description": "The location where the community endpoint was deployed."
               },
-              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('communityEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -3358,7 +3478,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "8579690226755007777"
+              "templateHash": "16775608663396955211"
             }
           },
           "definitions": {
@@ -3506,12 +3626,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "communityEndpoint": {
               "type": "Microsoft.Mission/communities/communityEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -3540,7 +3660,7 @@
               "metadata": {
                 "description": "The location where the community endpoint was deployed."
               },
-              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('communityEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -3587,7 +3707,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "8579690226755007777"
+              "templateHash": "16775608663396955211"
             }
           },
           "definitions": {
@@ -3735,12 +3855,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "communityEndpoint": {
               "type": "Microsoft.Mission/communities/communityEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -3769,7 +3889,7 @@
               "metadata": {
                 "description": "The location where the community endpoint was deployed."
               },
-              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('communityEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -3816,7 +3936,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "8579690226755007777"
+              "templateHash": "16775608663396955211"
             }
           },
           "definitions": {
@@ -3964,12 +4084,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "communityEndpoint": {
               "type": "Microsoft.Mission/communities/communityEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -3998,7 +4118,7 @@
               "metadata": {
                 "description": "The location where the community endpoint was deployed."
               },
-              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('communityEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -4045,7 +4165,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "8579690226755007777"
+              "templateHash": "16775608663396955211"
             }
           },
           "definitions": {
@@ -4193,12 +4313,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "communityEndpoint": {
               "type": "Microsoft.Mission/communities/communityEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -4227,7 +4347,7 @@
               "metadata": {
                 "description": "The location where the community endpoint was deployed."
               },
-              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('communityEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }

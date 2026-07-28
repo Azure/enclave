@@ -42,13 +42,13 @@ param tags object = {}
 
 // Reference to existing parent community resource
 #disable-next-line BCP081
-resource community 'Microsoft.Mission/communities@2025-05-01-preview' existing = {
+resource community 'Microsoft.Mission/communities@2026-03-01-preview' existing = {
   name: communityName
 }
 
 // Disable BCP081 as Microsoft.Mission/communities/transitHubs is a preview resource type
 #disable-next-line BCP081
-resource transitHub 'Microsoft.Mission/communities/transitHubs@2025-05-01-preview' = {
+resource transitHub 'Microsoft.Mission/communities/transitHubs@2026-03-01-preview' = {
   parent: community
   name: transitHubName
   location: location
