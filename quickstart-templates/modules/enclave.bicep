@@ -133,10 +133,26 @@ param subnetConfigurationsList subnetConfigurationType[]
   displayName: 'Approval Settings'
 })
 param approvalSettings enclaveApprovalSettingsType = {
-  connectionCreation: null
-  connectionUpdate: null
-  enclaveEndpointUpdate: null
-  enclaveMaintenanceMode: null
+  connectionCreation: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 0
+  }
+  connectionUpdate: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 0
+  }
+  enclaveEndpointUpdate: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 0
+  }
+  enclaveMaintenanceMode: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 0
+  }
 }
 
 resource enclave 'Microsoft.Mission/virtualEnclaves@2026-03-01-preview' = {

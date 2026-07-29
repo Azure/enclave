@@ -146,37 +146,37 @@ param approvalSettings communityApprovalSettingsType = {
   communityEndpointUpdate: {
     approvalPolicy: 'NotRequired'
     mandatoryApprovers: []
-    minimumApproversRequired: 0
+    minimumApproversRequired: 1
   }
   communityMaintenanceMode: {
     approvalPolicy: 'NotRequired'
     mandatoryApprovers: []
-    minimumApproversRequired: 0
+    minimumApproversRequired: 1
   }
   connectionCreation: {
     approvalPolicy: 'NotRequired'
     mandatoryApprovers: []
-    minimumApproversRequired: 0
+    minimumApproversRequired: 1
   }
   connectionUpdate: {
     approvalPolicy: 'NotRequired'
     mandatoryApprovers: []
-    minimumApproversRequired: 0
+    minimumApproversRequired: 1
   }
   enclaveCreation: {
     approvalPolicy: 'NotRequired'
     mandatoryApprovers: []
-    minimumApproversRequired: 0
+    minimumApproversRequired: 1
   }
   enclaveEndpointUpdate: {
     approvalPolicy: 'NotRequired'
     mandatoryApprovers: []
-    minimumApproversRequired: 0
+    minimumApproversRequired: 1
   }
   enclaveMaintenanceMode: {
     approvalPolicy: 'NotRequired'
     mandatoryApprovers: []
-    minimumApproversRequired: 0
+    minimumApproversRequired: 1
   }
 }
 
