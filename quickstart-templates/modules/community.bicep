@@ -76,16 +76,16 @@ type maintenanceModeConfigurationType = {
 
 type governedServiceType = {
   @description('The service identifier.')
-  serviceId: string
-  
-  @description('The service option (Allow, Deny, NotApplicable).')
-  option: string
-  
-  @description('The enforcement mode (Enabled, Disabled).')
-  enforcement: string
-  
-  @description('The policy action (Enforce, Audit).')
-  policyAction: string
+  serviceId: ('AKS' | 'AppService' | 'AzureFirewalls' | 'ContainerRegistry' | 'CosmosDB' | 'DataConnectors' | 'Insights' | 'KeyVault' | 'Logic' | 'MicrosoftSQL' | 'Monitoring' | 'PostgreSQL' | 'PrivateDNSZones' | 'ServiceBus' | 'Storage')
+
+  @description('The service option (Allow, Deny, ExceptionOnly, or NotApplicable).')
+  option: ('Allow' | 'Deny' | 'ExceptionOnly' | 'NotApplicable')
+
+  @description('The enforcement mode (Enabled or Disabled).')
+  enforcement: ('Enabled' | 'Disabled')
+
+  @description('The policy action (AuditOnly, Enforce, or None).')
+  policyAction: ('AuditOnly' | 'Enforce' | 'None')
 }
 
 @description('The maintenance mode configuration for the community.')

@@ -1,12 +1,20 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+type transitOptionParamsType = {
+  @description('Scale units for the gateway.')
+  scaleUnits: int?
+
+  @description('Remote virtual network resource ID for peering.')
+  remoteVirtualNetworkId: string?
+}
+
 type transitOptionType = {
   @description('The type of transit connection (Gateway, ExpressRoute, or Peering).')
   type: ('Gateway' | 'ExpressRoute' | 'Peering')
-  
+
   @description('Parameters specific to the transit type.')
-  params: object
+  params: transitOptionParamsType
 }
 
 @description('The name of the parent community.')
@@ -40,6 +48,10 @@ param location string = resourceGroup().location
 @description('Tags to be assigned to the transit hub.')
 param tags object = {}
 
+@description('The security provider for the transit hub.')
+@allowed(['AzureFirewall', 'None'])
+param securityProvider string = 'None'
+
 // Reference to existing parent community resource
 resource community 'Microsoft.Mission/communities@2026-03-01-preview' existing = {
   name: communityName
@@ -51,6 +63,7 @@ resource transitHub 'Microsoft.Mission/communities/transitHubs@2026-03-01-previe
   location: location
   tags: tags
   properties: {
+    securityProvider: securityProvider
     transitOption: transitOption
   }
 }
