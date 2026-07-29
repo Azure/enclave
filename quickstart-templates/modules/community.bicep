@@ -65,7 +65,7 @@ param tags object = {}
 
 type maintenanceModeConfigurationType = {
   @description('The mode of the maintenance mode configuration for the community.')
-  mode: ('Off' | 'General' | 'Advanced')
+  mode: ('Off' | 'On' | 'General' | 'Advanced' | 'CanNotDelete')
   
   @description('The justification for the maintenance mode configuration for the community.')
   justification: ('Off' | 'Networking' | 'Governance')
@@ -106,7 +106,7 @@ param governedServiceList governedServiceType[]
 
 type diagnosticDestinationType = {
   @description('The destination type for diagnostics.')
-  destinationType: string
+  destinationType: ('CommunityWorkspace' | 'CustomWorkspace' | 'EnclaveWorkspace')
 }
 
 type monitoringSettingsType = {
@@ -137,13 +137,41 @@ param monitoringSettings monitoringSettingsType = {
   displayName: 'Approval Settings'
 })
 param approvalSettings communityApprovalSettingsType = {
-  communityEndpointUpdate: null
-  communityMaintenanceMode: null
-  connectionCreation: null
-  connectionUpdate: null
-  enclaveCreation: null
-  enclaveEndpointUpdate: null
-  enclaveMaintenanceMode: null
+  communityEndpointUpdate: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 0
+  }
+  communityMaintenanceMode: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 0
+  }
+  connectionCreation: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 0
+  }
+  connectionUpdate: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 0
+  }
+  enclaveCreation: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 0
+  }
+  enclaveEndpointUpdate: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 0
+  }
+  enclaveMaintenanceMode: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 0
+  }
 }
 
 // Disable BCP081 as Microsoft.Mission/communities is a preview resource type

@@ -98,9 +98,16 @@ param deployWorkload bool = true
 @maxLength(30)
 param workloadName string = 'workload'
 
+@description('Optional list of workload names to deploy. If provided, this list takes precedence over workloadName.')
+param workloadNames array = []
+
 param workloadResourceGroupName string = ''
 
 var effectiveWorkloadResourceGroupName = empty(trim(workloadResourceGroupName)) ? 'wl-rg-${toLower(enclaveName)}-${substring(uniqueString(deployment().name, location), 0, 6)}' : trim(workloadResourceGroupName)
+var effectiveWorkloadNames = length(workloadNames) > 0 ? workloadNames : [
+  workloadName
+]
+var computedWorkloadResourceIds = [for wlName in effectiveWorkloadNames: '${enclave.id}/workloads/${wlName}']
 
 @description('Tags to be assigned to the enclave resource.')
 param tags object = {}
@@ -156,9 +163,9 @@ resource enclave 'Microsoft.Mission/virtualenclaves@2026-03-01-preview' = {
 
 // Disable BCP081 as Microsoft.Mission/virtualEnclaves/workloads is a preview resource type
 #disable-next-line BCP081
-resource workload 'Microsoft.Mission/virtualEnclaves/workloads@2026-03-01-preview' = if (deployWorkload) {
+resource workload 'Microsoft.Mission/virtualEnclaves/workloads@2026-03-01-preview' = [for wlName in effectiveWorkloadNames: if (deployWorkload) {
   parent: enclave
-  name: workloadName
+  name: wlName
   location: location
   tags: tags
   properties: {
@@ -166,7 +173,7 @@ resource workload 'Microsoft.Mission/virtualEnclaves/workloads@2026-03-01-previe
       '${subscription().id}/resourceGroups/${effectiveWorkloadResourceGroupName}'
     ]
   }
-}
+}]
 
 // AVM-compliant outputs
 @description('The resource ID of the enclave.')
@@ -190,5 +197,8 @@ output enclaveSubnetConfig array = enclave.properties.enclaveVirtualNetwork.subn
 @description('The current maintenance mode configuration.')
 output maintenanceModeConfiguration maintenanceModeConfigurationType = maintenanceModeConfiguration
 
-@description('The resource ID of the workload (if deployed).')
-output workloadResourceId string = deployWorkload ? workload.id : ''
+@description('The resource ID of the first workload (if deployed).')
+output workloadResourceId string = deployWorkload && length(effectiveWorkloadNames) > 0 ? '${enclave.id}/workloads/${effectiveWorkloadNames[0]}' : ''
+
+@description('The resource IDs of deployed workloads (if deployed).')
+output workloadResourceIds array = deployWorkload ? computedWorkloadResourceIds : []

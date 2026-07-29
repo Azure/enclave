@@ -248,7 +248,9 @@ module enclaveShared 'modules/enclave.bicep' = {
       }
     ]
     deployWorkload: true
-    workloadName: 'wl-shared-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    workloadNames: [
+      'wl-shared-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
     workloadResourceGroupName: 'rg-shared-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
   dependsOn: [
@@ -279,7 +281,9 @@ module enclaveProj1 'modules/enclave.bicep' = {
       }
     ]
     deployWorkload: true
-    workloadName: 'wl-project1-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    workloadNames: [
+      'wl-project1-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
     workloadResourceGroupName: 'rg-project1-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
@@ -307,7 +311,9 @@ module enclaveProj2 'modules/enclave.bicep' = {
       }
     ]
     deployWorkload: true
-    workloadName: 'wl-project2-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    workloadNames: [
+      'wl-project2-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
     workloadResourceGroupName: 'rg-project2-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
   dependsOn: [
@@ -338,7 +344,9 @@ module enclaveEnterp 'modules/enclave.bicep' = {
       }
     ]
     deployWorkload: true
-    workloadName: 'wl-enterp-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    workloadNames: [
+      'wl-enterp-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
     workloadResourceGroupName: 'rg-enterp-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
   dependsOn: [

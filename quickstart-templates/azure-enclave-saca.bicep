@@ -245,7 +245,9 @@ module enclaveIdentity 'modules/enclave.bicep' = {
     ]
     maintenanceModeConfiguration: maintenanceModeConfig
     deployWorkload: true
-    workloadName: 'wl-id-ADDS-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    workloadNames: [
+      'wl-id-ADDS-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
     workloadResourceGroupName: 'rg-id-ADDS-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
@@ -270,7 +272,9 @@ module enclaveOperations 'modules/enclave.bicep' = {
     ]
     maintenanceModeConfiguration: maintenanceModeConfig
     deployWorkload: true
-    workloadName: 'wl-operations-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    workloadNames: [
+      'wl-operations-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
     workloadResourceGroupName: 'rg-operations-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
@@ -295,7 +299,9 @@ module enclaveShared 'modules/enclave.bicep' = {
     ]
     maintenanceModeConfiguration: maintenanceModeConfig
     deployWorkload: true
-    workloadName: 'wl-shared-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    workloadNames: [
+      'wl-shared-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
     workloadResourceGroupName: 'rg-shared-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
@@ -324,7 +330,9 @@ module enclaveMission 'modules/enclave.bicep' = {
     ]
     maintenanceModeConfiguration: maintenanceModeConfig
     deployWorkload: true
-    workloadName: 'wl-mission-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    workloadNames: [
+      'wl-mission-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
     workloadResourceGroupName: 'rg-mission-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }

@@ -139,6 +139,9 @@ param appendUniqueNameSuffix bool = true
 @maxLength(30)
 param workloadName string = 'wl-${prefix}-${enclaveLabel}-${suffix}'
 
+@description('Optional list of workload names to deploy. If provided, this list takes precedence over workloadName.')
+param workloadNames array = []
+
 @description('Resource group name for the workload (only used if deployWorkload is true).')
 param workloadResourceGroupName string = appendUniqueNameSuffix 
   ? 'wl-rg-${prefix}-${enclaveLabel}-${suffix}-${substring(uniqueString(deployment().name, location), 0, 4)}'
@@ -190,6 +193,10 @@ var governedServices = [
   { serviceId: 'DataConnectors', option: 'Allow', enforcement: 'Enabled', policyAction: 'Enforce' }
 ]
 
+var effectiveWorkloadNames = length(workloadNames) > 0 ? workloadNames : [
+  workloadName
+]
+
 // Transit option based on connection type
 var transitOptions = transitHubConnectionType == 'Peering'
   ? {
@@ -204,211 +211,6 @@ var transitOptions = transitHubConnectionType == 'Peering'
         scaleUnits: 2
       }
     }
-
-// Community Endpoint Rule Collections
-// Authentication & Identity
-var authenticationEndpointRules = [
-  {
-    endpointRuleName: 'auth-microsoft'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: 'login.microsoftonline.com,*.msft.sts.microsoft.com,*.aadcdn.msftauth.net,*.aadcdn.msftauthimages.net,*.aadcdn.msauthimages.net,*.logincdn.msftauth.net,login.live.com,*.msauth.net,microsoftonline-p.com,*.microsoftonline-p.com,*.live.com,*.microsoftonline.com,*.microsoftonlinesupport.net,autologon.microsoftazuread-sso.com,clientconfig.passport.net,hrd.svc.cloud.microsoft'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-  {
-    endpointRuleName: 'auth-mfa'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: 'pfd.phonefactor.net,pfd2.phonefactor.net,css.phonefactor.net'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-  {
-    endpointRuleName: 'auth-certs'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: '*.digicert.com,www.microsoft.com,crl.microsoft.com'
-    protocols: ['HTTP']
-    ports: '80'
-  }
-]
-
-// Azure Portal & Management
-var portalManagementEndpointRules = [
-  {
-    endpointRuleName: 'portal-core'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: '*.portal.azure.com,*.hosting.portal.azure.net,*.reactblade.portal.azure.net,*reactblade-ms.portal.azure.net,afd-v2.hosting-ms.portal.azure.net,shell.azure.com,management.azure.com'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-  {
-    endpointRuleName: 'portal-services'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: 'gallery.azure.com,marketplacedataprovider.azure.com,marketplaceemail.azure.com,catalogapi.azure.com,catalogartifact.azureedge.net'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-]
-
-// Azure Resource APIs
-var azureServiceEndpointRules = [
-  {
-    endpointRuleName: 'services-data-analytics'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: '*.asazure.windows.net,asazure.windows.net,*.database.windows.net,datalake.azure.net,cosmos.azure.com,dev.azuresynapse.net,kusto.windows.net,help.kusto.windows.net'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-  {
-    endpointRuleName: 'services-compute-integration'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: 'appservice.azure.com,*.azurewebsites.net,batch.azure.com,functions.azure.com,logic.azure.com,eventhubs.azure.net,servicebus.azure.net,servicebus.windows.net,*.servicebus.windows.net'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-  {
-    endpointRuleName: 'services-ai-iot'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: 'cognitiveservices.azure.com,digitaltwins.azure.net,sphere.azure.net,quantum.azure.com'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-  {
-    endpointRuleName: 'services-governance-security'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: 'purview.azure.com,informationprotection.azure.com,api.aadrm.com,identitygovernance.azure.com,iga.azure.com,elm.iga.azure.com,mspim.azure.com,api.azrbac.mspim.azure.com,*.access.mcas.ms,cxcs.microsoft.net'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-  {
-    endpointRuleName: 'services-monitoring-storage'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: '*.applicationinsights.azure.com,monitor.azure.com,api.loganalytics.io,changeanalysis.azure.com,storage.azure.com,storage.azure.net,*core.windows.net,vault.azure.net,search.azure.com,adl.windows.com'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-  {
-    endpointRuleName: 'services-misc'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: '*.azconfig.io,*.aad.azure.com,*.aadconnecthealth.azure.com,ad.azure.com,adf.azure.com,*.arc.azure.net,bastion.azure.com,config.office.com,media.azure.net,rest.media.azure.net,network.azure.com,dev.azure.com,*.wvd.microsoft.com,enterpriseregistration.windows.net,ecs.office.com,asmconfigfiles-prod.azure-api.net'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-]
-
-// Microsoft Graph & Extensions
-var graphExtensionEndpointRules = [
-  {
-    endpointRuleName: 'graph-apis'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: '*.graph.windows.net,*.graph.microsoft.com,graph.microsoft.com'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-  {
-    endpointRuleName: 'azure-extensions'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: '*.ext.azure.com'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-]
-
-// Microsoft Domains & CDN
-var microsoftCdnEndpointRules = [
-  {
-    endpointRuleName: 'microsoft-domains'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: '*microsoft.com,*azure.com,*.msn.com,*.msn.cn,go.microsoft.com,aka.ms,learn.microsoft.com,privacy.microsoft.com,azure.status.microsoft,packages.microsoft.com,www.msftconnecttest.com,client.wns.windows.com,www.bing.com'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-  {
-    endpointRuleName: 'cdn-edge'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: '*.azureedge.net,*.akamaized.net,static.edge.microsoftapp.net,*config.edge.skype.com,outlookmobile-office365-tas.msedge.net'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-]
-
-// Third-Party & Telemetry
-var thirdPartyEndpointRules = [
-  {
-    endpointRuleName: 'third-party-services'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: 'clients2.google.com,clients2.googleusercontent.com,www.googleapis.com,bing.com'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-  {
-    endpointRuleName: 'telemetry-reporting'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: 'query.prod.cms.rt.microsoft.com,identity.nel.measure.office.net,deff.nelreports.net'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-]
-
-// Combined collection for Azure Portal access
-var azurePortalEndpointRules = concat(
-  authenticationEndpointRules,
-  portalManagementEndpointRules,
-  azureServiceEndpointRules,
-  graphExtensionEndpointRules,
-  microsoftCdnEndpointRules,
-  thirdPartyEndpointRules
-)
-
-var windowsUpdateEndpointRules = [
-  {
-    endpointRuleName: 'win-updates-https'
-    destinationType: 'FQDNTag'
-    #disable-next-line no-hardcoded-env-urls
-    destination: 'windowsupdate'
-    protocols: [
-      'HTTPS'
-    ]
-    ports: '443'
-  }
-  {
-    endpointRuleName: 'win-updates-http'
-    destinationType: 'FQDNTag'
-    #disable-next-line no-hardcoded-env-urls
-    destination: 'windowsupdate'
-    protocols: [
-      'HTTP'
-    ]
-    ports: '80'
-  }
-]
-
-var wingetEndpointRules = [
-  {
-    endpointRuleName: 'win-winget-https'
-    destinationType: 'FQDN'
-    #disable-next-line no-hardcoded-env-urls
-    destination: 'github.com,*.github.com,objects.githubusercontent.com,*.azureedge.com,*.azurefd.net,*.sourceforge.net,sourceforge.net,settings-win.data.microsoft.com'
-    protocols: ['HTTPS']
-    ports: '443'
-  }
-]
 
 // ========================================
 // MODULES
@@ -444,12 +246,17 @@ module community './modules/community.bicep' = {
   ]
 }
 
+module communityEndpointRules './endpoints/community-endpoint-rules.bicep' = {
+  scope: resourceGroup(communitySubscriptionId, communityResourceGroupName)
+  name: 'community-endpoint-rules-${prefix}-${suffix}'
+}
+
 module communityEndpointMsftAzure './modules/community-endpoint.bicep' = {
   scope: resourceGroup(communitySubscriptionId, communityResourceGroupName)
   params: {
     communityEndpointName: 'ce-${prefix}-msftAz-${suffix}'
     communityName: community.outputs.name
-    communityEndpointRuleCollection: azurePortalEndpointRules
+    communityEndpointRuleCollection: communityEndpointRules.outputs.azurePortalEndpointRules
     location: location
   }
 }
@@ -459,7 +266,7 @@ module communityEndpointWinUpdate './modules/community-endpoint.bicep' = {
   params: {
     communityEndpointName: 'ce-${prefix}-winupd-${suffix}'
     communityName: community.outputs.name
-    communityEndpointRuleCollection: windowsUpdateEndpointRules
+    communityEndpointRuleCollection: communityEndpointRules.outputs.windowsUpdateEndpointRules
     location: location
   }
 }
@@ -469,7 +276,7 @@ module communityEndpointWinget './modules/community-endpoint.bicep' = {
   params: {
     communityEndpointName: 'ce-${prefix}-winget-${suffix}'
     communityName: community.outputs.name
-    communityEndpointRuleCollection: wingetEndpointRules
+    communityEndpointRuleCollection: communityEndpointRules.outputs.wingetEndpointRules
     location: location
   }
 }
@@ -499,7 +306,7 @@ module enclave1 './modules/enclave.bicep' = {
       principals: enclaveMaintenanceModePrincipals
     }
     deployWorkload: deployWorkload
-    workloadName: workloadName
+      workloadNames: effectiveWorkloadNames
     workloadResourceGroupName: workloadResourceGroupName
   }
   dependsOn: [

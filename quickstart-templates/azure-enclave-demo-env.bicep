@@ -248,7 +248,9 @@ module enclaveIdentity 'modules/enclave.bicep' = {
     ]
     maintenanceModeConfiguration: maintenanceModeConfig
     deployWorkload: true
-    workloadName: 'wl-id-ADDS-${uniqueNumber}'
+    workloadNames: [
+      'wl-id-ADDS-${uniqueNumber}'
+    ]
     workloadResourceGroupName: 'rg-id-ADDS-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
@@ -277,7 +279,9 @@ module enclaveCollab 'modules/enclave.bicep' = {
     ]
     maintenanceModeConfiguration: maintenanceModeConfig
     deployWorkload: true
-    workloadName: 'wl-collab-apps-${uniqueNumber}'
+    workloadNames: [
+      'wl-collab-apps-${uniqueNumber}'
+    ]
     workloadResourceGroupName: 'rg-collab-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
@@ -306,7 +310,9 @@ module enclaveDesktop 'modules/enclave.bicep' = {
     ]
     maintenanceModeConfiguration: maintenanceModeConfig
     deployWorkload: true
-    workloadName: 'wl-desktops-${uniqueNumber}'
+    workloadNames: [
+      'wl-desktops-${uniqueNumber}'
+    ]
     workloadResourceGroupName: 'rg-desktops-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
@@ -335,7 +341,9 @@ module enclavePlatform 'modules/enclave.bicep' = {
     ]
     maintenanceModeConfiguration: maintenanceModeConfig
     deployWorkload: true
-    workloadName: 'wl-platform-apps-${uniqueNumber}'
+    workloadNames: [
+      'wl-platform-apps-${uniqueNumber}'
+    ]
     workloadResourceGroupName: 'rg-platform-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
@@ -364,7 +372,9 @@ module enclaveWeapon 'modules/enclave.bicep' = {
     ]
     maintenanceModeConfiguration: maintenanceModeConfig
     deployWorkload: true
-    workloadName: 'wl-weapon-apps-${uniqueNumber}'
+    workloadNames: [
+      'wl-weapon-apps-${uniqueNumber}'
+    ]
     workloadResourceGroupName: 'rg-weapon-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
@@ -393,7 +403,9 @@ module enclaveSubKtr 'modules/enclave.bicep' = {
     ]
     maintenanceModeConfiguration: maintenanceModeConfig
     deployWorkload: true
-    workloadName: 'wl-subktr-apps-${uniqueNumber}'
+    workloadNames: [
+      'wl-subktr-apps-${uniqueNumber}'
+    ]
     workloadResourceGroupName: 'rg-subktr-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
@@ -422,7 +434,9 @@ module enclaveCyber 'modules/enclave.bicep' = {
     ]
     maintenanceModeConfiguration: maintenanceModeConfig
     deployWorkload: true
-    workloadName: 'wl-cyber-apps-${uniqueNumber}'
+    workloadNames: [
+      'wl-cyber-apps-${uniqueNumber}'
+    ]
     workloadResourceGroupName: 'rg-cyber-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
@@ -451,7 +465,9 @@ module enclaveOffline 'modules/enclave.bicep' = {
     ]
     maintenanceModeConfiguration: maintenanceModeConfig
     deployWorkload: true
-    workloadName: 'wl-offline-apps-${uniqueNumber}'
+    workloadNames: [
+      'wl-offline-apps-${uniqueNumber}'
+    ]
     workloadResourceGroupName: 'rg-offline-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }

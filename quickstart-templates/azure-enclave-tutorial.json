@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "1603003400520742445"
+      "templateHash": "9245778896420805112"
     },
     "name": "Azure Enclave Tutorial Template",
     "description": "Tutorial template demonstrating Azure Enclave deployment using modular components"
@@ -153,26 +153,6 @@
       }
     },
     {
-      "type": "Microsoft.Mission/virtualEnclaves/workloads",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', parameters('enclaveWebAppName'), parameters('workloadFrontendName'))]",
-      "location": "[parameters('location')]",
-      "properties": {},
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', format('deploy-enclave-{0}', parameters('enclaveWebAppName')))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Mission/virtualEnclaves/workloads",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', parameters('enclaveWebAppName'), parameters('workloadBackendName'))]",
-      "location": "[parameters('location')]",
-      "properties": {},
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', format('deploy-enclave-{0}', parameters('enclaveWebAppName')))]"
-      ]
-    },
-    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
       "name": "[format('deploy-community-{0}', parameters('communityName'))]",
@@ -206,7 +186,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "8068673005734890492"
+              "templateHash": "9110084225436944696"
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
@@ -314,8 +294,10 @@
                   "type": "string",
                   "allowedValues": [
                     "Advanced",
+                    "CanNotDelete",
                     "General",
-                    "Off"
+                    "Off",
+                    "On"
                   ],
                   "metadata": {
                     "description": "The mode of the maintenance mode configuration for the community."
@@ -374,6 +356,11 @@
               "properties": {
                 "destinationType": {
                   "type": "string",
+                  "allowedValues": [
+                    "CommunityWorkspace",
+                    "CustomWorkspace",
+                    "EnclaveWorkspace"
+                  ],
                   "metadata": {
                     "description": "The destination type for diagnostics."
                   }
@@ -475,13 +462,41 @@
             "approvalSettings": {
               "$ref": "#/definitions/communityApprovalSettingsType",
               "defaultValue": {
-                "communityEndpointUpdate": null,
-                "communityMaintenanceMode": null,
-                "connectionCreation": null,
-                "connectionUpdate": null,
-                "enclaveCreation": null,
-                "enclaveEndpointUpdate": null,
-                "enclaveMaintenanceMode": null
+                "communityEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "communityMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -831,6 +846,12 @@
           },
           "deployWorkload": {
             "value": true
+          },
+          "workloadNames": {
+            "value": [
+              "[parameters('workloadFrontendName')]",
+              "[parameters('workloadBackendName')]"
+            ]
           }
         },
         "template": {
@@ -841,7 +862,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "14812321329925731463"
+              "templateHash": "1363000254242950712"
             }
           },
           "definitions": {
@@ -1036,6 +1057,13 @@
                 "description": "The name of the workload resource."
               }
             },
+            "workloadNames": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Optional list of workload names to deploy. If provided, this list takes precedence over workloadName."
+              }
+            },
             "workloadResourceGroupName": {
               "type": "string",
               "defaultValue": ""
@@ -1082,7 +1110,15 @@
             }
           },
           "variables": {
-            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
+            "copy": [
+              {
+                "name": "computedWorkloadResourceIds",
+                "count": "[length(variables('effectiveWorkloadNames'))]",
+                "input": "[format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[copyIndex('computedWorkloadResourceIds')])]"
+              }
+            ],
+            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]",
+            "effectiveWorkloadNames": "[if(greater(length(parameters('workloadNames')), 0), parameters('workloadNames'), createArray(parameters('workloadName')))]"
           },
           "resources": {
             "enclave": {
@@ -1107,10 +1143,14 @@
               }
             },
             "workload": {
+              "copy": {
+                "name": "workload",
+                "count": "[length(variables('effectiveWorkloadNames'))]"
+              },
               "condition": "[parameters('deployWorkload')]",
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
               "apiVersion": "2026-03-01-preview",
-              "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
+              "name": "[format('{0}/{1}', parameters('enclaveName'), variables('effectiveWorkloadNames')[copyIndex()])]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
@@ -1176,9 +1216,16 @@
             "workloadResourceId": {
               "type": "string",
               "metadata": {
-                "description": "The resource ID of the workload (if deployed)."
+                "description": "The resource ID of the first workload (if deployed)."
               },
-              "value": "[if(parameters('deployWorkload'), resourceId('Microsoft.Mission/virtualEnclaves/workloads', parameters('enclaveName'), parameters('workloadName')), '')]"
+              "value": "[if(and(parameters('deployWorkload'), greater(length(variables('effectiveWorkloadNames')), 0)), format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[0]), '')]"
+            },
+            "workloadResourceIds": {
+              "type": "array",
+              "metadata": {
+                "description": "The resource IDs of deployed workloads (if deployed)."
+              },
+              "value": "[if(parameters('deployWorkload'), variables('computedWorkloadResourceIds'), createArray())]"
             }
           }
         }
@@ -1236,7 +1283,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "14812321329925731463"
+              "templateHash": "1363000254242950712"
             }
           },
           "definitions": {
@@ -1431,6 +1478,13 @@
                 "description": "The name of the workload resource."
               }
             },
+            "workloadNames": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Optional list of workload names to deploy. If provided, this list takes precedence over workloadName."
+              }
+            },
             "workloadResourceGroupName": {
               "type": "string",
               "defaultValue": ""
@@ -1477,7 +1531,15 @@
             }
           },
           "variables": {
-            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
+            "copy": [
+              {
+                "name": "computedWorkloadResourceIds",
+                "count": "[length(variables('effectiveWorkloadNames'))]",
+                "input": "[format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[copyIndex('computedWorkloadResourceIds')])]"
+              }
+            ],
+            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]",
+            "effectiveWorkloadNames": "[if(greater(length(parameters('workloadNames')), 0), parameters('workloadNames'), createArray(parameters('workloadName')))]"
           },
           "resources": {
             "enclave": {
@@ -1502,10 +1564,14 @@
               }
             },
             "workload": {
+              "copy": {
+                "name": "workload",
+                "count": "[length(variables('effectiveWorkloadNames'))]"
+              },
               "condition": "[parameters('deployWorkload')]",
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
               "apiVersion": "2026-03-01-preview",
-              "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
+              "name": "[format('{0}/{1}', parameters('enclaveName'), variables('effectiveWorkloadNames')[copyIndex()])]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
@@ -1571,9 +1637,16 @@
             "workloadResourceId": {
               "type": "string",
               "metadata": {
-                "description": "The resource ID of the workload (if deployed)."
+                "description": "The resource ID of the first workload (if deployed)."
               },
-              "value": "[if(parameters('deployWorkload'), resourceId('Microsoft.Mission/virtualEnclaves/workloads', parameters('enclaveName'), parameters('workloadName')), '')]"
+              "value": "[if(and(parameters('deployWorkload'), greater(length(variables('effectiveWorkloadNames')), 0)), format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[0]), '')]"
+            },
+            "workloadResourceIds": {
+              "type": "array",
+              "metadata": {
+                "description": "The resource IDs of deployed workloads (if deployed)."
+              },
+              "value": "[if(parameters('deployWorkload'), variables('computedWorkloadResourceIds'), createArray())]"
             }
           }
         }
