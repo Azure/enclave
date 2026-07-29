@@ -249,6 +249,10 @@ module community './modules/community.bicep' = {
 module communityEndpointRules './endpoints/community-endpoint-rules.bicep' = {
   scope: resourceGroup(communitySubscriptionId, communityResourceGroupName)
   name: 'community-endpoint-rules-${prefix}-${suffix}'
+  dependsOn: [
+    communityResourceGroup
+    community
+  ]
 }
 
 module communityEndpointMsftAzure './modules/community-endpoint.bicep' = {
