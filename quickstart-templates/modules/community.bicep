@@ -104,6 +104,34 @@ param maintenanceModeConfiguration maintenanceModeConfigurationType = {
 })
 param governedServiceList governedServiceType[]
 
+type diagnosticDestinationType = {
+  @description('The destination type for diagnostics.')
+  destinationType: string
+}
+
+type monitoringSettingsType = {
+  @description('List of diagnostic destinations.')
+  diagnosticDestinations: diagnosticDestinationType[]
+
+  @description('The destination for flow logs.')
+  flowLogDestination: diagnosticDestinationType
+}
+
+@description('Monitoring settings for diagnostic and flow log destinations.')
+@metadata({
+  displayName: 'Monitoring Settings'
+})
+param monitoringSettings monitoringSettingsType = {
+  diagnosticDestinations: [
+    {
+      destinationType: 'CommunityWorkspace'
+    }
+  ]
+  flowLogDestination: {
+    destinationType: 'CommunityWorkspace'
+  }
+}
+
 @description('Approval settings for various actions on the community resources.')
 @metadata({
   displayName: 'Approval Settings'
@@ -128,6 +156,7 @@ resource community 'Microsoft.Mission/communities@2026-03-01-preview' = {
     addressSpace: addressSpace
     maintenanceModeConfiguration: maintenanceModeConfiguration
     governedServiceList: governedServiceList
+    monitoringSettings: monitoringSettings
     approvalSettings: {
       communityEndpointUpdate: approvalSettings.?communityEndpointUpdate
       communityMaintenanceMode: approvalSettings.?communityMaintenanceMode

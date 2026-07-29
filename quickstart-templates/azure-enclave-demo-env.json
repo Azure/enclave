@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "6420171833510136081"
+      "templateHash": "17844998764402462407"
     }
   },
   "definitions": {
@@ -286,7 +286,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "15211851496822557066"
+              "templateHash": "8068673005734890492"
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
@@ -448,6 +448,37 @@
                   }
                 }
               }
+            },
+            "diagnosticDestinationType": {
+              "type": "object",
+              "properties": {
+                "destinationType": {
+                  "type": "string",
+                  "metadata": {
+                    "description": "The destination type for diagnostics."
+                  }
+                }
+              }
+            },
+            "monitoringSettingsType": {
+              "type": "object",
+              "properties": {
+                "diagnosticDestinations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/diagnosticDestinationType"
+                  },
+                  "metadata": {
+                    "description": "List of diagnostic destinations."
+                  }
+                },
+                "flowLogDestination": {
+                  "$ref": "#/definitions/diagnosticDestinationType",
+                  "metadata": {
+                    "description": "The destination for flow logs."
+                  }
+                }
+              }
             }
           },
           "parameters": {
@@ -504,6 +535,23 @@
                 "description": "The list of governed services for the community."
               }
             },
+            "monitoringSettings": {
+              "$ref": "#/definitions/monitoringSettingsType",
+              "defaultValue": {
+                "diagnosticDestinations": [
+                  {
+                    "destinationType": "CommunityWorkspace"
+                  }
+                ],
+                "flowLogDestination": {
+                  "destinationType": "CommunityWorkspace"
+                }
+              },
+              "metadata": {
+                "displayName": "Monitoring Settings",
+                "description": "Monitoring settings for diagnostic and flow log destinations."
+              }
+            },
             "approvalSettings": {
               "$ref": "#/definitions/communityApprovalSettingsType",
               "defaultValue": {
@@ -532,6 +580,7 @@
                 "addressSpace": "[parameters('addressSpace')]",
                 "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]",
                 "governedServiceList": "[parameters('governedServiceList')]",
+                "monitoringSettings": "[parameters('monitoringSettings')]",
                 "approvalSettings": {
                   "communityEndpointUpdate": "[tryGet(parameters('approvalSettings'), 'communityEndpointUpdate')]",
                   "communityMaintenanceMode": "[tryGet(parameters('approvalSettings'), 'communityMaintenanceMode')]",
