@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "2144277300777545237"
+      "templateHash": "664153385590176602"
     }
   },
   "definitions": {
@@ -286,7 +286,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "17615243782070886438"
+              "templateHash": "7195046281524681413"
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
@@ -413,7 +413,7 @@
           "resources": {
             "community": {
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -444,7 +444,7 @@
               "metadata": {
                 "description": "The location where the community was deployed."
               },
-              "value": "[reference('community', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('community', '2026-03-01-preview', 'full').location]"
             },
             "addressPrefixes": {
               "type": "string",
@@ -501,7 +501,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "8579690226755007777"
+              "templateHash": "16775608663396955211"
             }
           },
           "definitions": {
@@ -649,12 +649,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "communityEndpoint": {
               "type": "Microsoft.Mission/communities/communityEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -683,7 +683,7 @@
               "metadata": {
                 "description": "The location where the community endpoint was deployed."
               },
-              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('communityEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -733,7 +733,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "4456110992906823786"
+              "templateHash": "3698052620106389402"
             }
           },
           "definitions": {
@@ -808,12 +808,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "transitHub": {
               "type": "Microsoft.Mission/communities/transitHubs",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('transitHubName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -842,7 +842,7 @@
               "metadata": {
                 "description": "The location where the transit hub was deployed."
               },
-              "value": "[reference('transitHub', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('transitHub', '2026-03-01-preview', 'full').location]"
             },
             "transitOption": {
               "$ref": "#/definitions/transitOptionType",
@@ -881,7 +881,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "9622407626512764700"
+              "templateHash": "8173239528489251168"
             }
           },
           "definitions": {
@@ -897,13 +897,13 @@
                 "destinationType": {
                   "type": "string",
                   "metadata": {
-                    "description": "The type of destination (FQDN, FQDNTag, IP)."
+                    "description": "The type of destination (FQDN, FQDNTag, IP, IPAddress, PrivateNetwork, ServiceTag)."
                   }
                 },
                 "destination": {
                   "type": "string",
                   "metadata": {
-                    "description": "The destination value (FQDN, tag name, or IP)."
+                    "description": "The destination value (FQDN(s), tag name(s), CIDR(s)/IP(s), service tag(s), or private network range)."
                   }
                 },
                 "protocols": {
@@ -1279,7 +1279,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "8579690226755007777"
+              "templateHash": "16775608663396955211"
             }
           },
           "definitions": {
@@ -1427,12 +1427,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "communityEndpoint": {
               "type": "Microsoft.Mission/communities/communityEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -1461,7 +1461,7 @@
               "metadata": {
                 "description": "The location where the community endpoint was deployed."
               },
-              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('communityEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -1508,7 +1508,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "8579690226755007777"
+              "templateHash": "16775608663396955211"
             }
           },
           "definitions": {
@@ -1656,12 +1656,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "communityEndpoint": {
               "type": "Microsoft.Mission/communities/communityEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -1690,7 +1690,7 @@
               "metadata": {
                 "description": "The location where the community endpoint was deployed."
               },
-              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('communityEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -1737,7 +1737,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "8579690226755007777"
+              "templateHash": "16775608663396955211"
             }
           },
           "definitions": {
@@ -1885,12 +1885,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "communityEndpoint": {
               "type": "Microsoft.Mission/communities/communityEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -1919,7 +1919,7 @@
               "metadata": {
                 "description": "The location where the community endpoint was deployed."
               },
-              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('communityEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -1966,7 +1966,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "8579690226755007777"
+              "templateHash": "16775608663396955211"
             }
           },
           "definitions": {
@@ -2114,12 +2114,12 @@
             "community": {
               "existing": true,
               "type": "Microsoft.Mission/communities",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('communityName')]"
             },
             "communityEndpoint": {
               "type": "Microsoft.Mission/communities/communityEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('communityName'), parameters('communityEndpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -2148,7 +2148,7 @@
               "metadata": {
                 "description": "The location where the community endpoint was deployed."
               },
-              "value": "[reference('communityEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('communityEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -2216,7 +2216,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "6858646730706830690"
+              "templateHash": "17938765826736229944"
             }
           },
           "definitions": {
@@ -2375,7 +2375,7 @@
           "resources": {
             "enclave": {
               "type": "Microsoft.Mission/virtualEnclaves",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('enclaveName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -2391,7 +2391,7 @@
             "workload": {
               "condition": "[parameters('deployWorkload')]",
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -2425,7 +2425,7 @@
               "metadata": {
                 "description": "The location where the enclave was deployed."
               },
-              "value": "[reference('enclave', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('enclave', '2026-03-01-preview', 'full').location]"
             },
             "enclaveAddressSpace": {
               "type": "string",
@@ -2466,7 +2466,8 @@
         }
       },
       "dependsOn": [
-        "community"
+        "community",
+        "enclaveProj1"
       ]
     },
     "enclaveProj1": {
@@ -2527,7 +2528,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "6858646730706830690"
+              "templateHash": "17938765826736229944"
             }
           },
           "definitions": {
@@ -2686,7 +2687,7 @@
           "resources": {
             "enclave": {
               "type": "Microsoft.Mission/virtualEnclaves",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('enclaveName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -2702,7 +2703,7 @@
             "workload": {
               "condition": "[parameters('deployWorkload')]",
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -2736,7 +2737,7 @@
               "metadata": {
                 "description": "The location where the enclave was deployed."
               },
-              "value": "[reference('enclave', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('enclave', '2026-03-01-preview', 'full').location]"
             },
             "enclaveAddressSpace": {
               "type": "string",
@@ -2838,7 +2839,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "6858646730706830690"
+              "templateHash": "17938765826736229944"
             }
           },
           "definitions": {
@@ -2997,7 +2998,7 @@
           "resources": {
             "enclave": {
               "type": "Microsoft.Mission/virtualEnclaves",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('enclaveName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -3013,7 +3014,7 @@
             "workload": {
               "condition": "[parameters('deployWorkload')]",
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -3047,7 +3048,7 @@
               "metadata": {
                 "description": "The location where the enclave was deployed."
               },
-              "value": "[reference('enclave', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('enclave', '2026-03-01-preview', 'full').location]"
             },
             "enclaveAddressSpace": {
               "type": "string",
@@ -3088,13 +3089,14 @@
         }
       },
       "dependsOn": [
-        "community"
+        "community",
+        "enclaveProj1"
       ]
     },
-    "enclaveDCC": {
+    "enclaveEnterp": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
-      "name": "[format('deploy-enclave-{0}-DCC', variables('uniqueEnclaveNamePrefix'))]",
+      "name": "[format('deploy-enclave-{0}-Enterp', variables('uniqueEnclaveNamePrefix'))]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -3105,7 +3107,7 @@
             "value": "[reference('community').outputs.resourceId.value]"
           },
           "enclaveName": {
-            "value": "[format('{0}-DCC', variables('uniqueEnclaveNamePrefix'))]"
+            "value": "[format('{0}-Enterp', variables('uniqueEnclaveNamePrefix'))]"
           },
           "networkSize": {
             "value": "[parameters('networkSize')]"
@@ -3115,8 +3117,8 @@
           },
           "tags": {
             "value": {
-              "department": "DataCoordinationCenterDept",
-              "company": "DataCoordinationCenterCompany"
+              "department": "EnterpriseDept",
+              "company": "EnterpriseCompany"
             }
           },
           "subnetConfigurationsList": {
@@ -3135,10 +3137,10 @@
             "value": true
           },
           "workloadName": {
-            "value": "[format('wl-DCC-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
+            "value": "[format('wl-enterp-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
           },
           "workloadResourceGroupName": {
-            "value": "[format('rg-DCC-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
+            "value": "[format('rg-enterp-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
           }
         },
         "template": {
@@ -3149,7 +3151,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "6858646730706830690"
+              "templateHash": "17938765826736229944"
             }
           },
           "definitions": {
@@ -3308,7 +3310,7 @@
           "resources": {
             "enclave": {
               "type": "Microsoft.Mission/virtualEnclaves",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('enclaveName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -3324,7 +3326,7 @@
             "workload": {
               "condition": "[parameters('deployWorkload')]",
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -3358,7 +3360,7 @@
               "metadata": {
                 "description": "The location where the enclave was deployed."
               },
-              "value": "[reference('enclave', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('enclave', '2026-03-01-preview', 'full').location]"
             },
             "enclaveAddressSpace": {
               "type": "string",
@@ -3399,7 +3401,8 @@
         }
       },
       "dependsOn": [
-        "community"
+        "community",
+        "enclaveProj1"
       ]
     },
     "enclaveEndpointShared": {
@@ -3448,7 +3451,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "15575639647144315238"
+              "templateHash": "6250350341902244931"
             }
           },
           "definitions": {
@@ -3537,12 +3540,12 @@
             "enclave": {
               "existing": true,
               "type": "Microsoft.Mission/virtualEnclaves",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('enclaveName')]"
             },
             "enclaveEndpoint": {
               "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('endpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -3571,7 +3574,7 @@
               "metadata": {
                 "description": "The location where the enclave endpoint was deployed."
               },
-              "value": "[reference('enclaveEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('enclaveEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -3626,7 +3629,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "15575639647144315238"
+              "templateHash": "6250350341902244931"
             }
           },
           "definitions": {
@@ -3715,12 +3718,12 @@
             "enclave": {
               "existing": true,
               "type": "Microsoft.Mission/virtualEnclaves",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('enclaveName')]"
             },
             "enclaveEndpoint": {
               "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('endpointName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -3749,7 +3752,7 @@
               "metadata": {
                 "description": "The location where the enclave endpoint was deployed."
               },
-              "value": "[reference('enclaveEndpoint', '2025-05-01-preview', 'full').location]"
+              "value": "[reference('enclaveEndpoint', '2026-03-01-preview', 'full').location]"
             }
           }
         }
@@ -3800,7 +3803,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -3858,7 +3861,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -3890,21 +3893,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -3959,7 +3962,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -4017,7 +4020,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -4049,21 +4052,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -4118,7 +4121,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -4176,7 +4179,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -4208,21 +4211,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -4235,7 +4238,7 @@
         "enclaveProj2"
       ]
     },
-    "connectionDCCToDefaultPortal": {
+    "connectionEnterpToDefaultPortal": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
       "name": "[format('deploy-ec-dcc-portal-{0}', parameters('uniqueNumber'))]",
@@ -4249,13 +4252,13 @@
             "value": "[reference('community').outputs.resourceId.value]"
           },
           "sourceResourceId": {
-            "value": "[reference('enclaveDCC').outputs.enclaveResourceId.value]"
+            "value": "[reference('enclaveEnterp').outputs.enclaveResourceId.value]"
           },
           "destinationResourceId": {
             "value": "[reference('communityEndpointDefaultPortal').outputs.communityEndpointResourceId.value]"
           },
           "sourceAddressSpace": {
-            "value": "[filter(reference('enclaveDCC').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]"
+            "value": "[filter(reference('enclaveEnterp').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -4277,7 +4280,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -4335,7 +4338,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -4367,21 +4370,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -4389,12 +4392,12 @@
       "dependsOn": [
         "community",
         "communityEndpointDefaultPortal",
-        "enclaveDCC",
         "enclaveEndpointProject1",
-        "enclaveEndpointShared"
+        "enclaveEndpointShared",
+        "enclaveEnterp"
       ]
     },
-    "connectionDCCToProject1Data": {
+    "connectionEnterpToProject1Data": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
       "name": "[format('deploy-ec-dcc-proj1-{0}', parameters('uniqueNumber'))]",
@@ -4408,13 +4411,13 @@
             "value": "[reference('community').outputs.resourceId.value]"
           },
           "sourceResourceId": {
-            "value": "[reference('enclaveDCC').outputs.enclaveResourceId.value]"
+            "value": "[reference('enclaveEnterp').outputs.enclaveResourceId.value]"
           },
           "destinationResourceId": {
             "value": "[reference('enclaveEndpointProject1').outputs.endpointId.value]"
           },
           "sourceAddressSpace": {
-            "value": "[filter(reference('enclaveDCC').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]"
+            "value": "[filter(reference('enclaveEnterp').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -4436,7 +4439,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -4494,7 +4497,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -4526,30 +4529,30 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
       },
       "dependsOn": [
         "community",
-        "enclaveDCC",
         "enclaveEndpointProject1",
-        "enclaveEndpointShared"
+        "enclaveEndpointShared",
+        "enclaveEnterp"
       ]
     },
     "connectionSharedToWinUpdates": {
@@ -4594,7 +4597,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -4652,7 +4655,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -4684,21 +4687,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -4753,7 +4756,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -4811,7 +4814,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -4843,21 +4846,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -4912,7 +4915,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -4970,7 +4973,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -5002,21 +5005,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -5029,7 +5032,7 @@
         "enclaveProj2"
       ]
     },
-    "connectionDCCToWinUpdates": {
+    "connectionEnterpToWinUpdates": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
       "name": "[format('deploy-ec-dcc-winupd-{0}', parameters('uniqueNumber'))]",
@@ -5043,13 +5046,13 @@
             "value": "[reference('community').outputs.resourceId.value]"
           },
           "sourceResourceId": {
-            "value": "[reference('enclaveDCC').outputs.enclaveResourceId.value]"
+            "value": "[reference('enclaveEnterp').outputs.enclaveResourceId.value]"
           },
           "destinationResourceId": {
             "value": "[reference('communityEndpointWindowsUpdates').outputs.communityEndpointResourceId.value]"
           },
           "sourceAddressSpace": {
-            "value": "[format('{0}, {1}/26', join(map(reference('enclaveDCC').outputs.enclaveSubnetConfig.value, lambda('s', lambdaVariables('s').addressPrefix)), ', '), split(reference('enclaveDCC').outputs.managedAddressSpace.value, '/')[0])]"
+            "value": "[format('{0}, {1}/26', join(map(reference('enclaveEnterp').outputs.enclaveSubnetConfig.value, lambda('s', lambdaVariables('s').addressPrefix)), ', '), split(reference('enclaveEnterp').outputs.managedAddressSpace.value, '/')[0])]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -5071,7 +5074,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -5129,7 +5132,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -5161,21 +5164,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -5183,9 +5186,9 @@
       "dependsOn": [
         "community",
         "communityEndpointWindowsUpdates",
-        "enclaveDCC",
         "enclaveEndpointProject1",
-        "enclaveEndpointShared"
+        "enclaveEndpointShared",
+        "enclaveEnterp"
       ]
     },
     "connectionSharedToWinget": {
@@ -5230,7 +5233,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -5288,7 +5291,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -5320,21 +5323,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -5389,7 +5392,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -5447,7 +5450,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -5479,21 +5482,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -5548,7 +5551,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -5606,7 +5609,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -5638,21 +5641,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -5665,7 +5668,7 @@
         "enclaveProj2"
       ]
     },
-    "connectionDCCToWinget": {
+    "connectionEnterpToWinget": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
       "name": "[format('deploy-ec-dcc-winget-{0}', parameters('uniqueNumber'))]",
@@ -5679,13 +5682,13 @@
             "value": "[reference('community').outputs.resourceId.value]"
           },
           "sourceResourceId": {
-            "value": "[reference('enclaveDCC').outputs.enclaveResourceId.value]"
+            "value": "[reference('enclaveEnterp').outputs.enclaveResourceId.value]"
           },
           "destinationResourceId": {
             "value": "[reference('communityEndpointWinget').outputs.communityEndpointResourceId.value]"
           },
           "sourceAddressSpace": {
-            "value": "[filter(reference('enclaveDCC').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]"
+            "value": "[filter(reference('enclaveEnterp').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -5707,7 +5710,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -5765,7 +5768,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -5797,21 +5800,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -5819,9 +5822,9 @@
       "dependsOn": [
         "community",
         "communityEndpointWinget",
-        "enclaveDCC",
         "enclaveEndpointProject1",
-        "enclaveEndpointShared"
+        "enclaveEndpointShared",
+        "enclaveEnterp"
       ]
     },
     "connectionSharedToExternal": {
@@ -5866,7 +5869,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -5924,7 +5927,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -5956,21 +5959,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
@@ -6025,7 +6028,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "11476053832399171077"
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -6083,7 +6086,7 @@
           "resources": [
             {
               "type": "Microsoft.Mission/enclaveConnections",
-              "apiVersion": "2025-05-01-preview",
+              "apiVersion": "2026-03-01-preview",
               "name": "[parameters('connectionName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
@@ -6115,21 +6118,21 @@
               "metadata": {
                 "description": "The location where the enclave connection was deployed."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview', 'full').location]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview', 'full').location]"
             },
             "sourceCidr": {
               "type": "string",
               "metadata": {
                 "description": "The source CIDR notation used in the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').sourceCidr]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').sourceCidr]"
             },
             "communityResourceId": {
               "type": "string",
               "metadata": {
                 "description": "The community resource ID associated with the connection."
               },
-              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2025-05-01-preview').communityResourceId]"
+              "value": "[reference(resourceId('Microsoft.Mission/enclaveConnections', parameters('connectionName')), '2026-03-01-preview').communityResourceId]"
             }
           }
         }
