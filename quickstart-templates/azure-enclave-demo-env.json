@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "6799075004121800578"
+      "templateHash": "17504563175553669519"
     }
   },
   "definitions": {
@@ -286,7 +286,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "4889603617427033907"
+              "templateHash": "6721890420651872179"
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
@@ -425,26 +425,58 @@
               "properties": {
                 "serviceId": {
                   "type": "string",
+                  "allowedValues": [
+                    "AKS",
+                    "AppService",
+                    "AzureFirewalls",
+                    "ContainerRegistry",
+                    "CosmosDB",
+                    "DataConnectors",
+                    "Insights",
+                    "KeyVault",
+                    "Logic",
+                    "MicrosoftSQL",
+                    "Monitoring",
+                    "PostgreSQL",
+                    "PrivateDNSZones",
+                    "ServiceBus",
+                    "Storage"
+                  ],
                   "metadata": {
                     "description": "The service identifier."
                   }
                 },
                 "option": {
                   "type": "string",
+                  "allowedValues": [
+                    "Allow",
+                    "Deny",
+                    "ExceptionOnly",
+                    "NotApplicable"
+                  ],
                   "metadata": {
-                    "description": "The service option (Allow, Deny, NotApplicable)."
+                    "description": "The service option (Allow, Deny, ExceptionOnly, or NotApplicable)."
                   }
                 },
                 "enforcement": {
                   "type": "string",
+                  "allowedValues": [
+                    "Disabled",
+                    "Enabled"
+                  ],
                   "metadata": {
-                    "description": "The enforcement mode (Enabled, Disabled)."
+                    "description": "The enforcement mode (Enabled or Disabled)."
                   }
                 },
                 "policyAction": {
                   "type": "string",
+                  "allowedValues": [
+                    "AuditOnly",
+                    "Enforce",
+                    "None"
+                  ],
                   "metadata": {
-                    "description": "The policy action (Enforce, Audit)."
+                    "description": "The policy action (AuditOnly, Enforce, or None)."
                   }
                 }
               }
@@ -577,37 +609,37 @@
                 "communityEndpointUpdate": {
                   "approvalPolicy": "NotRequired",
                   "mandatoryApprovers": [],
-                  "minimumApproversRequired": 0
+                  "minimumApproversRequired": 1
                 },
                 "communityMaintenanceMode": {
                   "approvalPolicy": "NotRequired",
                   "mandatoryApprovers": [],
-                  "minimumApproversRequired": 0
+                  "minimumApproversRequired": 1
                 },
                 "connectionCreation": {
                   "approvalPolicy": "NotRequired",
                   "mandatoryApprovers": [],
-                  "minimumApproversRequired": 0
+                  "minimumApproversRequired": 1
                 },
                 "connectionUpdate": {
                   "approvalPolicy": "NotRequired",
                   "mandatoryApprovers": [],
-                  "minimumApproversRequired": 0
+                  "minimumApproversRequired": 1
                 },
                 "enclaveCreation": {
                   "approvalPolicy": "NotRequired",
                   "mandatoryApprovers": [],
-                  "minimumApproversRequired": 0
+                  "minimumApproversRequired": 1
                 },
                 "enclaveEndpointUpdate": {
                   "approvalPolicy": "NotRequired",
                   "mandatoryApprovers": [],
-                  "minimumApproversRequired": 0
+                  "minimumApproversRequired": 1
                 },
                 "enclaveMaintenanceMode": {
                   "approvalPolicy": "NotRequired",
                   "mandatoryApprovers": [],
-                  "minimumApproversRequired": 0
+                  "minimumApproversRequired": 1
                 }
               },
               "metadata": {
@@ -720,10 +752,29 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "3698052620106389402"
+              "templateHash": "3689946510813165946"
             }
           },
           "definitions": {
+            "transitOptionParamsType": {
+              "type": "object",
+              "properties": {
+                "scaleUnits": {
+                  "type": "int",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Scale units for the gateway."
+                  }
+                },
+                "remoteVirtualNetworkId": {
+                  "type": "string",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Remote virtual network resource ID for peering."
+                  }
+                }
+              }
+            },
             "transitOptionType": {
               "type": "object",
               "properties": {
@@ -739,7 +790,7 @@
                   }
                 },
                 "params": {
-                  "type": "object",
+                  "$ref": "#/definitions/transitOptionParamsType",
                   "metadata": {
                     "description": "Parameters specific to the transit type."
                   }
@@ -789,6 +840,17 @@
               "metadata": {
                 "description": "Tags to be assigned to the transit hub."
               }
+            },
+            "securityProvider": {
+              "type": "string",
+              "defaultValue": "None",
+              "allowedValues": [
+                "AzureFirewall",
+                "None"
+              ],
+              "metadata": {
+                "description": "The security provider for the transit hub."
+              }
             }
           },
           "resources": {
@@ -805,6 +867,7 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
+                "securityProvider": "[parameters('securityProvider')]",
                 "transitOption": "[parameters('transitOption')]"
               }
             }
@@ -2492,7 +2555,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "1363000254242950712"
+              "templateHash": "7163142406234217791"
             }
           },
           "definitions": {
@@ -2728,10 +2791,26 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
-                "connectionCreation": null,
-                "connectionUpdate": null,
-                "enclaveEndpointUpdate": null,
-                "enclaveMaintenanceMode": null
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -2927,7 +3006,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "1363000254242950712"
+              "templateHash": "7163142406234217791"
             }
           },
           "definitions": {
@@ -3163,10 +3242,26 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
-                "connectionCreation": null,
-                "connectionUpdate": null,
-                "enclaveEndpointUpdate": null,
-                "enclaveMaintenanceMode": null
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -3362,7 +3457,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "1363000254242950712"
+              "templateHash": "7163142406234217791"
             }
           },
           "definitions": {
@@ -3598,10 +3693,26 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
-                "connectionCreation": null,
-                "connectionUpdate": null,
-                "enclaveEndpointUpdate": null,
-                "enclaveMaintenanceMode": null
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -3797,7 +3908,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "1363000254242950712"
+              "templateHash": "7163142406234217791"
             }
           },
           "definitions": {
@@ -4033,10 +4144,26 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
-                "connectionCreation": null,
-                "connectionUpdate": null,
-                "enclaveEndpointUpdate": null,
-                "enclaveMaintenanceMode": null
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -4232,7 +4359,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "1363000254242950712"
+              "templateHash": "7163142406234217791"
             }
           },
           "definitions": {
@@ -4468,10 +4595,26 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
-                "connectionCreation": null,
-                "connectionUpdate": null,
-                "enclaveEndpointUpdate": null,
-                "enclaveMaintenanceMode": null
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -4667,7 +4810,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "1363000254242950712"
+              "templateHash": "7163142406234217791"
             }
           },
           "definitions": {
@@ -4903,10 +5046,26 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
-                "connectionCreation": null,
-                "connectionUpdate": null,
-                "enclaveEndpointUpdate": null,
-                "enclaveMaintenanceMode": null
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -5102,7 +5261,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "1363000254242950712"
+              "templateHash": "7163142406234217791"
             }
           },
           "definitions": {
@@ -5338,10 +5497,26 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
-                "connectionCreation": null,
-                "connectionUpdate": null,
-                "enclaveEndpointUpdate": null,
-                "enclaveMaintenanceMode": null
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -5537,7 +5712,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "1363000254242950712"
+              "templateHash": "7163142406234217791"
             }
           },
           "definitions": {
@@ -5773,10 +5948,26 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
-                "connectionCreation": null,
-                "connectionUpdate": null,
-                "enclaveEndpointUpdate": null,
-                "enclaveMaintenanceMode": null
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
               },
               "metadata": {
                 "displayName": "Approval Settings",
