@@ -17,7 +17,6 @@ type endpointDestinationType =
   | 'IPAddress'
   | 'PrivateNetwork'
   | 'ServiceTag'
-  | 'IP'
 
 type endpointRuleType = {
   @description('The name of the rule.')
@@ -82,14 +81,15 @@ param location string = resourceGroup().location
 @description('Optional. Tags to apply to the community endpoint.')
 param tags object = {}
 
+@description('Whether endpoint rule updates are applied automatically or require manual approval.')
+@allowed(['Automatic', 'Manual'])
+param updateMode string = 'Automatic'
+
 // Reference to existing parent community resource
-#disable-next-line BCP081
 resource community 'Microsoft.Mission/communities@2026-03-01-preview' existing = {
   name: communityName
 }
 
-// Disable BCP081 as Microsoft.Mission/communities/communityEndpoints is a preview resource type
-#disable-next-line BCP081
 resource communityEndpoint 'Microsoft.Mission/communities/communityEndpoints@2026-03-01-preview' = {
   parent: community
   name: communityEndpointName
@@ -97,6 +97,7 @@ resource communityEndpoint 'Microsoft.Mission/communities/communityEndpoints@202
   tags: tags
   properties: {
     ruleCollection: communityEndpointRuleCollection
+    updateMode: updateMode
   }
 }
 

@@ -65,7 +65,7 @@ param tags object = {}
 
 type maintenanceModeConfigurationType = {
   @description('The mode of the maintenance mode configuration for the community.')
-  mode: ('Off' | 'On' | 'General' | 'Advanced' | 'CanNotDelete')
+  mode: ('Off' | 'General' | 'Advanced')
   
   @description('The justification for the maintenance mode configuration for the community.')
   justification: ('Off' | 'Networking' | 'Governance')
@@ -107,6 +107,12 @@ param governedServiceList governedServiceType[]
 type diagnosticDestinationType = {
   @description('The destination type for diagnostics.')
   destinationType: ('CommunityWorkspace' | 'CustomWorkspace' | 'EnclaveWorkspace')
+
+  @description('Log Analytics workspace resource ID. Required when destinationType is CustomWorkspace.')
+  customWorkspaceResourceId: string?
+
+  @description('Custom name for the diagnostic settings.')
+  diagnosticSettingsName: string?
 }
 
 type monitoringSettingsType = {
@@ -174,8 +180,6 @@ param approvalSettings communityApprovalSettingsType = {
   }
 }
 
-// Disable BCP081 as Microsoft.Mission/communities is a preview resource type
-#disable-next-line BCP081
 resource community 'Microsoft.Mission/communities@2026-03-01-preview' = {
   name: communityName
   location: location

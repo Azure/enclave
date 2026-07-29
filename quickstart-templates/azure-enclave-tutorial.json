@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "9245778896420805112"
+      "templateHash": "5387858901457172244"
     },
     "name": "Azure Enclave Tutorial Template",
     "description": "Tutorial template demonstrating Azure Enclave deployment using modular components"
@@ -186,7 +186,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "9110084225436944696"
+              "templateHash": "4889603617427033907"
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
@@ -294,10 +294,8 @@
                   "type": "string",
                   "allowedValues": [
                     "Advanced",
-                    "CanNotDelete",
                     "General",
-                    "Off",
-                    "On"
+                    "Off"
                   ],
                   "metadata": {
                     "description": "The mode of the maintenance mode configuration for the community."
@@ -363,6 +361,20 @@
                   ],
                   "metadata": {
                     "description": "The destination type for diagnostics."
+                  }
+                },
+                "customWorkspaceResourceId": {
+                  "type": "string",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Log Analytics workspace resource ID. Required when destinationType is CustomWorkspace."
+                  }
+                },
+                "diagnosticSettingsName": {
+                  "type": "string",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Custom name for the diagnostic settings."
                   }
                 }
               }
@@ -615,7 +627,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "16775608663396955211"
+              "templateHash": "13573103881482708685"
             }
           },
           "definitions": {
@@ -637,7 +649,6 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
-                "IP",
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -757,6 +768,17 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
+            },
+            "updateMode": {
+              "type": "string",
+              "defaultValue": "Automatic",
+              "allowedValues": [
+                "Automatic",
+                "Manual"
+              ],
+              "metadata": {
+                "description": "Whether endpoint rule updates are applied automatically or require manual approval."
+              }
             }
           },
           "resources": {
@@ -773,7 +795,8 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-                "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
+                "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
+                "updateMode": "[parameters('updateMode')]"
               }
             }
           },
@@ -1698,7 +1721,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "6250350341902244931"
+              "templateHash": "17098404646497358101"
             }
           },
           "definitions": {
@@ -1781,6 +1804,17 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the enclave endpoint."
               }
+            },
+            "updateMode": {
+              "type": "string",
+              "defaultValue": "Automatic",
+              "allowedValues": [
+                "Automatic",
+                "Manual"
+              ],
+              "metadata": {
+                "description": "Whether endpoint rule updates are applied automatically or require manual approval."
+              }
             }
           },
           "resources": {
@@ -1797,7 +1831,8 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-                "ruleCollection": "[parameters('rules')]"
+                "ruleCollection": "[parameters('rules')]",
+                "updateMode": "[parameters('updateMode')]"
               }
             }
           },

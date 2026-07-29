@@ -139,9 +139,7 @@ param approvalSettings enclaveApprovalSettingsType = {
   enclaveMaintenanceMode: null
 }
 
-// Disable BCP081 as Microsoft.Mission/virtualenclaves is a preview resource type
-#disable-next-line BCP081
-resource enclave 'Microsoft.Mission/virtualenclaves@2026-03-01-preview' = {
+resource enclave 'Microsoft.Mission/virtualEnclaves@2026-03-01-preview' = {
   name: enclaveName
   location: location
   tags: tags
@@ -161,8 +159,6 @@ resource enclave 'Microsoft.Mission/virtualenclaves@2026-03-01-preview' = {
   }
 }
 
-// Disable BCP081 as Microsoft.Mission/virtualEnclaves/workloads is a preview resource type
-#disable-next-line BCP081
 resource workload 'Microsoft.Mission/virtualEnclaves/workloads@2026-03-01-preview' = [for wlName in effectiveWorkloadNames: if (deployWorkload) {
   parent: enclave
   name: wlName
