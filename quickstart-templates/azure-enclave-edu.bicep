@@ -369,7 +369,7 @@ module enclaveEndpointShared 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'AVD'
-        destination: filter(enclaveShared.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveShared.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '53,88,135,138,139,389,445,464,636,686,3268-3269,5722,9389,49152-65535'
         protocols: [
           'TCP'
@@ -393,7 +393,7 @@ module enclaveEndpointProject1 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'Project1-Data'
-        destination: filter(enclaveProj1.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveProj1.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -416,7 +416,7 @@ module connectionSharedToDefaultPortal 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveShared.outputs.enclaveResourceId
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveShared.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveShared.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-shared-portal-edu-${uniqueNumber}'
     tags: {
@@ -437,7 +437,7 @@ module connectionProj1ToDefaultPortal 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveProj1.outputs.enclaveResourceId
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveProj1.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveProj1.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-proj1-portal-edu-${uniqueNumber}'
     tags: {
@@ -458,7 +458,7 @@ module connectionProj2ToDefaultPortal 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveProj2.outputs.enclaveResourceId
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveProj2.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveProj2.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-proj2-portal-edu-${uniqueNumber}'
     tags: {
@@ -479,7 +479,7 @@ module connectionEnterpToDefaultPortal 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveEnterp.outputs.enclaveResourceId
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveEnterp.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveEnterp.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-dcc-portal-edu-${uniqueNumber}'
     tags: {
@@ -501,7 +501,7 @@ module connectionEnterpToProject1Data 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveEnterp.outputs.enclaveResourceId
     destinationResourceId: enclaveEndpointProject1.outputs.endpointId
-    sourceAddressSpace: filter(enclaveEnterp.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveEnterp.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-dcc-proj1-edu-${uniqueNumber}'
     tags: {
@@ -525,7 +525,7 @@ module connectionSharedToWinUpdates 'modules/enclave-connection.bicep' = {
     sourceResourceId: enclaveShared.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
     // use all enclave subnets plus managed address space /26 for Windows Update service tag
-    sourceAddressSpace: '${join(map(enclaveShared.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveShared.outputs.managedAddressSpace, '/')[0]}/26'
+    sourceAddressSpace: '${join(map(enclaveShared.outputs.enclaveSubnetConfigResolved, s => s.addressPrefix), ', ')}, ${split(enclaveShared.outputs.managedAddressSpace, '/')[0]}/26'
     location: location
     connectionName: 'ec-shared-winupd-${uniqueNumber}'
     tags: {
@@ -547,7 +547,7 @@ module connectionProj1ToWinUpdates 'modules/enclave-connection.bicep' = {
     sourceResourceId: enclaveProj1.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
     // use all enclave subnets plus managed address space /26 for Windows Update service tag
-    sourceAddressSpace: '${join(map(enclaveProj1.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveProj1.outputs.managedAddressSpace, '/')[0]}/26'
+    sourceAddressSpace: '${join(map(enclaveProj1.outputs.enclaveSubnetConfigResolved, s => s.addressPrefix), ', ')}, ${split(enclaveProj1.outputs.managedAddressSpace, '/')[0]}/26'
     location: location
     connectionName: 'ec-proj1-winupd-${uniqueNumber}'
     tags: {
@@ -569,7 +569,7 @@ module connectionProj2ToWinUpdates 'modules/enclave-connection.bicep' = {
     sourceResourceId: enclaveProj2.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
     // use all enclave subnets plus managed address space /26 for Windows Update service tag
-    sourceAddressSpace: '${join(map(enclaveProj2.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveProj2.outputs.managedAddressSpace, '/')[0]}/26'
+    sourceAddressSpace: '${join(map(enclaveProj2.outputs.enclaveSubnetConfigResolved, s => s.addressPrefix), ', ')}, ${split(enclaveProj2.outputs.managedAddressSpace, '/')[0]}/26'
     location: location
     connectionName: 'ec-proj2-winupd-${uniqueNumber}'
     tags: {
@@ -591,7 +591,7 @@ module connectionEnterpToWinUpdates 'modules/enclave-connection.bicep' = {
     sourceResourceId: enclaveEnterp.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
     // use all enclave subnets plus managed address space /26 for Windows Update service tag
-    sourceAddressSpace: '${join(map(enclaveEnterp.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveEnterp.outputs.managedAddressSpace, '/')[0]}/26'
+    sourceAddressSpace: '${join(map(enclaveEnterp.outputs.enclaveSubnetConfigResolved, s => s.addressPrefix), ', ')}, ${split(enclaveEnterp.outputs.managedAddressSpace, '/')[0]}/26'
     location: location
     connectionName: 'ec-dcc-winupd-${uniqueNumber}'
     tags: {
@@ -613,7 +613,7 @@ module connectionSharedToWinget 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveShared.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveShared.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveShared.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-shared-winget-${uniqueNumber}'
     tags: {
@@ -634,7 +634,7 @@ module connectionProj1ToWinget 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveProj1.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveProj1.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveProj1.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-proj1-winget-${uniqueNumber}'
     tags: {
@@ -655,7 +655,7 @@ module connectionProj2ToWinget 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveProj2.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveProj2.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveProj2.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-proj2-winget-${uniqueNumber}'
     tags: {
@@ -676,7 +676,7 @@ module connectionEnterpToWinget 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveEnterp.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveEnterp.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveEnterp.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-dcc-winget-${uniqueNumber}'
     tags: {
@@ -698,7 +698,7 @@ module connectionSharedToExternal 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveShared.outputs.enclaveResourceId
     destinationResourceId: communityEndpointExternal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveShared.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveShared.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-shared-ext-${uniqueNumber}'
     tags: {
@@ -734,3 +734,4 @@ module connectionExternalToShared 'modules/enclave-connection.bicep' = {
     enclaveEndpointProject1
   ]
 }
+

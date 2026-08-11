@@ -487,7 +487,7 @@ module enclaveIdentity_endpointName_1_v2 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'ADDS-TCP'
-        destination: filter(enclaveIdentity.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveIdentity.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '53,88,135,138,139,389,445,464,636,686,3268-3269,5722,9389,49152-65535'
         protocols: [
           'TCP'
@@ -495,7 +495,7 @@ module enclaveIdentity_endpointName_1_v2 'modules/enclave-endpoint.bicep' = {
       }
       {
         endpointRuleName: 'ADDS-UDP'
-        destination: filter(enclaveIdentity.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveIdentity.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '53,389'
         protocols: [
           'UDP'
@@ -519,7 +519,7 @@ module ep_enclavePlatform_from_weapon 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'inbound-to-platform'
-        destination: filter(enclavePlatform.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclavePlatform.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -543,7 +543,7 @@ module ep_enclaveWeapon_from_platform 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'inbound-to-weapon'
-        destination: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveWeapon.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -567,7 +567,7 @@ module ep_enclaveWeapon_from_subktr 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'inbound-to-weapon'
-        destination: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveWeapon.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -591,7 +591,7 @@ module ep_enclaveSubKtr_from_weapon 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'inbound-to-subktr'
-        destination: filter(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveSubKtr.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -615,7 +615,7 @@ module ep_enclaveIdentity_cyber 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'cyber-inbound'
-        destination: filter(enclaveIdentity.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveIdentity.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -639,7 +639,7 @@ module ep_enclaveDesktop_cyber 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'cyber-inbound'
-        destination: filter(enclaveDesktop.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveDesktop.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -663,7 +663,7 @@ module ep_enclaveCollab_cyber 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'cyber-inbound'
-        destination: filter(enclaveCollab.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveCollab.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -687,7 +687,7 @@ module ep_enclavePlatform_cyber 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'cyber-inbound'
-        destination: filter(enclavePlatform.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclavePlatform.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -711,7 +711,7 @@ module ep_enclaveWeapon_cyber 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'cyber-inbound'
-        destination: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveWeapon.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -735,7 +735,7 @@ module ep_enclaveSubKtr_cyber 'modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'cyber-inbound'
-        destination: filter(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveSubKtr.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -758,7 +758,7 @@ module ec_collab_to_external 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCollab.outputs.enclaveResourceId
     destinationResourceId: communityEndpointExternal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveCollab.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCollab.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-coll-ext-${uniqueNumber}'
     tags: {
@@ -793,7 +793,7 @@ module ec_collab_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCollab.outputs.enclaveResourceId
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveCollab.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCollab.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-coll-portal-${uniqueNumber}'
     tags: {
@@ -827,7 +827,7 @@ module ec_desktop_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveDesktop.outputs.enclaveResourceId
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveDesktop.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveDesktop.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-desk-portal-${uniqueNumber}'
     tags: {
@@ -861,7 +861,7 @@ module ec_platform_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclavePlatform.outputs.enclaveResourceId
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclavePlatform.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclavePlatform.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-plat-portal-${uniqueNumber}'
     tags: {
@@ -895,7 +895,7 @@ module ec_weapon_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveWeapon.outputs.enclaveResourceId
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-weap-portal-${uniqueNumber}'
     tags: {
@@ -929,7 +929,7 @@ module ec_subktr_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveSubKtr.outputs.enclaveResourceId
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveSubKtr.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-sub-portal-${uniqueNumber}'
     tags: {
@@ -963,7 +963,7 @@ module ec_cyber_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCyber.outputs.enclaveResourceId
     destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-cyber-portal-${uniqueNumber}'
     tags: {
@@ -998,7 +998,7 @@ module ec_collab_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCollab.outputs.enclaveResourceId
     destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCollab.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCollab.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-coll-idadds-${uniqueNumber}'
     tags: {
@@ -1032,7 +1032,7 @@ module ec_desktop_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveDesktop.outputs.enclaveResourceId
     destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: filter(enclaveDesktop.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveDesktop.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-desk-idadds-${uniqueNumber}'
     tags: {
@@ -1066,7 +1066,7 @@ module ec_platform_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclavePlatform.outputs.enclaveResourceId
     destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: filter(enclavePlatform.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclavePlatform.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-plat-idadds-${uniqueNumber}'
     tags: {
@@ -1100,7 +1100,7 @@ module ec_weapon_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveWeapon.outputs.enclaveResourceId
     destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-weap-idadds-${uniqueNumber}'
     tags: {
@@ -1134,7 +1134,7 @@ module ec_subktr_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveSubKtr.outputs.enclaveResourceId
     destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: filter(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveSubKtr.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-sub-idadds-${uniqueNumber}'
     tags: {
@@ -1168,7 +1168,7 @@ module ec_cyber_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCyber.outputs.enclaveResourceId
     destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-cyber-idadds-${uniqueNumber}'
     tags: {
@@ -1203,7 +1203,7 @@ module ec_cyber_to_identity 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCyber.outputs.enclaveResourceId
     destinationResourceId: ep_enclaveIdentity_cyber.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-cyber-id-${uniqueNumber}'
     tags: {
@@ -1237,7 +1237,7 @@ module ec_cyber_to_desktop 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCyber.outputs.enclaveResourceId
     destinationResourceId: ep_enclaveDesktop_cyber.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-cyber-desk-${uniqueNumber}'
     tags: {
@@ -1271,7 +1271,7 @@ module ec_cyber_to_collab 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCyber.outputs.enclaveResourceId
     destinationResourceId: ep_enclaveCollab_cyber.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-cyber-coll-${uniqueNumber}'
     tags: {
@@ -1305,7 +1305,7 @@ module ec_cyber_to_platform 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCyber.outputs.enclaveResourceId
     destinationResourceId: ep_enclavePlatform_cyber.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-cyber-plat-${uniqueNumber}'
     tags: {
@@ -1339,7 +1339,7 @@ module ec_cyber_to_weapon 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCyber.outputs.enclaveResourceId
     destinationResourceId: ep_enclaveWeapon_cyber.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-cyber-weap-${uniqueNumber}'
     tags: {
@@ -1373,7 +1373,7 @@ module ec_cyber_to_subktr 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCyber.outputs.enclaveResourceId
     destinationResourceId: ep_enclaveSubKtr_cyber.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-cyber-sub-${uniqueNumber}'
     tags: {
@@ -1408,7 +1408,7 @@ module ec_desktop_to_cm_ep_bingOutlook 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveDesktop.outputs.enclaveResourceId
     destinationResourceId: communityEndpointDataSource.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveDesktop.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveDesktop.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-desk-data-${uniqueNumber}'
     tags: {
@@ -1443,7 +1443,7 @@ module ec_identity_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveIdentity.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclaveIdentity.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveIdentity.outputs.managedAddressSpace, '/')[0]}/26'
+    sourceAddressSpace: '${join(map(enclaveIdentity.outputs.enclaveSubnetConfigResolved, s => s.addressPrefix), ', ')}, ${split(enclaveIdentity.outputs.managedAddressSpace, '/')[0]}/26'
     location: location
     connectionName: 'ec-id-winupd-${uniqueNumber}'
     tags: {
@@ -1477,7 +1477,7 @@ module ec_collab_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCollab.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclaveCollab.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveCollab.outputs.managedAddressSpace, '/')[0]}/26'
+    sourceAddressSpace: '${join(map(enclaveCollab.outputs.enclaveSubnetConfigResolved, s => s.addressPrefix), ', ')}, ${split(enclaveCollab.outputs.managedAddressSpace, '/')[0]}/26'
     location: location
     connectionName: 'ec-coll-winupd-${uniqueNumber}'
     tags: {
@@ -1511,7 +1511,7 @@ module ec_desktop_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveDesktop.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclaveDesktop.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveDesktop.outputs.managedAddressSpace, '/')[0]}/26'
+    sourceAddressSpace: '${join(map(enclaveDesktop.outputs.enclaveSubnetConfigResolved, s => s.addressPrefix), ', ')}, ${split(enclaveDesktop.outputs.managedAddressSpace, '/')[0]}/26'
     location: location
     connectionName: 'ec-desk-winupd-${uniqueNumber}'
     tags: {
@@ -1545,7 +1545,7 @@ module ec_platform_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclavePlatform.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclavePlatform.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclavePlatform.outputs.managedAddressSpace, '/')[0]}/26'
+    sourceAddressSpace: '${join(map(enclavePlatform.outputs.enclaveSubnetConfigResolved, s => s.addressPrefix), ', ')}, ${split(enclavePlatform.outputs.managedAddressSpace, '/')[0]}/26'
     location: location
     connectionName: 'ec-plat-winupd-${uniqueNumber}'
     tags: {
@@ -1579,7 +1579,7 @@ module ec_weapon_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveWeapon.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveWeapon.outputs.managedAddressSpace, '/')[0]}/26'
+    sourceAddressSpace: '${join(map(enclaveWeapon.outputs.enclaveSubnetConfigResolved, s => s.addressPrefix), ', ')}, ${split(enclaveWeapon.outputs.managedAddressSpace, '/')[0]}/26'
     location: location
     connectionName: 'ec-weap-winupd-${uniqueNumber}'
     tags: {
@@ -1613,7 +1613,7 @@ module ec_subktr_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveSubKtr.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveSubKtr.outputs.managedAddressSpace, '/')[0]}/26'
+    sourceAddressSpace: '${join(map(enclaveSubKtr.outputs.enclaveSubnetConfigResolved, s => s.addressPrefix), ', ')}, ${split(enclaveSubKtr.outputs.managedAddressSpace, '/')[0]}/26'
     location: location
     connectionName: 'ec-sub-winupd-${uniqueNumber}'
     tags: {
@@ -1647,7 +1647,7 @@ module ec_cyber_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCyber.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclaveCyber.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveCyber.outputs.managedAddressSpace, '/')[0]}/26'
+    sourceAddressSpace: '${join(map(enclaveCyber.outputs.enclaveSubnetConfigResolved, s => s.addressPrefix), ', ')}, ${split(enclaveCyber.outputs.managedAddressSpace, '/')[0]}/26'
     location: location
     connectionName: 'ec-cyber-winupd-${uniqueNumber}'
     tags: {
@@ -1681,7 +1681,7 @@ module ec_identity_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveIdentity.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveIdentity.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveIdentity.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-id-winget-${uniqueNumber}'
     tags: {
@@ -1715,7 +1715,7 @@ module ec_collab_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCollab.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveCollab.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCollab.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-coll-winget-${uniqueNumber}'
     tags: {
@@ -1749,7 +1749,7 @@ module ec_desktop_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveDesktop.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveDesktop.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveDesktop.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-desk-winget-${uniqueNumber}'
     tags: {
@@ -1783,7 +1783,7 @@ module ec_platform_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclavePlatform.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclavePlatform.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclavePlatform.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-plat-winget-${uniqueNumber}'
     tags: {
@@ -1817,7 +1817,7 @@ module ec_weapon_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveWeapon.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-weap-winget-${uniqueNumber}'
     tags: {
@@ -1851,7 +1851,7 @@ module ec_subktr_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveSubKtr.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveSubKtr.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-sub-winget-${uniqueNumber}'
     tags: {
@@ -1885,7 +1885,7 @@ module ec_cyber_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveCyber.outputs.enclaveResourceId
     destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-cyber-winget-${uniqueNumber}'
     tags: {
@@ -1919,7 +1919,7 @@ module ec_platform_to_weapon 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclavePlatform.outputs.enclaveResourceId
     destinationResourceId: ep_enclaveWeapon_from_platform.outputs.endpointId
-    sourceAddressSpace: filter(enclavePlatform.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclavePlatform.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-plat-weap-${uniqueNumber}'
     tags: {
@@ -1953,7 +1953,7 @@ module ec_weapon_to_platform 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveWeapon.outputs.enclaveResourceId
     destinationResourceId: ep_enclavePlatform_from_weapon.outputs.endpointId
-    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-weap-plat-${uniqueNumber}'
     tags: {
@@ -1987,7 +1987,7 @@ module ec_weapon_to_subktr 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveWeapon.outputs.enclaveResourceId
     destinationResourceId: ep_enclaveSubKtr_from_weapon.outputs.endpointId
-    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-weap-sub-${uniqueNumber}'
     tags: {
@@ -2021,7 +2021,7 @@ module ec_subktr_to_weapon 'modules/enclave-connection.bicep' = {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: enclaveSubKtr.outputs.enclaveResourceId
     destinationResourceId: ep_enclaveWeapon_from_subktr.outputs.endpointId
-    sourceAddressSpace: filter(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    sourceAddressSpace: filter(enclaveSubKtr.outputs.enclaveSubnetConfigResolved, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
     location: location
     connectionName: 'ec-sub-weap-${uniqueNumber}'
     tags: {
@@ -2082,3 +2082,4 @@ module ec_external_to_identity_adds 'modules/enclave-connection.bicep' = {
     ep_enclaveSubKtr_cyber
   ]
 }
+

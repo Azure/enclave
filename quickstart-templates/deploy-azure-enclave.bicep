@@ -320,9 +320,9 @@ module enclave1 './modules/enclave.bicep' = {
 
 // Enclave-derived variables (computed from module outputs)
 // Includes enclave user specified subnets and management subnet
-var enclave1SourceAddressSpaceAllSubnets = '${join(map(enclave1.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclave1.outputs.managedAddressSpace, '/')[0]}/26'
+var enclave1SourceAddressSpaceAllSubnets = '${join(map(enclave1.outputs.enclaveSubnetConfigResolved, s => s.addressPrefix), ', ')}, ${split(enclave1.outputs.managedAddressSpace, '/')[0]}/26'
 // Use the first configured subnet for single-subnet connection flows
-var enclave1SourceAddressSpaceOneSubnet = enclave1.outputs.enclaveSubnetConfig[0].addressPrefix
+var enclave1SourceAddressSpaceOneSubnet = enclave1.outputs.enclaveSubnetConfigResolved[0].addressPrefix
 
 module enclaveEndpointWebApp './modules/enclave-endpoint.bicep' = {
   scope: resourceGroup(enclaveSubscriptionId, enclave1ResourceGroupName)
@@ -333,7 +333,7 @@ module enclaveEndpointWebApp './modules/enclave-endpoint.bicep' = {
     rules: [
       {
         endpointRuleName: 'enclave-web-app-subnet'
-        destination: enclave1.outputs.enclaveSubnetConfig[0].addressPrefix
+        destination: enclave1.outputs.enclaveSubnetConfigResolved[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -444,7 +444,7 @@ output enclaveName string = enclave1.outputs.name
 output enclaveAddressSpace string = enclave1.outputs.enclaveAddressSpace
 
 @description('The subnet configurations of the enclave.')
-output enclaveSubnetConfig array = enclave1.outputs.enclaveSubnetConfig
+output enclaveSubnetConfig array = enclave1.outputs.enclaveSubnetConfigResolved
 
 @description('The resource ID of the transit hub.')
 output transitHubResourceId string = deployTransitHub ? transitHub!.outputs.transitHubResourceId : ''
@@ -469,4 +469,5 @@ output enclaveConnectionIds array = [
   enclaveConnectionWinget.outputs.enclaveConnectionId
   enclaveConnectionWebApp.outputs.enclaveConnectionId
 ]
+
 
