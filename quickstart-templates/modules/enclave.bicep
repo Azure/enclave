@@ -206,6 +206,9 @@ output managedAddressSpace string = enclave.properties.enclaveAddressSpaces.mana
 @description('The subnet configurations of the enclave virtual network.')
 output enclaveSubnetConfig array = enclave.properties.enclaveVirtualNetwork.subnetConfigurations
 
+@description('Resolved subnet configurations of the enclave virtual network, including allocated address prefixes.')
+output enclaveSubnetConfigResolved array = reference(enclave.id, '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations
+
 @description('The current maintenance mode configuration.')
 output maintenanceModeConfiguration maintenanceModeConfigurationType = maintenanceModeConfiguration
 
