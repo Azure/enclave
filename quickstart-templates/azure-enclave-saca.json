@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "7441494900202610061"
+      "templateHash": "12210862744692174279"
     }
   },
   "definitions": {
@@ -5134,7 +5134,7 @@
             "value": "[reference('communityEndpointDefaultPortal').outputs.communityEndpointResourceId.value]"
           },
           "sourceAddressSpace": {
-            "value": "[reference(resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-mission', variables('uniqueEnclaveNamePrefix'))), '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations[0].addressPrefix]"
+            "value": "[filter(reference('enclaveMission').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -5606,7 +5606,7 @@
             "value": "[reference('enclaveEndpointIdentity').outputs.endpointId.value]"
           },
           "sourceAddressSpace": {
-            "value": "[reference(resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-mission', variables('uniqueEnclaveNamePrefix'))), '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations[0].addressPrefix]"
+            "value": "[filter(reference('enclaveMission').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -6237,7 +6237,7 @@
             "value": "[reference('communityEndpointWindowsUpdates').outputs.communityEndpointResourceId.value]"
           },
           "sourceAddressSpace": {
-            "value": "[reference(resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-mission', variables('uniqueEnclaveNamePrefix'))), '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations[0].addressPrefix]"
+            "value": "[filter(reference('enclaveMission').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -6869,7 +6869,7 @@
             "value": "[reference('communityEndpointWinget').outputs.communityEndpointResourceId.value]"
           },
           "sourceAddressSpace": {
-            "value": "[reference(resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-mission', variables('uniqueEnclaveNamePrefix'))), '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations[0].addressPrefix]"
+            "value": "[filter(reference('enclaveMission').outputs.enclaveSubnetConfig.value, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]"
           },
           "location": {
             "value": "[parameters('location')]"
