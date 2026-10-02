@@ -6,11 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-<<<<<<< HEAD
-      "templateHash": "14073585424531008827"
-=======
       "templateHash": "17504563175553669519"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
     }
   },
   "definitions": {
@@ -250,2088 +246,6 @@
         }
       }
     },
-<<<<<<< HEAD
-    "enclaveIdentity": {
-      "type": "Microsoft.Mission/virtualEnclaves",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}-identity', variables('uniqueEnclaveNamePrefix'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "enclaveVirtualNetwork": {
-          "networkSize": "[parameters('networkSize')]",
-          "subnetConfigurations": [
-            {
-              "subnetName": "AppSubnet",
-              "networkPrefixSize": 26
-            },
-            {
-              "subnetName": "WorkloadSubnet",
-              "networkPrefixSize": 26
-            }
-          ],
-          "allowSubnetCommunication": true
-        },
-        "maintenanceModeConfiguration": "[parameters('maintenanceModeConfig')]"
-      },
-      "dependsOn": [
-        "community"
-      ]
-    },
-    "enclaveCollab": {
-      "type": "Microsoft.Mission/virtualEnclaves",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}-collab', variables('uniqueEnclaveNamePrefix'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "enclaveVirtualNetwork": {
-          "networkSize": "[parameters('networkSize')]",
-          "subnetConfigurations": [
-            {
-              "subnetName": "AppSubnet",
-              "networkPrefixSize": 26
-            },
-            {
-              "subnetName": "WorkloadSubnet",
-              "networkPrefixSize": 26
-            }
-          ],
-          "allowSubnetCommunication": true
-        },
-        "maintenanceModeConfiguration": "[parameters('maintenanceModeConfig')]"
-      },
-      "dependsOn": [
-        "community"
-      ]
-    },
-    "enclaveDesktop": {
-      "type": "Microsoft.Mission/virtualEnclaves",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}-desktop', variables('uniqueEnclaveNamePrefix'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "enclaveVirtualNetwork": {
-          "networkSize": "[parameters('networkSize')]",
-          "subnetConfigurations": [
-            {
-              "subnetName": "AppSubnet",
-              "networkPrefixSize": 26
-            },
-            {
-              "subnetName": "WorkloadSubnet",
-              "networkPrefixSize": 26
-            }
-          ],
-          "allowSubnetCommunication": true
-        },
-        "maintenanceModeConfiguration": "[parameters('maintenanceModeConfig')]"
-      },
-      "dependsOn": [
-        "community"
-      ]
-    },
-    "enclavePlatform": {
-      "type": "Microsoft.Mission/virtualEnclaves",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}-platform', variables('uniqueEnclaveNamePrefix'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "platforms",
-        "company": "PrimeContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "enclaveVirtualNetwork": {
-          "networkSize": "[parameters('networkSize')]",
-          "subnetConfigurations": [
-            {
-              "subnetName": "AppSubnet",
-              "networkPrefixSize": 26
-            },
-            {
-              "subnetName": "WorkloadSubnet",
-              "networkPrefixSize": 26
-            }
-          ],
-          "allowSubnetCommunication": true
-        },
-        "maintenanceModeConfiguration": "[parameters('maintenanceModeConfig')]"
-      },
-      "dependsOn": [
-        "community"
-      ]
-    },
-    "enclaveWeapon": {
-      "type": "Microsoft.Mission/virtualEnclaves",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}-weapon', variables('uniqueEnclaveNamePrefix'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "PewPewDept",
-        "company": "WeaponContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "enclaveVirtualNetwork": {
-          "networkSize": "[parameters('networkSize')]",
-          "subnetConfigurations": [
-            {
-              "subnetName": "AppSubnet",
-              "networkPrefixSize": 26
-            },
-            {
-              "subnetName": "WorkloadSubnet",
-              "networkPrefixSize": 26
-            }
-          ],
-          "allowSubnetCommunication": true
-        },
-        "maintenanceModeConfiguration": "[parameters('maintenanceModeConfig')]"
-      },
-      "dependsOn": [
-        "community"
-      ]
-    },
-    "enclaveSubKtr": {
-      "type": "Microsoft.Mission/virtualEnclaves",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}-subktr', variables('uniqueEnclaveNamePrefix'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "SoftwareDevDept",
-        "company": "Subcontractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "enclaveVirtualNetwork": {
-          "networkSize": "[parameters('networkSize')]",
-          "subnetConfigurations": [
-            {
-              "subnetName": "AppSubnet",
-              "networkPrefixSize": 26
-            },
-            {
-              "subnetName": "WorkloadSubnet",
-              "networkPrefixSize": 26
-            }
-          ],
-          "allowSubnetCommunication": true
-        },
-        "maintenanceModeConfiguration": "[parameters('maintenanceModeConfig')]"
-      },
-      "dependsOn": [
-        "community"
-      ]
-    },
-    "enclaveCyber": {
-      "type": "Microsoft.Mission/virtualEnclaves",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}-cyber', variables('uniqueEnclaveNamePrefix'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "enclaveVirtualNetwork": {
-          "networkSize": "[parameters('networkSize')]",
-          "subnetConfigurations": [
-            {
-              "subnetName": "AppSubnet",
-              "networkPrefixSize": 26
-            },
-            {
-              "subnetName": "WorkloadSubnet",
-              "networkPrefixSize": 26
-            }
-          ],
-          "allowSubnetCommunication": true
-        },
-        "maintenanceModeConfiguration": "[parameters('maintenanceModeConfig')]"
-      },
-      "dependsOn": [
-        "community"
-      ]
-    },
-    "enclaveOffline": {
-      "type": "Microsoft.Mission/virtualEnclaves",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}-offline', variables('uniqueEnclaveNamePrefix'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "SensitiveDataDept",
-        "company": "R&D_Collaboration"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "enclaveVirtualNetwork": {
-          "networkSize": "[parameters('networkSize')]",
-          "subnetConfigurations": [
-            {
-              "subnetName": "AppSubnet",
-              "networkPrefixSize": 26
-            },
-            {
-              "subnetName": "WorkloadSubnet",
-              "networkPrefixSize": 26
-            }
-          ],
-          "allowSubnetCommunication": true
-        },
-        "maintenanceModeConfiguration": "[parameters('maintenanceModeConfig')]"
-      },
-      "dependsOn": [
-        "community"
-      ]
-    },
-    "wl_enclaveIdentity_adds": {
-      "type": "Microsoft.Mission/virtualEnclaves/workloads",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-identity', variables('uniqueEnclaveNamePrefix')), format('wl-id-ADDS-{0}', parameters('uniqueNumber')))]",
-      "properties": {
-        "resourceGroupCollection": [
-          "[format('{0}/resourcegroups/rg-id-ADDS-{1}-{2}', subscription().id, parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
-        ]
-      },
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "dependsOn": [
-        "enclaveIdentity"
-      ]
-    },
-    "wl_enclaveDesktop_desktop": {
-      "type": "Microsoft.Mission/virtualEnclaves/workloads",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-desktop', variables('uniqueEnclaveNamePrefix')), format('wl-desktops-{0}', parameters('uniqueNumber')))]",
-      "properties": {
-        "resourceGroupCollection": [
-          "[format('{0}/resourcegroups/rg-desktops-{1}-{2}', subscription().id, parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
-        ]
-      },
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "dependsOn": [
-        "enclaveDesktop"
-      ]
-    },
-    "wl_enclaveCollab_apps": {
-      "type": "Microsoft.Mission/virtualEnclaves/workloads",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-collab', variables('uniqueEnclaveNamePrefix')), format('wl-collab-apps-{0}', parameters('uniqueNumber')))]",
-      "properties": {
-        "resourceGroupCollection": [
-          "[format('{0}/resourcegroups/rg-collab-apps-{1}-{2}', subscription().id, parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
-        ]
-      },
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "dependsOn": [
-        "enclaveCollab"
-      ]
-    },
-    "wl_enclavePlatform_apps": {
-      "type": "Microsoft.Mission/virtualEnclaves/workloads",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-platform', variables('uniqueEnclaveNamePrefix')), format('wl-platform-apps-{0}', parameters('uniqueNumber')))]",
-      "properties": {
-        "resourceGroupCollection": [
-          "[format('{0}/resourcegroups/rg-platform-apps-{1}-{2}', subscription().id, parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
-        ]
-      },
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "platforms",
-        "company": "primeContractor"
-      },
-      "dependsOn": [
-        "enclavePlatform"
-      ]
-    },
-    "wl_enclaveWeapon_apps": {
-      "type": "Microsoft.Mission/virtualEnclaves/workloads",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')), format('wl-weapon-apps-{0}', parameters('uniqueNumber')))]",
-      "properties": {
-        "resourceGroupCollection": [
-          "[format('{0}/resourcegroups/rg-weapon-apps-{1}-{2}', subscription().id, parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
-        ]
-      },
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "pewPewDept",
-        "company": "weaponContractor"
-      },
-      "dependsOn": [
-        "enclaveWeapon"
-      ]
-    },
-    "wl_enclaveSubKtr_apps": {
-      "type": "Microsoft.Mission/virtualEnclaves/workloads",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-subktr', variables('uniqueEnclaveNamePrefix')), format('wl-subktr-apps-{0}', parameters('uniqueNumber')))]",
-      "properties": {
-        "resourceGroupCollection": [
-          "[format('{0}/resourcegroups/rg-subktr-apps-{1}-{2}', subscription().id, parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
-        ]
-      },
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "softwareDevDept",
-        "company": "subContractor"
-      },
-      "dependsOn": [
-        "enclaveSubKtr"
-      ]
-    },
-    "wl_enclaveCyber_apps": {
-      "type": "Microsoft.Mission/virtualEnclaves/workloads",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-cyber', variables('uniqueEnclaveNamePrefix')), format('wl-cyber-apps-{0}', parameters('uniqueNumber')))]",
-      "properties": {
-        "resourceGroupCollection": [
-          "[format('{0}/resourcegroups/rg-cyber-apps-{1}-{2}', subscription().id, parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
-        ]
-      },
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "dependsOn": [
-        "enclaveCyber"
-      ]
-    },
-    "wl_enclaveOffline_apps": {
-      "type": "Microsoft.Mission/virtualEnclaves/workloads",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-offline', variables('uniqueEnclaveNamePrefix')), format('wl-offline-apps-{0}', parameters('uniqueNumber')))]",
-      "properties": {
-        "resourceGroupCollection": [
-          "[format('{0}/resourcegroups/rg-offline-apps-{1}-{2}', subscription().id, parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
-        ]
-      },
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "sensitiveDataDept",
-        "company": "R&D_Collaboration"
-      },
-      "dependsOn": [
-        "enclaveOffline"
-      ]
-    },
-    "enclaveIdentity_endpointName_1_v2": {
-      "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-identity', variables('uniqueEnclaveNamePrefix')), 'ee-ADDS')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "ruleCollection": [
-          {
-            "endpointRuleName": "ADDS-TCP",
-            "destination": "[filter(reference('enclaveIdentity').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-            "ports": "53,88,135,138,139,389,445,464,636,686,3268-3269,5722,9389,49152-65535",
-            "protocols": [
-              "TCP"
-            ]
-          },
-          {
-            "endpointRuleName": "ADDS-UDP",
-            "destination": "[filter(reference('enclaveIdentity').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-            "ports": "53,389",
-            "protocols": [
-              "UDP"
-            ]
-          }
-        ]
-      },
-      "dependsOn": [
-        "enclaveIdentity"
-      ]
-    },
-    "ep_enclavePlatform_from_weapon": {
-      "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-platform', variables('uniqueEnclaveNamePrefix')), 'ee-platform-from-weapon')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "platforms",
-        "company": "primeContractor"
-      },
-      "properties": {
-        "ruleCollection": [
-          {
-            "endpointRuleName": "inbound-to-platform",
-            "destination": "[filter(reference('enclavePlatform').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-            "ports": "443",
-            "protocols": [
-              "TCP"
-            ]
-          }
-        ]
-      },
-      "dependsOn": [
-        "enclavePlatform"
-      ]
-    },
-    "ep_enclaveWeapon_from_platform": {
-      "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')), 'ee-weapon-from-platform')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "pewPewDept",
-        "company": "weaponContractor"
-      },
-      "properties": {
-        "ruleCollection": [
-          {
-            "endpointRuleName": "inbound-to-weapon",
-            "destination": "[filter(reference('enclaveWeapon').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-            "ports": "443",
-            "protocols": [
-              "TCP"
-            ]
-          }
-        ]
-      },
-      "dependsOn": [
-        "enclaveWeapon"
-      ]
-    },
-    "ep_enclaveWeapon_from_subktr": {
-      "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')), 'ee-weapon-from-subktr')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "pewPewDept",
-        "company": "weaponContractor"
-      },
-      "properties": {
-        "ruleCollection": [
-          {
-            "endpointRuleName": "inbound-to-weapon",
-            "destination": "[filter(reference('enclaveWeapon').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-            "ports": "443",
-            "protocols": [
-              "TCP"
-            ]
-          }
-        ]
-      },
-      "dependsOn": [
-        "enclaveWeapon"
-      ]
-    },
-    "ep_enclaveSubKtr_from_weapon": {
-      "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-subktr', variables('uniqueEnclaveNamePrefix')), 'ee-subktr-from-weapon')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "softwareDevDept",
-        "company": "subContractor"
-      },
-      "properties": {
-        "ruleCollection": [
-          {
-            "endpointRuleName": "inbound-to-subktr",
-            "destination": "[filter(reference('enclaveSubKtr').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-            "ports": "443",
-            "protocols": [
-              "TCP"
-            ]
-          }
-        ]
-      },
-      "dependsOn": [
-        "enclaveSubKtr"
-      ]
-    },
-    "ep_enclaveIdentity_cyber": {
-      "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-identity', variables('uniqueEnclaveNamePrefix')), 'ee-identity-cyber')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "ruleCollection": [
-          {
-            "endpointRuleName": "cyber-inbound",
-            "destination": "[filter(reference('enclaveIdentity').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-            "ports": "443",
-            "protocols": [
-              "TCP"
-            ]
-          }
-        ]
-      },
-      "dependsOn": [
-        "enclaveIdentity"
-      ]
-    },
-    "ep_enclaveDesktop_cyber": {
-      "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-desktop', variables('uniqueEnclaveNamePrefix')), 'ee-desktop-cyber')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "ruleCollection": [
-          {
-            "endpointRuleName": "cyber-inbound",
-            "destination": "[filter(reference('enclaveDesktop').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-            "ports": "443",
-            "protocols": [
-              "TCP"
-            ]
-          }
-        ]
-      },
-      "dependsOn": [
-        "enclaveDesktop"
-      ]
-    },
-    "ep_enclaveCollab_cyber": {
-      "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-collab', variables('uniqueEnclaveNamePrefix')), 'ee-collab-cyber')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "ruleCollection": [
-          {
-            "endpointRuleName": "cyber-inbound",
-            "destination": "[filter(reference('enclaveCollab').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-            "ports": "443",
-            "protocols": [
-              "TCP"
-            ]
-          }
-        ]
-      },
-      "dependsOn": [
-        "enclaveCollab"
-      ]
-    },
-    "ep_enclavePlatform_cyber": {
-      "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-platform', variables('uniqueEnclaveNamePrefix')), 'ee-platform-cyber')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "platforms",
-        "company": "primeContractor"
-      },
-      "properties": {
-        "ruleCollection": [
-          {
-            "endpointRuleName": "cyber-inbound",
-            "destination": "[filter(reference('enclavePlatform').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-            "ports": "443",
-            "protocols": [
-              "TCP"
-            ]
-          }
-        ]
-      },
-      "dependsOn": [
-        "enclavePlatform"
-      ]
-    },
-    "ep_enclaveWeapon_cyber": {
-      "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')), 'ee-weapon-cyber')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "pewPewDept",
-        "company": "weaponContractor"
-      },
-      "properties": {
-        "ruleCollection": [
-          {
-            "endpointRuleName": "cyber-inbound",
-            "destination": "[filter(reference('enclaveWeapon').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-            "ports": "443",
-            "protocols": [
-              "TCP"
-            ]
-          }
-        ]
-      },
-      "dependsOn": [
-        "enclaveWeapon"
-      ]
-    },
-    "ep_enclaveSubKtr_cyber": {
-      "type": "Microsoft.Mission/virtualEnclaves/enclaveEndpoints",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-subktr', variables('uniqueEnclaveNamePrefix')), 'ee-subktr-cyber')]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "softwareDevDept",
-        "company": "subContractor"
-      },
-      "properties": {
-        "ruleCollection": [
-          {
-            "endpointRuleName": "cyber-inbound",
-            "destination": "[filter(reference('enclaveSubKtr').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-            "ports": "443",
-            "protocols": [
-              "TCP"
-            ]
-          }
-        ]
-      },
-      "dependsOn": [
-        "enclaveSubKtr"
-      ]
-    },
-    "ec_collab_to_external": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-collab-to-external-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-collab', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCollab').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointExternal').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCollab",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_collab_to_defaultPortal_cm_ep": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-collab-to-defaultPortal-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-collab', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCollab').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointDefaultPortal').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCollab",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_desktop_to_defaultPortal_cm_ep": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-desktop-to-defaultPortal-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-desktop', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveDesktop').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointDefaultPortal').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveDesktop",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_platform_to_defaultPortal_cm_ep": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-platform-to-defaultPortal-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "platforms",
-        "company": "primeContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-platform', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclavePlatform').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointDefaultPortal').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclavePlatform",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_weapon_to_defaultPortal_cm_ep": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-weapon-to-defaultPortal-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "pewPewDept",
-        "company": "weaponContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveWeapon').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointDefaultPortal').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclaveWeapon",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_subktr_to_defaultPortal_cm_ep": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-subktr-to-defaultPortal-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "softwareDevDept",
-        "company": "subContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-subktr', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveSubKtr').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointDefaultPortal').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclaveSubKtr",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_cyber_to_defaultPortal_cm_ep": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-cyber-to-defaultPortal-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-cyber', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCyber').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointDefaultPortal').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCyber",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_collab_to_identity_adds": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-collab-to-identity-adds-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-collab', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCollab').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-identity', variables('uniqueEnclaveNamePrefix')), 'ee-ADDS')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCollab",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_desktop_to_identity_adds": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-desktop-to-identity-adds-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-desktop', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveDesktop').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-identity', variables('uniqueEnclaveNamePrefix')), 'ee-ADDS')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveDesktop",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_platform_to_identity_adds": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-platform-to-identity-adds-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "platforms",
-        "company": "primeContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-platform', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclavePlatform').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-identity', variables('uniqueEnclaveNamePrefix')), 'ee-ADDS')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclavePlatform",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_weapon_to_identity_adds": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-weapon-to-identity-adds-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "pewPewDept",
-        "company": "weaponContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveWeapon').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-identity', variables('uniqueEnclaveNamePrefix')), 'ee-ADDS')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclaveWeapon",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_subktr_to_identity_adds": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-subktr-to-identity-adds-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "softwareDevDept",
-        "company": "subContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-subktr', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveSubKtr').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-identity', variables('uniqueEnclaveNamePrefix')), 'ee-ADDS')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclaveSubKtr",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_cyber_to_identity_adds": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-cyber-to-identity-adds-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-cyber', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCyber').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-identity', variables('uniqueEnclaveNamePrefix')), 'ee-ADDS')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCyber",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_cyber_to_identity": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-cyber-to-identity-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-cyber', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCyber').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-identity', variables('uniqueEnclaveNamePrefix')), 'ee-identity-cyber')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCyber",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_cyber_to_desktop": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-cyber-to-desktop-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-cyber', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCyber').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-desktop', variables('uniqueEnclaveNamePrefix')), 'ee-desktop-cyber')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCyber",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_cyber_to_collab": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-cyber-to-collab-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-cyber', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCyber').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-collab', variables('uniqueEnclaveNamePrefix')), 'ee-collab-cyber')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCyber",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_cyber_to_platform": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-cyber-to-platform-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "platforms",
-        "company": "primeContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-cyber', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCyber').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-platform', variables('uniqueEnclaveNamePrefix')), 'ee-platform-cyber')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCyber",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_cyber_to_weapon": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-cyber-to-weapon-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-cyber', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCyber').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')), 'ee-weapon-cyber')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCyber",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_cyber_to_subktr": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-cyber-to-subktr-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-cyber', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCyber').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-subktr', variables('uniqueEnclaveNamePrefix')), 'ee-subktr-cyber')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCyber",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_desktop_to_cm_ep_bingOutlook": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-desktop-to-ce-bing-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-desktop', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveDesktop').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointDataSource').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveDesktop",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_identity_to_cm_ep_win_update": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-identity-to-ce-win-update-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-identity', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[format('{0}, {1}/26', join(map(reference('enclaveIdentity').enclaveVirtualNetwork.subnetConfigurations, lambda('s', lambdaVariables('s').addressPrefix)), ', '), split(reference('enclaveIdentity').enclaveAddressSpaces.managedAddressSpace, '/')[0])]",
-        "destinationEndpointId": "[reference('communityEndpointWindowsUpdates').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_collab_to_cm_ep_win_update": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-collab-to-ce-win-update-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-collab', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[format('{0}, {1}/26', join(map(reference('enclaveCollab').enclaveVirtualNetwork.subnetConfigurations, lambda('s', lambdaVariables('s').addressPrefix)), ', '), split(reference('enclaveCollab').enclaveAddressSpaces.managedAddressSpace, '/')[0])]",
-        "destinationEndpointId": "[reference('communityEndpointWindowsUpdates').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCollab",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_desktop_to_cm_ep_win_update": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-desktop-to-ce-win-update-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-desktop', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[format('{0}, {1}/26', join(map(reference('enclaveDesktop').enclaveVirtualNetwork.subnetConfigurations, lambda('s', lambdaVariables('s').addressPrefix)), ', '), split(reference('enclaveDesktop').enclaveAddressSpaces.managedAddressSpace, '/')[0])]",
-        "destinationEndpointId": "[reference('communityEndpointWindowsUpdates').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveDesktop",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_platform_to_cm_ep_win_update": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-platform-to-ce-win-update-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-platform', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[format('{0}, {1}/26', join(map(reference('enclavePlatform').enclaveVirtualNetwork.subnetConfigurations, lambda('s', lambdaVariables('s').addressPrefix)), ', '), split(reference('enclavePlatform').enclaveAddressSpaces.managedAddressSpace, '/')[0])]",
-        "destinationEndpointId": "[reference('communityEndpointWindowsUpdates').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclavePlatform",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_weapon_to_cm_ep_win_update": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-weapon-to-ce-win-update-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[format('{0}, {1}/26', join(map(reference('enclaveWeapon').enclaveVirtualNetwork.subnetConfigurations, lambda('s', lambdaVariables('s').addressPrefix)), ', '), split(reference('enclaveWeapon').enclaveAddressSpaces.managedAddressSpace, '/')[0])]",
-        "destinationEndpointId": "[reference('communityEndpointWindowsUpdates').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclaveWeapon",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_subktr_to_cm_ep_win_update": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-subktr-to-ce-win-update-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-subktr', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[format('{0}, {1}/26', join(map(reference('enclaveSubKtr').enclaveVirtualNetwork.subnetConfigurations, lambda('s', lambdaVariables('s').addressPrefix)), ', '), split(reference('enclaveSubKtr').enclaveAddressSpaces.managedAddressSpace, '/')[0])]",
-        "destinationEndpointId": "[reference('communityEndpointWindowsUpdates').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclaveSubKtr",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_cyber_to_cm_ep_win_update": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-cyber-to-ce-win-update-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-cyber', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[format('{0}, {1}/26', join(map(reference('enclaveCyber').enclaveVirtualNetwork.subnetConfigurations, lambda('s', lambdaVariables('s').addressPrefix)), ', '), split(reference('enclaveCyber').enclaveAddressSpaces.managedAddressSpace, '/')[0])]",
-        "destinationEndpointId": "[reference('communityEndpointWindowsUpdates').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCyber",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_identity_to_cm_ep_winget": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-identity-to-ce-winget-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-identity', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveIdentity').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointWinget').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_collab_to_cm_ep_winget": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-collab-to-ce-winget-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-collab', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCollab').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointWinget').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCollab",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_desktop_to_cm_ep_winget": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-desktop-to-ce-winget-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-desktop', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveDesktop').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointWinget').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveDesktop",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_platform_to_cm_ep_winget": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-platform-to-ce-winget-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-platform', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclavePlatform').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointWinget').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclavePlatform",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_weapon_to_cm_ep_winget": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-weapon-to-ce-winget-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveWeapon').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointWinget').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclaveWeapon",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_subktr_to_cm_ep_winget": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-subktr-to-ce-winget-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-subktr', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveSubKtr').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointWinget').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclaveSubKtr",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_cyber_to_cm_ep_winget": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-cyber-to-ce-winget-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-cyber', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveCyber').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[reference('communityEndpointWinget').outputs.communityEndpointResourceId.value]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveCyber",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_platform_to_weapon": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-platform-to-weapon-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "platforms",
-        "company": "primeContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-platform', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclavePlatform').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')), 'ee-weapon-from-platform')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclavePlatform",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_weapon_to_platform": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-weapon-to-platform-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "pewPewDept",
-        "company": "weaponContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveWeapon').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-platform', variables('uniqueEnclaveNamePrefix')), 'ee-platform-from-weapon')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclaveWeapon",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_weapon_to_subktr": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-weapon-to-subktr-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "pewPewDept",
-        "company": "weaponContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveWeapon').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-subktr', variables('uniqueEnclaveNamePrefix')), 'ee-subktr-from-weapon')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclaveWeapon",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_subktr_to_weapon": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-subktr-to-weapon-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "softwareDevDept",
-        "company": "subContractor"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[resourceId('Microsoft.Mission/virtualEnclaves', format('{0}-subktr', variables('uniqueEnclaveNamePrefix')))]",
-        "sourceCidr": "[filter(reference('enclaveSubKtr').enclaveVirtualNetwork.subnetConfigurations, lambda('s', equals(lambdaVariables('s').subnetName, 'WorkloadSubnet')))[0].addressPrefix]",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-weapon', variables('uniqueEnclaveNamePrefix')), 'ee-weapon-from-subktr')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "enclaveSubKtr",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr"
-      ]
-    },
-    "ec_external_to_identity_adds": {
-      "type": "Microsoft.Mission/enclaveConnections",
-      "apiVersion": "2025-05-01-preview",
-      "name": "[format('ec-external-to-identity-adds-demo-{0}', parameters('uniqueNumber'))]",
-      "location": "[parameters('location')]",
-      "tags": {
-        "department": "CommunitySharedServices",
-        "company": "CommunityOversight"
-      },
-      "properties": {
-        "communityResourceId": "[reference('community').outputs.resourceId.value]",
-        "sourceResourceId": "[reference('transitHub').outputs.transitHubResourceId.value]",
-        "sourceCidr": "172.16.18.0/24",
-        "destinationEndpointId": "[resourceId('Microsoft.Mission/virtualEnclaves/enclaveEndpoints', format('{0}-identity', variables('uniqueEnclaveNamePrefix')), 'ee-ADDS')]"
-      },
-      "dependsOn": [
-        "community",
-        "communityEndpointDataSource",
-        "communityEndpointDefaultPortal",
-        "communityEndpointExternal",
-        "communityEndpointWindowsUpdates",
-        "communityEndpointWinget",
-        "enclaveIdentity_endpointName_1_v2",
-        "ep_enclaveCollab_cyber",
-        "ep_enclaveDesktop_cyber",
-        "ep_enclaveIdentity_cyber",
-        "ep_enclavePlatform_cyber",
-        "ep_enclavePlatform_from_weapon",
-        "ep_enclaveSubKtr_cyber",
-        "ep_enclaveSubKtr_from_weapon",
-        "ep_enclaveWeapon_cyber",
-        "ep_enclaveWeapon_from_platform",
-        "ep_enclaveWeapon_from_subktr",
-        "transitHub"
-      ]
-    },
-=======
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
     "community": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
@@ -2372,11 +286,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "15211851496822557066"
-=======
               "templateHash": "6721890420651872179"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
@@ -2515,8 +425,6 @@
               "properties": {
                 "serviceId": {
                   "type": "string",
-<<<<<<< HEAD
-=======
                   "allowedValues": [
                     "AKS",
                     "AppService",
@@ -2534,17 +442,12 @@
                     "ServiceBus",
                     "Storage"
                   ],
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   "metadata": {
                     "description": "The service identifier."
                   }
                 },
                 "option": {
                   "type": "string",
-<<<<<<< HEAD
-                  "metadata": {
-                    "description": "The service option (Allow, Deny, NotApplicable)."
-=======
                   "allowedValues": [
                     "Allow",
                     "Deny",
@@ -2553,30 +456,20 @@
                   ],
                   "metadata": {
                     "description": "The service option (Allow, Deny, ExceptionOnly, or NotApplicable)."
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   }
                 },
                 "enforcement": {
                   "type": "string",
-<<<<<<< HEAD
-                  "metadata": {
-                    "description": "The enforcement mode (Enabled, Disabled)."
-=======
                   "allowedValues": [
                     "Disabled",
                     "Enabled"
                   ],
                   "metadata": {
                     "description": "The enforcement mode (Enabled or Disabled)."
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   }
                 },
                 "policyAction": {
                   "type": "string",
-<<<<<<< HEAD
-                  "metadata": {
-                    "description": "The policy action (Enforce, Audit)."
-=======
                   "allowedValues": [
                     "AuditOnly",
                     "Enforce",
@@ -2634,7 +527,6 @@
                   "$ref": "#/definitions/diagnosticDestinationType",
                   "metadata": {
                     "description": "The destination for flow logs."
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   }
                 }
               }
@@ -2694,18 +586,6 @@
                 "description": "The list of governed services for the community."
               }
             },
-<<<<<<< HEAD
-            "approvalSettings": {
-              "$ref": "#/definitions/communityApprovalSettingsType",
-              "defaultValue": {
-                "communityEndpointUpdate": null,
-                "communityMaintenanceMode": null,
-                "connectionCreation": null,
-                "connectionUpdate": null,
-                "enclaveCreation": null,
-                "enclaveEndpointUpdate": null,
-                "enclaveMaintenanceMode": null
-=======
             "monitoringSettings": {
               "$ref": "#/definitions/monitoringSettingsType",
               "defaultValue": {
@@ -2761,7 +641,6 @@
                   "mandatoryApprovers": [],
                   "minimumApproversRequired": 1
                 }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -2780,10 +659,7 @@
                 "addressSpace": "[parameters('addressSpace')]",
                 "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]",
                 "governedServiceList": "[parameters('governedServiceList')]",
-<<<<<<< HEAD
-=======
                 "monitoringSettings": "[parameters('monitoringSettings')]",
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "approvalSettings": {
                   "communityEndpointUpdate": "[tryGet(parameters('approvalSettings'), 'communityEndpointUpdate')]",
                   "communityMaintenanceMode": "[tryGet(parameters('approvalSettings'), 'communityMaintenanceMode')]",
@@ -2876,12 +752,6 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "3698052620106389402"
-            }
-          },
-          "definitions": {
-=======
               "templateHash": "3689946510813165946"
             }
           },
@@ -2905,7 +775,6 @@
                 }
               }
             },
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             "transitOptionType": {
               "type": "object",
               "properties": {
@@ -2921,11 +790,7 @@
                   }
                 },
                 "params": {
-<<<<<<< HEAD
-                  "type": "object",
-=======
                   "$ref": "#/definitions/transitOptionParamsType",
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   "metadata": {
                     "description": "Parameters specific to the transit type."
                   }
@@ -2975,8 +840,6 @@
               "metadata": {
                 "description": "Tags to be assigned to the transit hub."
               }
-<<<<<<< HEAD
-=======
             },
             "securityProvider": {
               "type": "string",
@@ -2988,7 +851,6 @@
               "metadata": {
                 "description": "The security provider for the transit hub."
               }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -3005,10 +867,7 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-<<<<<<< HEAD
-=======
                 "securityProvider": "[parameters('securityProvider')]",
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "transitOption": "[parameters('transitOption')]"
               }
             }
@@ -3470,11 +1329,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "16775608663396955211"
-=======
               "templateHash": "13573103881482708685"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -3496,10 +1351,6 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
-<<<<<<< HEAD
-                "IP",
-=======
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -3619,8 +1470,6 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
-<<<<<<< HEAD
-=======
             },
             "updateMode": {
               "type": "string",
@@ -3632,7 +1481,6 @@
               "metadata": {
                 "description": "Whether endpoint rule updates are applied automatically or require manual approval."
               }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -3649,12 +1497,8 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-<<<<<<< HEAD
-                "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
-=======
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
                 "updateMode": "[parameters('updateMode')]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -3725,11 +1569,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "16775608663396955211"
-=======
               "templateHash": "13573103881482708685"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -3751,10 +1591,6 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
-<<<<<<< HEAD
-                "IP",
-=======
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -3874,8 +1710,6 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
-<<<<<<< HEAD
-=======
             },
             "updateMode": {
               "type": "string",
@@ -3887,7 +1721,6 @@
               "metadata": {
                 "description": "Whether endpoint rule updates are applied automatically or require manual approval."
               }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -3904,12 +1737,8 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-<<<<<<< HEAD
-                "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
-=======
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
                 "updateMode": "[parameters('updateMode')]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -3980,11 +1809,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "16775608663396955211"
-=======
               "templateHash": "13573103881482708685"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -4006,10 +1831,6 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
-<<<<<<< HEAD
-                "IP",
-=======
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -4129,8 +1950,6 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
-<<<<<<< HEAD
-=======
             },
             "updateMode": {
               "type": "string",
@@ -4142,7 +1961,6 @@
               "metadata": {
                 "description": "Whether endpoint rule updates are applied automatically or require manual approval."
               }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -4159,12 +1977,8 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-<<<<<<< HEAD
-                "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
-=======
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
                 "updateMode": "[parameters('updateMode')]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -4235,11 +2049,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "16775608663396955211"
-=======
               "templateHash": "13573103881482708685"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -4261,10 +2071,6 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
-<<<<<<< HEAD
-                "IP",
-=======
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -4384,8 +2190,6 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
-<<<<<<< HEAD
-=======
             },
             "updateMode": {
               "type": "string",
@@ -4397,7 +2201,6 @@
               "metadata": {
                 "description": "Whether endpoint rule updates are applied automatically or require manual approval."
               }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -4414,12 +2217,8 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-<<<<<<< HEAD
-                "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
-=======
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
                 "updateMode": "[parameters('updateMode')]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -4490,11 +2289,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "16775608663396955211"
-=======
               "templateHash": "13573103881482708685"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -4516,10 +2311,6 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
-<<<<<<< HEAD
-                "IP",
-=======
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -4639,8 +2430,6 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
-<<<<<<< HEAD
-=======
             },
             "updateMode": {
               "type": "string",
@@ -4652,7 +2441,6 @@
               "metadata": {
                 "description": "Whether endpoint rule updates are applied automatically or require manual approval."
               }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -4669,12 +2457,8 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-<<<<<<< HEAD
-                "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
-=======
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
                 "updateMode": "[parameters('updateMode')]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -4707,11 +2491,6 @@
         "community",
         "communityEndpointRules"
       ]
-<<<<<<< HEAD
-    }
-  }
-}
-=======
     },
     "enclaveIdentity": {
       "type": "Microsoft.Resources/deployments",
@@ -17129,4 +14908,3 @@
     }
   }
 }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc

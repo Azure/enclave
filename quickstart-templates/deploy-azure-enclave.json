@@ -6,11 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-<<<<<<< HEAD
-      "templateHash": "16670250633111972177"
-=======
       "templateHash": "17097276438984958972"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
     }
   },
   "definitions": {
@@ -259,8 +255,6 @@
         "description": "Name for the workload resource (only used if deployWorkload is true)."
       }
     },
-<<<<<<< HEAD
-=======
     "workloadNames": {
       "type": "array",
       "defaultValue": [],
@@ -268,7 +262,6 @@
         "description": "Optional list of workload names to deploy. If provided, this list takes precedence over workloadName."
       }
     },
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
     "workloadResourceGroupName": {
       "type": "string",
       "defaultValue": "[if(parameters('appendUniqueNameSuffix'), format('wl-rg-{0}-{1}-{2}-{3}', parameters('prefix'), parameters('enclaveLabel'), parameters('suffix'), substring(uniqueString(deployment().name, parameters('location')), 0, 4)), format('wl-rg-{0}-{1}-{2}', parameters('prefix'), parameters('enclaveLabel'), parameters('suffix')))]",
@@ -405,209 +398,8 @@
         "policyAction": "Enforce"
       }
     ],
-<<<<<<< HEAD
-    "transitOptions": "[if(equals(parameters('transitHubConnectionType'), 'Peering'), createObject('type', parameters('transitHubConnectionType'), 'params', createObject('remoteVirtualNetworkId', parameters('transitHubRemoteVnetId'))), createObject('type', parameters('transitHubConnectionType'), 'params', createObject('scaleUnits', 2)))]",
-    "authenticationEndpointRules": [
-      {
-        "endpointRuleName": "auth-microsoft",
-        "destinationType": "FQDN",
-        "destination": "login.microsoftonline.com,*.msft.sts.microsoft.com,*.aadcdn.msftauth.net,*.aadcdn.msftauthimages.net,*.aadcdn.msauthimages.net,*.logincdn.msftauth.net,login.live.com,*.msauth.net,microsoftonline-p.com,*.microsoftonline-p.com,*.live.com,*.microsoftonline.com,*.microsoftonlinesupport.net,autologon.microsoftazuread-sso.com,clientconfig.passport.net,hrd.svc.cloud.microsoft",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      },
-      {
-        "endpointRuleName": "auth-mfa",
-        "destinationType": "FQDN",
-        "destination": "pfd.phonefactor.net,pfd2.phonefactor.net,css.phonefactor.net",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      },
-      {
-        "endpointRuleName": "auth-certs",
-        "destinationType": "FQDN",
-        "destination": "*.digicert.com,www.microsoft.com,crl.microsoft.com",
-        "protocols": [
-          "HTTP"
-        ],
-        "ports": "80"
-      }
-    ],
-    "portalManagementEndpointRules": [
-      {
-        "endpointRuleName": "portal-core",
-        "destinationType": "FQDN",
-        "destination": "*.portal.azure.com,*.hosting.portal.azure.net,*.reactblade.portal.azure.net,*reactblade-ms.portal.azure.net,afd-v2.hosting-ms.portal.azure.net,shell.azure.com,management.azure.com",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      },
-      {
-        "endpointRuleName": "portal-services",
-        "destinationType": "FQDN",
-        "destination": "gallery.azure.com,marketplacedataprovider.azure.com,marketplaceemail.azure.com,catalogapi.azure.com,catalogartifact.azureedge.net",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      }
-    ],
-    "azureServiceEndpointRules": [
-      {
-        "endpointRuleName": "services-data-analytics",
-        "destinationType": "FQDN",
-        "destination": "*.asazure.windows.net,asazure.windows.net,*.database.windows.net,datalake.azure.net,cosmos.azure.com,dev.azuresynapse.net,kusto.windows.net,help.kusto.windows.net",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      },
-      {
-        "endpointRuleName": "services-compute-integration",
-        "destinationType": "FQDN",
-        "destination": "appservice.azure.com,*.azurewebsites.net,batch.azure.com,functions.azure.com,logic.azure.com,eventhubs.azure.net,servicebus.azure.net,servicebus.windows.net,*.servicebus.windows.net",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      },
-      {
-        "endpointRuleName": "services-ai-iot",
-        "destinationType": "FQDN",
-        "destination": "cognitiveservices.azure.com,digitaltwins.azure.net,sphere.azure.net,quantum.azure.com",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      },
-      {
-        "endpointRuleName": "services-governance-security",
-        "destinationType": "FQDN",
-        "destination": "purview.azure.com,informationprotection.azure.com,api.aadrm.com,identitygovernance.azure.com,iga.azure.com,elm.iga.azure.com,mspim.azure.com,api.azrbac.mspim.azure.com,*.access.mcas.ms,cxcs.microsoft.net",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      },
-      {
-        "endpointRuleName": "services-monitoring-storage",
-        "destinationType": "FQDN",
-        "destination": "*.applicationinsights.azure.com,monitor.azure.com,api.loganalytics.io,changeanalysis.azure.com,storage.azure.com,storage.azure.net,*core.windows.net,vault.azure.net,search.azure.com,adl.windows.com",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      },
-      {
-        "endpointRuleName": "services-misc",
-        "destinationType": "FQDN",
-        "destination": "*.azconfig.io,*.aad.azure.com,*.aadconnecthealth.azure.com,ad.azure.com,adf.azure.com,*.arc.azure.net,bastion.azure.com,config.office.com,media.azure.net,rest.media.azure.net,network.azure.com,dev.azure.com,*.wvd.microsoft.com,enterpriseregistration.windows.net,ecs.office.com,asmconfigfiles-prod.azure-api.net",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      }
-    ],
-    "graphExtensionEndpointRules": [
-      {
-        "endpointRuleName": "graph-apis",
-        "destinationType": "FQDN",
-        "destination": "*.graph.windows.net,*.graph.microsoft.com,graph.microsoft.com",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      },
-      {
-        "endpointRuleName": "azure-extensions",
-        "destinationType": "FQDN",
-        "destination": "*.ext.azure.com",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      }
-    ],
-    "microsoftCdnEndpointRules": [
-      {
-        "endpointRuleName": "microsoft-domains",
-        "destinationType": "FQDN",
-        "destination": "*microsoft.com,*azure.com,*.msn.com,*.msn.cn,go.microsoft.com,aka.ms,learn.microsoft.com,privacy.microsoft.com,azure.status.microsoft,packages.microsoft.com,www.msftconnecttest.com,client.wns.windows.com,www.bing.com",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      },
-      {
-        "endpointRuleName": "cdn-edge",
-        "destinationType": "FQDN",
-        "destination": "*.azureedge.net,*.akamaized.net,static.edge.microsoftapp.net,*config.edge.skype.com,outlookmobile-office365-tas.msedge.net",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      }
-    ],
-    "thirdPartyEndpointRules": [
-      {
-        "endpointRuleName": "third-party-services",
-        "destinationType": "FQDN",
-        "destination": "clients2.google.com,clients2.googleusercontent.com,www.googleapis.com,bing.com",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      },
-      {
-        "endpointRuleName": "telemetry-reporting",
-        "destinationType": "FQDN",
-        "destination": "query.prod.cms.rt.microsoft.com,identity.nel.measure.office.net,deff.nelreports.net",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      }
-    ],
-    "azurePortalEndpointRules": "[concat(variables('authenticationEndpointRules'), variables('portalManagementEndpointRules'), variables('azureServiceEndpointRules'), variables('graphExtensionEndpointRules'), variables('microsoftCdnEndpointRules'), variables('thirdPartyEndpointRules'))]",
-    "windowsUpdateEndpointRules": [
-      {
-        "endpointRuleName": "win-updates-https",
-        "destinationType": "FQDNTag",
-        "destination": "windowsupdate",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      },
-      {
-        "endpointRuleName": "win-updates-http",
-        "destinationType": "FQDNTag",
-        "destination": "windowsupdate",
-        "protocols": [
-          "HTTP"
-        ],
-        "ports": "80"
-      }
-    ],
-    "wingetEndpointRules": [
-      {
-        "endpointRuleName": "win-winget-https",
-        "destinationType": "FQDN",
-        "destination": "github.com,*.github.com,objects.githubusercontent.com,*.azureedge.com,*.azurefd.net,*.sourceforge.net,sourceforge.net,settings-win.data.microsoft.com",
-        "protocols": [
-          "HTTPS"
-        ],
-        "ports": "443"
-      }
-    ]
-=======
     "effectiveWorkloadNames": "[if(greater(length(parameters('workloadNames')), 0), parameters('workloadNames'), createArray(parameters('workloadName')))]",
     "transitOptions": "[if(equals(parameters('transitHubConnectionType'), 'Peering'), createObject('type', parameters('transitHubConnectionType'), 'params', createObject('remoteVirtualNetworkId', parameters('transitHubRemoteVnetId'))), createObject('type', parameters('transitHubConnectionType'), 'params', createObject('scaleUnits', 2)))]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
   },
   "resources": {
     "communityResourceGroup": {
@@ -746,11 +538,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "15211851496822557066"
-=======
               "templateHash": "6721890420651872179"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
@@ -889,8 +677,6 @@
               "properties": {
                 "serviceId": {
                   "type": "string",
-<<<<<<< HEAD
-=======
                   "allowedValues": [
                     "AKS",
                     "AppService",
@@ -908,17 +694,12 @@
                     "ServiceBus",
                     "Storage"
                   ],
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   "metadata": {
                     "description": "The service identifier."
                   }
                 },
                 "option": {
                   "type": "string",
-<<<<<<< HEAD
-                  "metadata": {
-                    "description": "The service option (Allow, Deny, NotApplicable)."
-=======
                   "allowedValues": [
                     "Allow",
                     "Deny",
@@ -927,30 +708,20 @@
                   ],
                   "metadata": {
                     "description": "The service option (Allow, Deny, ExceptionOnly, or NotApplicable)."
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   }
                 },
                 "enforcement": {
                   "type": "string",
-<<<<<<< HEAD
-                  "metadata": {
-                    "description": "The enforcement mode (Enabled, Disabled)."
-=======
                   "allowedValues": [
                     "Disabled",
                     "Enabled"
                   ],
                   "metadata": {
                     "description": "The enforcement mode (Enabled or Disabled)."
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   }
                 },
                 "policyAction": {
                   "type": "string",
-<<<<<<< HEAD
-                  "metadata": {
-                    "description": "The policy action (Enforce, Audit)."
-=======
                   "allowedValues": [
                     "AuditOnly",
                     "Enforce",
@@ -1008,7 +779,6 @@
                   "$ref": "#/definitions/diagnosticDestinationType",
                   "metadata": {
                     "description": "The destination for flow logs."
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   }
                 }
               }
@@ -1068,18 +838,6 @@
                 "description": "The list of governed services for the community."
               }
             },
-<<<<<<< HEAD
-            "approvalSettings": {
-              "$ref": "#/definitions/communityApprovalSettingsType",
-              "defaultValue": {
-                "communityEndpointUpdate": null,
-                "communityMaintenanceMode": null,
-                "connectionCreation": null,
-                "connectionUpdate": null,
-                "enclaveCreation": null,
-                "enclaveEndpointUpdate": null,
-                "enclaveMaintenanceMode": null
-=======
             "monitoringSettings": {
               "$ref": "#/definitions/monitoringSettingsType",
               "defaultValue": {
@@ -1135,7 +893,6 @@
                   "mandatoryApprovers": [],
                   "minimumApproversRequired": 1
                 }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -1154,10 +911,7 @@
                 "addressSpace": "[parameters('addressSpace')]",
                 "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]",
                 "governedServiceList": "[parameters('governedServiceList')]",
-<<<<<<< HEAD
-=======
                 "monitoringSettings": "[parameters('monitoringSettings')]",
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "approvalSettings": {
                   "communityEndpointUpdate": "[tryGet(parameters('approvalSettings'), 'communityEndpointUpdate')]",
                   "communityMaintenanceMode": "[tryGet(parameters('approvalSettings'), 'communityMaintenanceMode')]",
@@ -1213,8 +967,6 @@
         "communityResourceGroup"
       ]
     },
-<<<<<<< HEAD
-=======
     "communityEndpointRules": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
@@ -1592,7 +1344,6 @@
         }
       }
     },
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
     "communityEndpointMsftAzure": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
@@ -1612,11 +1363,7 @@
             "value": "[reference('community').outputs.name.value]"
           },
           "communityEndpointRuleCollection": {
-<<<<<<< HEAD
-            "value": "[variables('azurePortalEndpointRules')]"
-=======
             "value": "[reference('communityEndpointRules').outputs.azurePortalEndpointRules.value]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "location": {
             "value": "[parameters('location')]"
@@ -1630,11 +1377,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "16775608663396955211"
-=======
               "templateHash": "13573103881482708685"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -1656,10 +1399,6 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
-<<<<<<< HEAD
-                "IP",
-=======
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -1779,8 +1518,6 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
-<<<<<<< HEAD
-=======
             },
             "updateMode": {
               "type": "string",
@@ -1792,7 +1529,6 @@
               "metadata": {
                 "description": "Whether endpoint rule updates are applied automatically or require manual approval."
               }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -1809,12 +1545,8 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-<<<<<<< HEAD
-                "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
-=======
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
                 "updateMode": "[parameters('updateMode')]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -1844,12 +1576,8 @@
         }
       },
       "dependsOn": [
-<<<<<<< HEAD
-        "community"
-=======
         "community",
         "communityEndpointRules"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
       ]
     },
     "communityEndpointWinUpdate": {
@@ -1871,11 +1599,7 @@
             "value": "[reference('community').outputs.name.value]"
           },
           "communityEndpointRuleCollection": {
-<<<<<<< HEAD
-            "value": "[variables('windowsUpdateEndpointRules')]"
-=======
             "value": "[reference('communityEndpointRules').outputs.windowsUpdateEndpointRules.value]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "location": {
             "value": "[parameters('location')]"
@@ -1889,11 +1613,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "16775608663396955211"
-=======
               "templateHash": "13573103881482708685"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -1915,10 +1635,6 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
-<<<<<<< HEAD
-                "IP",
-=======
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -2038,8 +1754,6 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
-<<<<<<< HEAD
-=======
             },
             "updateMode": {
               "type": "string",
@@ -2051,7 +1765,6 @@
               "metadata": {
                 "description": "Whether endpoint rule updates are applied automatically or require manual approval."
               }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -2068,12 +1781,8 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-<<<<<<< HEAD
-                "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
-=======
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
                 "updateMode": "[parameters('updateMode')]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -2103,12 +1812,8 @@
         }
       },
       "dependsOn": [
-<<<<<<< HEAD
-        "community"
-=======
         "community",
         "communityEndpointRules"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
       ]
     },
     "communityEndpointWinget": {
@@ -2130,11 +1835,7 @@
             "value": "[reference('community').outputs.name.value]"
           },
           "communityEndpointRuleCollection": {
-<<<<<<< HEAD
-            "value": "[variables('wingetEndpointRules')]"
-=======
             "value": "[reference('communityEndpointRules').outputs.wingetEndpointRules.value]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "location": {
             "value": "[parameters('location')]"
@@ -2148,11 +1849,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "16775608663396955211"
-=======
               "templateHash": "13573103881482708685"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -2174,10 +1871,6 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
-<<<<<<< HEAD
-                "IP",
-=======
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -2297,8 +1990,6 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
-<<<<<<< HEAD
-=======
             },
             "updateMode": {
               "type": "string",
@@ -2310,7 +2001,6 @@
               "metadata": {
                 "description": "Whether endpoint rule updates are applied automatically or require manual approval."
               }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -2327,12 +2017,8 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-<<<<<<< HEAD
-                "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
-=======
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
                 "updateMode": "[parameters('updateMode')]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -2362,12 +2048,8 @@
         }
       },
       "dependsOn": [
-<<<<<<< HEAD
-        "community"
-=======
         "community",
         "communityEndpointRules"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
       ]
     },
     "enc1ResourceGroup": {
@@ -2503,13 +2185,8 @@
           "deployWorkload": {
             "value": "[parameters('deployWorkload')]"
           },
-<<<<<<< HEAD
-          "workloadName": {
-            "value": "[parameters('workloadName')]"
-=======
           "workloadNames": {
             "value": "[variables('effectiveWorkloadNames')]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "workloadResourceGroupName": {
             "value": "[parameters('workloadResourceGroupName')]"
@@ -2523,11 +2200,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "14812321329925731463"
-=======
               "templateHash": "7163142406234217791"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -2722,8 +2395,6 @@
                 "description": "The name of the workload resource."
               }
             },
-<<<<<<< HEAD
-=======
             "workloadNames": {
               "type": "array",
               "defaultValue": [],
@@ -2731,7 +2402,6 @@
                 "description": "Optional list of workload names to deploy. If provided, this list takes precedence over workloadName."
               }
             },
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             "workloadResourceGroupName": {
               "type": "string",
               "defaultValue": ""
@@ -2766,12 +2436,6 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
-<<<<<<< HEAD
-                "connectionCreation": null,
-                "connectionUpdate": null,
-                "enclaveEndpointUpdate": null,
-                "enclaveMaintenanceMode": null
-=======
                 "connectionCreation": {
                   "approvalPolicy": "NotRequired",
                   "mandatoryApprovers": [],
@@ -2792,7 +2456,6 @@
                   "mandatoryApprovers": [],
                   "minimumApproversRequired": 0
                 }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -2801,9 +2464,6 @@
             }
           },
           "variables": {
-<<<<<<< HEAD
-            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
-=======
             "copy": [
               {
                 "name": "computedWorkloadResourceIds",
@@ -2813,7 +2473,6 @@
             ],
             "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]",
             "effectiveWorkloadNames": "[if(greater(length(parameters('workloadNames')), 0), parameters('workloadNames'), createArray(parameters('workloadName')))]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "resources": {
             "enclave": {
@@ -2838,12 +2497,6 @@
               }
             },
             "workload": {
-<<<<<<< HEAD
-              "condition": "[parameters('deployWorkload')]",
-              "type": "Microsoft.Mission/virtualEnclaves/workloads",
-              "apiVersion": "2026-03-01-preview",
-              "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
-=======
               "copy": {
                 "name": "workload",
                 "count": "[length(variables('effectiveWorkloadNames'))]"
@@ -2852,7 +2505,6 @@
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
               "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), variables('effectiveWorkloadNames')[copyIndex()])]",
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
@@ -2918,11 +2570,6 @@
             "workloadResourceId": {
               "type": "string",
               "metadata": {
-<<<<<<< HEAD
-                "description": "The resource ID of the workload (if deployed)."
-              },
-              "value": "[if(parameters('deployWorkload'), resourceId('Microsoft.Mission/virtualEnclaves/workloads', parameters('enclaveName'), parameters('workloadName')), '')]"
-=======
                 "description": "The resource ID of the first workload (if deployed)."
               },
               "value": "[if(and(parameters('deployWorkload'), greater(length(variables('effectiveWorkloadNames')), 0)), format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[0]), '')]"
@@ -2933,7 +2580,6 @@
                 "description": "The resource IDs of deployed workloads (if deployed)."
               },
               "value": "[if(parameters('deployWorkload'), variables('computedWorkloadResourceIds'), createArray())]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           }
         }
@@ -2985,11 +2631,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "6250350341902244931"
-=======
               "templateHash": "17098404646497358101"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -3072,8 +2714,6 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the enclave endpoint."
               }
-<<<<<<< HEAD
-=======
             },
             "updateMode": {
               "type": "string",
@@ -3085,7 +2725,6 @@
               "metadata": {
                 "description": "Whether endpoint rule updates are applied automatically or require manual approval."
               }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -3102,12 +2741,8 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-<<<<<<< HEAD
-                "ruleCollection": "[parameters('rules')]"
-=======
                 "ruleCollection": "[parameters('rules')]",
                 "updateMode": "[parameters('updateMode')]"
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -3801,12 +3436,6 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-<<<<<<< HEAD
-              "templateHash": "3698052620106389402"
-            }
-          },
-          "definitions": {
-=======
               "templateHash": "3689946510813165946"
             }
           },
@@ -3830,7 +3459,6 @@
                 }
               }
             },
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             "transitOptionType": {
               "type": "object",
               "properties": {
@@ -3846,11 +3474,7 @@
                   }
                 },
                 "params": {
-<<<<<<< HEAD
-                  "type": "object",
-=======
                   "$ref": "#/definitions/transitOptionParamsType",
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   "metadata": {
                     "description": "Parameters specific to the transit type."
                   }
@@ -3900,8 +3524,6 @@
               "metadata": {
                 "description": "Tags to be assigned to the transit hub."
               }
-<<<<<<< HEAD
-=======
             },
             "securityProvider": {
               "type": "string",
@@ -3913,7 +3535,6 @@
               "metadata": {
                 "description": "The security provider for the transit hub."
               }
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -3930,10 +3551,7 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
-<<<<<<< HEAD
-=======
                 "securityProvider": "[parameters('securityProvider')]",
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "transitOption": "[parameters('transitOption')]"
               }
             }
@@ -4221,8 +3839,4 @@
       ]
     }
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
