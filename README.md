@@ -31,6 +31,14 @@ https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.github
 
 [Contributing guidance](./CONTRIBUTING.md)
 
+When changing Bicep templates, regenerate and validate the committed ARM JSON with:
+
+```powershell
+pwsh ./eng/Build-ArmTemplates.ps1
+```
+
+See [eng/README.md](./eng/README.md) for compiler pin updates and the CI parity check.
+
 ## Telemetry
 The templates in this repo may contain telemetry to track the usage of each template. This information helps validate effort to develop and support these templates. You can turn off telemetry by changing `enableTelemetry` to `false`. The telemetry method used here was adopted from the [Azure Verified Modules (AVM) telemetry method](https://azure.github.io/Azure-Verified-Modules/help-support/telemetry/). You can read more about how AVM uses the same method to count template usage with this telemetry.
 
