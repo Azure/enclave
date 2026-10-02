@@ -223,271 +223,391 @@ module communityEndpointWinget 'modules/community-endpoint.bicep' = {
   }
 }
 
-// Enclaves with Workloads
+// Enclaves
 // Enclave: Identity
-module enclaveIdentity 'modules/enclave.bicep' = {
-  name: 'deploy-enclave-${uniqueEnclaveNamePrefix}-identity'
-  params: {
+#disable-next-line BCP081
+resource enclaveIdentity 'Microsoft.Mission/virtualenclaves@2025-05-01-preview' = {
+  name: '${uniqueEnclaveNamePrefix}-identity'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    enclaveName: '${uniqueEnclaveNamePrefix}-identity'
-    networkSize: networkSize
-    location: location
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
+    enclaveVirtualNetwork: {
+      networkSize: networkSize
+      subnetConfigurations: [
+        {
+          subnetName: 'AppSubnet'
+          networkPrefixSize: 26
+        }
+        {
+          subnetName: 'WorkloadSubnet'
+          networkPrefixSize: 26
+        }
+      ]
+      allowSubnetCommunication: true
     }
-    subnetConfigurationsList: [
-      {
-        subnetName: 'AppSubnet'
-        networkPrefixSize: 26
-      }
-      {
-        subnetName: 'WorkloadSubnet'
-        networkPrefixSize: 26
-      }
-    ]
     maintenanceModeConfiguration: maintenanceModeConfig
-    deployWorkload: true
-    workloadNames: [
-      'wl-id-ADDS-${uniqueNumber}'
-    ]
-    workloadResourceGroupName: 'rg-id-ADDS-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
 
 // Enclave: Collaboration
-module enclaveCollab 'modules/enclave.bicep' = {
-  name: 'deploy-enclave-${uniqueEnclaveNamePrefix}-collab'
-  params: {
+#disable-next-line BCP081
+resource enclaveCollab 'Microsoft.Mission/virtualenclaves@2025-05-01-preview' = {
+  name: '${uniqueEnclaveNamePrefix}-collab'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    enclaveName: '${uniqueEnclaveNamePrefix}-collab'
-    networkSize: networkSize
-    location: location
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
+    enclaveVirtualNetwork: {
+      networkSize: networkSize
+      subnetConfigurations: [
+        {
+          subnetName: 'AppSubnet'
+          networkPrefixSize: 26
+        }
+        {
+          subnetName: 'WorkloadSubnet'
+          networkPrefixSize: 26
+        }
+      ]
+      allowSubnetCommunication: true
     }
-    subnetConfigurationsList: [
-      {
-        subnetName: 'AppSubnet'
-        networkPrefixSize: 26
-      }
-      {
-        subnetName: 'WorkloadSubnet'
-        networkPrefixSize: 26
-      }
-    ]
     maintenanceModeConfiguration: maintenanceModeConfig
-    deployWorkload: true
-    workloadNames: [
-      'wl-collab-apps-${uniqueNumber}'
-    ]
-    workloadResourceGroupName: 'rg-collab-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
 
 // Enclave: Desktop
-module enclaveDesktop 'modules/enclave.bicep' = {
-  name: 'deploy-enclave-${uniqueEnclaveNamePrefix}-desktop'
-  params: {
+#disable-next-line BCP081
+resource enclaveDesktop 'Microsoft.Mission/virtualenclaves@2025-05-01-preview' = {
+  name: '${uniqueEnclaveNamePrefix}-desktop'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    enclaveName: '${uniqueEnclaveNamePrefix}-desktop'
-    networkSize: networkSize
-    location: location
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
+    enclaveVirtualNetwork: {
+      networkSize: networkSize
+      subnetConfigurations: [
+        {
+          subnetName: 'AppSubnet'
+          networkPrefixSize: 26
+        }
+        {
+          subnetName: 'WorkloadSubnet'
+          networkPrefixSize: 26
+        }
+      ]
+      allowSubnetCommunication: true
     }
-    subnetConfigurationsList: [
-      {
-        subnetName: 'AppSubnet'
-        networkPrefixSize: 26
-      }
-      {
-        subnetName: 'WorkloadSubnet'
-        networkPrefixSize: 26
-      }
-    ]
     maintenanceModeConfiguration: maintenanceModeConfig
-    deployWorkload: true
-    workloadNames: [
-      'wl-desktops-${uniqueNumber}'
-    ]
-    workloadResourceGroupName: 'rg-desktops-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
 
 // Enclave: Platform
-module enclavePlatform 'modules/enclave.bicep' = {
-  name: 'deploy-enclave-${uniqueEnclaveNamePrefix}-platform'
-  params: {
+#disable-next-line BCP081
+resource enclavePlatform 'Microsoft.Mission/virtualenclaves@2025-05-01-preview' = {
+  name: '${uniqueEnclaveNamePrefix}-platform'
+  location: location
+  tags: {
+    department: 'platforms'
+    company: 'PrimeContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    enclaveName: '${uniqueEnclaveNamePrefix}-platform'
-    networkSize: networkSize
-    location: location
-    tags: {
-      department: 'platforms'
-      company: 'PrimeContractor'
+    enclaveVirtualNetwork: {
+      networkSize: networkSize
+      subnetConfigurations: [
+        {
+          subnetName: 'AppSubnet'
+          networkPrefixSize: 26
+        }
+        {
+          subnetName: 'WorkloadSubnet'
+          networkPrefixSize: 26
+        }
+      ]
+      allowSubnetCommunication: true
     }
-    subnetConfigurationsList: [
-      {
-        subnetName: 'AppSubnet'
-        networkPrefixSize: 26
-      }
-      {
-        subnetName: 'WorkloadSubnet'
-        networkPrefixSize: 26
-      }
-    ]
     maintenanceModeConfiguration: maintenanceModeConfig
-    deployWorkload: true
-    workloadNames: [
-      'wl-platform-apps-${uniqueNumber}'
-    ]
-    workloadResourceGroupName: 'rg-platform-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
 
 // Enclave: Weapon
-module enclaveWeapon 'modules/enclave.bicep' = {
-  name: 'deploy-enclave-${uniqueEnclaveNamePrefix}-weapon'
-  params: {
+#disable-next-line BCP081
+resource enclaveWeapon 'Microsoft.Mission/virtualenclaves@2025-05-01-preview' = {
+  name: '${uniqueEnclaveNamePrefix}-weapon'
+  location: location
+  tags: {
+    department: 'PewPewDept'
+    company: 'WeaponContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    enclaveName: '${uniqueEnclaveNamePrefix}-weapon'
-    networkSize: networkSize
-    location: location
-    tags: {
-      department: 'PewPewDept'
-      company: 'WeaponContractor'
+    enclaveVirtualNetwork: {
+      networkSize: networkSize
+      subnetConfigurations: [
+        {
+          subnetName: 'AppSubnet'
+          networkPrefixSize: 26
+        }
+        {
+          subnetName: 'WorkloadSubnet'
+          networkPrefixSize: 26
+        }
+      ]
+      allowSubnetCommunication: true
     }
-    subnetConfigurationsList: [
-      {
-        subnetName: 'AppSubnet'
-        networkPrefixSize: 26
-      }
-      {
-        subnetName: 'WorkloadSubnet'
-        networkPrefixSize: 26
-      }
-    ]
     maintenanceModeConfiguration: maintenanceModeConfig
-    deployWorkload: true
-    workloadNames: [
-      'wl-weapon-apps-${uniqueNumber}'
-    ]
-    workloadResourceGroupName: 'rg-weapon-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
 
 // Enclave: SubKtr
-module enclaveSubKtr 'modules/enclave.bicep' = {
-  name: 'deploy-enclave-${uniqueEnclaveNamePrefix}-subktr'
-  params: {
+#disable-next-line BCP081
+resource enclaveSubKtr 'Microsoft.Mission/virtualenclaves@2025-05-01-preview' = {
+  name: '${uniqueEnclaveNamePrefix}-subktr'
+  location: location
+  tags: {
+    department: 'SoftwareDevDept'
+    company: 'Subcontractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    enclaveName: '${uniqueEnclaveNamePrefix}-subktr'
-    networkSize: networkSize
-    location: location
-    tags: {
-      department: 'SoftwareDevDept'
-      company: 'Subcontractor'
+    enclaveVirtualNetwork: {
+      networkSize: networkSize
+      subnetConfigurations: [
+        {
+          subnetName: 'AppSubnet'
+          networkPrefixSize: 26
+        }
+        {
+          subnetName: 'WorkloadSubnet'
+          networkPrefixSize: 26
+        }
+      ]
+      allowSubnetCommunication: true
     }
-    subnetConfigurationsList: [
-      {
-        subnetName: 'AppSubnet'
-        networkPrefixSize: 26
-      }
-      {
-        subnetName: 'WorkloadSubnet'
-        networkPrefixSize: 26
-      }
-    ]
     maintenanceModeConfiguration: maintenanceModeConfig
-    deployWorkload: true
-    workloadNames: [
-      'wl-subktr-apps-${uniqueNumber}'
-    ]
-    workloadResourceGroupName: 'rg-subktr-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
 
 // Enclave: Cyber
-module enclaveCyber 'modules/enclave.bicep' = {
-  name: 'deploy-enclave-${uniqueEnclaveNamePrefix}-cyber'
-  params: {
+#disable-next-line BCP081
+resource enclaveCyber 'Microsoft.Mission/virtualenclaves@2025-05-01-preview' = {
+  name: '${uniqueEnclaveNamePrefix}-cyber'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    enclaveName: '${uniqueEnclaveNamePrefix}-cyber'
-    networkSize: networkSize
-    location: location
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
+    enclaveVirtualNetwork: {
+      networkSize: networkSize
+      subnetConfigurations: [
+        {
+          subnetName: 'AppSubnet'
+          networkPrefixSize: 26
+        }
+        {
+          subnetName: 'WorkloadSubnet'
+          networkPrefixSize: 26
+        }
+      ]
+      allowSubnetCommunication: true
     }
-    subnetConfigurationsList: [
-      {
-        subnetName: 'AppSubnet'
-        networkPrefixSize: 26
-      }
-      {
-        subnetName: 'WorkloadSubnet'
-        networkPrefixSize: 26
-      }
-    ]
     maintenanceModeConfiguration: maintenanceModeConfig
-    deployWorkload: true
-    workloadNames: [
-      'wl-cyber-apps-${uniqueNumber}'
-    ]
-    workloadResourceGroupName: 'rg-cyber-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
 
 // Enclave: Offline
-module enclaveOffline 'modules/enclave.bicep' = {
-  name: 'deploy-enclave-${uniqueEnclaveNamePrefix}-offline'
-  params: {
+#disable-next-line BCP081
+resource enclaveOffline 'Microsoft.Mission/virtualenclaves@2025-05-01-preview' = {
+  name: '${uniqueEnclaveNamePrefix}-offline'
+  location: location
+  tags: {
+    department: 'SensitiveDataDept'
+    company: 'R&D_Collaboration'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    enclaveName: '${uniqueEnclaveNamePrefix}-offline'
-    networkSize: networkSize
-    location: location
-    tags: {
-      department: 'SensitiveDataDept'
-      company: 'R&D_Collaboration'
+    enclaveVirtualNetwork: {
+      networkSize: networkSize
+      subnetConfigurations: [
+        {
+          subnetName: 'AppSubnet'
+          networkPrefixSize: 26
+        }
+        {
+          subnetName: 'WorkloadSubnet'
+          networkPrefixSize: 26
+        }
+      ]
+      allowSubnetCommunication: true
     }
-    subnetConfigurationsList: [
-      {
-        subnetName: 'AppSubnet'
-        networkPrefixSize: 26
-      }
-      {
-        subnetName: 'WorkloadSubnet'
-        networkPrefixSize: 26
-      }
-    ]
     maintenanceModeConfiguration: maintenanceModeConfig
-    deployWorkload: true
-    workloadNames: [
-      'wl-offline-apps-${uniqueNumber}'
-    ]
-    workloadResourceGroupName: 'rg-offline-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
   }
 }
 
-// Enclave Endpoints
+// -------------------Workloads-------------------
+// Workload: Identity enclave
+#disable-next-line BCP081
+resource wl_enclaveIdentity_adds 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-preview' = {
+  name: 'wl-id-ADDS-${uniqueNumber}'
+  parent: enclaveIdentity
+  properties: {
+    resourceGroupCollection: [
+      '${subscription().id}/resourcegroups/rg-id-ADDS-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
+  }
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+}
+
+// Workload: Desktop enclave
+#disable-next-line BCP081
+resource wl_enclaveDesktop_desktop 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-preview' = {
+  name: 'wl-desktops-${uniqueNumber}'
+  parent: enclaveDesktop
+  properties: {
+    resourceGroupCollection: [
+      '${subscription().id}/resourcegroups/rg-desktops-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
+  }
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+}
+
+// Workload: Collab enclave
+#disable-next-line BCP081
+resource wl_enclaveCollab_apps 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-preview' = {
+  name: 'wl-collab-apps-${uniqueNumber}'
+  parent: enclaveCollab
+  properties: {
+    resourceGroupCollection: [
+      '${subscription().id}/resourcegroups/rg-collab-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
+  }
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+}
+
+// Workload: Platform enclave
+#disable-next-line BCP081
+resource wl_enclavePlatform_apps 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-preview' = {
+  name: 'wl-platform-apps-${uniqueNumber}'
+  parent: enclavePlatform
+  properties: {
+    resourceGroupCollection: [
+      '${subscription().id}/resourcegroups/rg-platform-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
+  }
+  location: location
+  tags: {
+    department: 'platforms'
+    company: 'primeContractor'
+  }
+}
+
+// Workload: Weapon enclave
+#disable-next-line BCP081
+resource wl_enclaveWeapon_apps 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-preview' = {
+  name: 'wl-weapon-apps-${uniqueNumber}'
+  parent: enclaveWeapon
+  properties: {
+    resourceGroupCollection: [
+      '${subscription().id}/resourcegroups/rg-weapon-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
+  }
+  location: location
+  tags: {
+    department: 'pewPewDept'
+    company: 'weaponContractor'
+  }
+}
+
+// Workload: SubKtr enclave
+#disable-next-line BCP081
+resource wl_enclaveSubKtr_apps 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-preview' = {
+  name: 'wl-subktr-apps-${uniqueNumber}'
+  parent: enclaveSubKtr
+  properties: {
+    resourceGroupCollection: [
+      '${subscription().id}/resourcegroups/rg-subktr-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
+  }
+  location: location
+  tags: {
+    department: 'softwareDevDept'
+    company: 'subContractor'
+  }
+}
+
+// Workload: Cyber enclave
+#disable-next-line BCP081
+resource wl_enclaveCyber_apps 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-preview' = {
+  name: 'wl-cyber-apps-${uniqueNumber}'
+  parent: enclaveCyber
+  properties: {
+    resourceGroupCollection: [
+      '${subscription().id}/resourcegroups/rg-cyber-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
+  }
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+}
+
+// Workload: Offline enclave
+#disable-next-line BCP081
+resource wl_enclaveOffline_apps 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-preview' = {
+  name: 'wl-offline-apps-${uniqueNumber}'
+  parent: enclaveOffline
+  properties: {
+    resourceGroupCollection: [
+      '${subscription().id}/resourcegroups/rg-offline-apps-${uniqueNumber}-${substring(uniqueString(deployment().name, location), 0, 4)}'
+    ]
+  }
+  location: location
+  tags: {
+    department: 'sensitiveDataDept'
+    company: 'R&D_Collaboration'
+  }
+}
+
 // Enclave Endpoint: Identity enclave ADDS
-module enclaveIdentity_endpointName_1_v2 'modules/enclave-endpoint.bicep' = {
-  name: 'deploy-ee-identity-adds-${uniqueNumber}'
-  params: {
-    enclaveName: enclaveIdentity.outputs.name
-    endpointName: 'ee-ADDS'
-    location: location
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
-    rules: [
+#disable-next-line BCP081
+resource enclaveIdentity_endpointName_1_v2 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2025-05-01-preview' = {
+  name: 'ee-ADDS'
+  parent: enclaveIdentity
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
+    ruleCollection: [
       {
         endpointRuleName: 'ADDS-TCP'
-        destination: filter(enclaveIdentity.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveIdentity.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '53,88,135,138,139,389,445,464,636,686,3268-3269,5722,9389,49152-65535'
         protocols: [
           'TCP'
@@ -495,7 +615,7 @@ module enclaveIdentity_endpointName_1_v2 'modules/enclave-endpoint.bicep' = {
       }
       {
         endpointRuleName: 'ADDS-UDP'
-        destination: filter(enclaveIdentity.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveIdentity.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '53,389'
         protocols: [
           'UDP'
@@ -505,21 +625,21 @@ module enclaveIdentity_endpointName_1_v2 'modules/enclave-endpoint.bicep' = {
   }
 }
 
-// Enclave Endpoint: Platform from Weapon
-module ep_enclavePlatform_from_weapon 'modules/enclave-endpoint.bicep' = {
-  name: 'deploy-ee-plat-from-weap-${uniqueNumber}'
-  params: {
-    enclaveName: enclavePlatform.outputs.name
-    endpointName: 'ee-platform-from-weapon'
-    location: location
-    tags: {
-      department: 'platforms'
-      company: 'primeContractor'
-    }
-    rules: [
+// Enclave Endpoint: Platform to Weapon
+#disable-next-line BCP081
+resource ep_enclavePlatform_from_weapon 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2025-05-01-preview' = {
+  name: 'ee-platform-from-weapon'
+  parent: enclavePlatform
+  location: location
+  tags: {
+    department: 'platforms'
+    company: 'primeContractor'
+  }
+  properties: {
+    ruleCollection: [
       {
         endpointRuleName: 'inbound-to-platform'
-        destination: filter(enclavePlatform.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclavePlatform.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -530,20 +650,20 @@ module ep_enclavePlatform_from_weapon 'modules/enclave-endpoint.bicep' = {
 }
 
 // Enclave Endpoint: Weapon from Platform
-module ep_enclaveWeapon_from_platform 'modules/enclave-endpoint.bicep' = {
-  name: 'deploy-ee-weap-from-plat-${uniqueNumber}'
-  params: {
-    enclaveName: enclaveWeapon.outputs.name
-    endpointName: 'ee-weapon-from-platform'
-    location: location
-    tags: {
-      department: 'pewPewDept'
-      company: 'weaponContractor'
-    }
-    rules: [
+#disable-next-line BCP081
+resource ep_enclaveWeapon_from_platform 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2025-05-01-preview' = {
+  name: 'ee-weapon-from-platform'
+  parent: enclaveWeapon
+  location: location
+  tags: {
+    department: 'pewPewDept'
+    company: 'weaponContractor'
+  }
+  properties: {
+    ruleCollection: [
       {
         endpointRuleName: 'inbound-to-weapon'
-        destination: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveWeapon.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -554,20 +674,20 @@ module ep_enclaveWeapon_from_platform 'modules/enclave-endpoint.bicep' = {
 }
 
 // Enclave Endpoint: Weapon from SubKtr
-module ep_enclaveWeapon_from_subktr 'modules/enclave-endpoint.bicep' = {
-  name: 'deploy-ee-weap-from-sub-${uniqueNumber}'
-  params: {
-    enclaveName: enclaveWeapon.outputs.name
-    endpointName: 'ee-weapon-from-subktr'
-    location: location
-    tags: {
-      department: 'pewPewDept'
-      company: 'weaponContractor'
-    }
-    rules: [
+#disable-next-line BCP081
+resource ep_enclaveWeapon_from_subktr 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2025-05-01-preview' = {
+  name: 'ee-weapon-from-subktr'
+  parent: enclaveWeapon
+  location: location
+  tags: {
+    department: 'pewPewDept'
+    company: 'weaponContractor'
+  }
+  properties: {
+    ruleCollection: [
       {
         endpointRuleName: 'inbound-to-weapon'
-        destination: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveWeapon.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -578,20 +698,20 @@ module ep_enclaveWeapon_from_subktr 'modules/enclave-endpoint.bicep' = {
 }
 
 // Enclave Endpoint: SubKtr from Weapon
-module ep_enclaveSubKtr_from_weapon 'modules/enclave-endpoint.bicep' = {
-  name: 'deploy-ee-sub-from-weap-${uniqueNumber}'
-  params: {
-    enclaveName: enclaveSubKtr.outputs.name
-    endpointName: 'ee-subktr-from-weapon'
-    location: location
-    tags: {
-      department: 'softwareDevDept'
-      company: 'subContractor'
-    }
-    rules: [
+#disable-next-line BCP081
+resource ep_enclaveSubKtr_from_weapon 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2025-05-01-preview' = {
+  name: 'ee-subktr-from-weapon'
+  parent: enclaveSubKtr
+  location: location
+  tags: {
+    department: 'softwareDevDept'
+    company: 'subContractor'
+  }
+  properties: {
+    ruleCollection: [
       {
         endpointRuleName: 'inbound-to-subktr'
-        destination: filter(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveSubKtr.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -601,21 +721,21 @@ module ep_enclaveSubKtr_from_weapon 'modules/enclave-endpoint.bicep' = {
   }
 }
 
-// Enclave Endpoint: Cyber inbound to Identity
-module ep_enclaveIdentity_cyber 'modules/enclave-endpoint.bicep' = {
-  name: 'deploy-ee-identity-cyber-${uniqueNumber}'
-  params: {
-    enclaveName: enclaveIdentity.outputs.name
-    endpointName: 'ee-identity-cyber'
-    location: location
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
-    rules: [
+// Enclave Endpoint: Cyber inbound
+#disable-next-line BCP081
+resource ep_enclaveIdentity_cyber 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2025-05-01-preview' = {
+  name: 'ee-identity-cyber'
+  parent: enclaveIdentity
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
+    ruleCollection: [
       {
         endpointRuleName: 'cyber-inbound'
-        destination: filter(enclaveIdentity.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveIdentity.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -625,21 +745,21 @@ module ep_enclaveIdentity_cyber 'modules/enclave-endpoint.bicep' = {
   }
 }
 
-// Enclave Endpoint: Cyber inbound to Desktop
-module ep_enclaveDesktop_cyber 'modules/enclave-endpoint.bicep' = {
-  name: 'deploy-ee-desktop-cyber-${uniqueNumber}'
-  params: {
-    enclaveName: enclaveDesktop.outputs.name
-    endpointName: 'ee-desktop-cyber'
-    location: location
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
-    rules: [
+// Enclave Endpoint: Cyber inbound
+#disable-next-line BCP081
+resource ep_enclaveDesktop_cyber 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2025-05-01-preview' = {
+  name: 'ee-desktop-cyber'
+  parent: enclaveDesktop
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
+    ruleCollection: [
       {
         endpointRuleName: 'cyber-inbound'
-        destination: filter(enclaveDesktop.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveDesktop.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -649,21 +769,21 @@ module ep_enclaveDesktop_cyber 'modules/enclave-endpoint.bicep' = {
   }
 }
 
-// Enclave Endpoint: Cyber inbound to Collab
-module ep_enclaveCollab_cyber 'modules/enclave-endpoint.bicep' = {
-  name: 'deploy-ee-collab-cyber-${uniqueNumber}'
-  params: {
-    enclaveName: enclaveCollab.outputs.name
-    endpointName: 'ee-collab-cyber'
-    location: location
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
-    rules: [
+// Enclave Endpoint: Cyber inbound
+#disable-next-line BCP081
+resource ep_enclaveCollab_cyber 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2025-05-01-preview' = {
+  name: 'ee-collab-cyber'
+  parent: enclaveCollab
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
+    ruleCollection: [
       {
         endpointRuleName: 'cyber-inbound'
-        destination: filter(enclaveCollab.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveCollab.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -673,21 +793,21 @@ module ep_enclaveCollab_cyber 'modules/enclave-endpoint.bicep' = {
   }
 }
 
-// Enclave Endpoint: Cyber inbound to Platform
-module ep_enclavePlatform_cyber 'modules/enclave-endpoint.bicep' = {
-  name: 'deploy-ee-platform-cyber-${uniqueNumber}'
-  params: {
-    enclaveName: enclavePlatform.outputs.name
-    endpointName: 'ee-platform-cyber'
-    location: location
-    tags: {
-      department: 'platforms'
-      company: 'primeContractor'
-    }
-    rules: [
+// Enclave Endpoint: Cyber inbound
+#disable-next-line BCP081
+resource ep_enclavePlatform_cyber 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2025-05-01-preview' = {
+  name: 'ee-platform-cyber'
+  parent: enclavePlatform
+  location: location
+  tags: {
+    department: 'platforms'
+    company: 'primeContractor'
+  }
+  properties: {
+    ruleCollection: [
       {
         endpointRuleName: 'cyber-inbound'
-        destination: filter(enclavePlatform.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclavePlatform.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -697,21 +817,21 @@ module ep_enclavePlatform_cyber 'modules/enclave-endpoint.bicep' = {
   }
 }
 
-// Enclave Endpoint: Cyber inbound to Weapon
-module ep_enclaveWeapon_cyber 'modules/enclave-endpoint.bicep' = {
-  name: 'deploy-ee-weapon-cyber-${uniqueNumber}'
-  params: {
-    enclaveName: enclaveWeapon.outputs.name
-    endpointName: 'ee-weapon-cyber'
-    location: location
-    tags: {
-      department: 'pewPewDept'
-      company: 'weaponContractor'
-    }
-    rules: [
+// Enclave Endpoint: Cyber inbound
+#disable-next-line BCP081
+resource ep_enclaveWeapon_cyber 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2025-05-01-preview' = {
+  name: 'ee-weapon-cyber'
+  parent: enclaveWeapon
+  location: location
+  tags: {
+    department: 'pewPewDept'
+    company: 'weaponContractor'
+  }
+  properties: {
+    ruleCollection: [
       {
         endpointRuleName: 'cyber-inbound'
-        destination: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveWeapon.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -721,21 +841,21 @@ module ep_enclaveWeapon_cyber 'modules/enclave-endpoint.bicep' = {
   }
 }
 
-// Enclave Endpoint: Cyber inbound to SubKtr
-module ep_enclaveSubKtr_cyber 'modules/enclave-endpoint.bicep' = {
-  name: 'deploy-ee-subktr-cyber-${uniqueNumber}'
-  params: {
-    enclaveName: enclaveSubKtr.outputs.name
-    endpointName: 'ee-subktr-cyber'
-    location: location
-    tags: {
-      department: 'softwareDevDept'
-      company: 'subContractor'
-    }
-    rules: [
+// Enclave Endpoint: Cyber inbound
+#disable-next-line BCP081
+resource ep_enclaveSubKtr_cyber 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2025-05-01-preview' = {
+  name: 'ee-subktr-cyber'
+  parent: enclaveSubKtr
+  location: location
+  tags: {
+    department: 'softwareDevDept'
+    company: 'subContractor'
+  }
+  properties: {
+    ruleCollection: [
       {
         endpointRuleName: 'cyber-inbound'
-        destination: filter(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+        destination: filter(enclaveSubKtr.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
         ports: '443'
         protocols: [
           'TCP'
@@ -752,19 +872,19 @@ module ep_enclaveSubKtr_cyber 'modules/enclave-endpoint.bicep' = {
 
 // -------------------External Connections-------------------
 // Connection: Collaboration enclave to external community endpoint
-module ec_collab_to_external 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-coll-ext-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_collab_to_external 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-collab-to-external-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCollab.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointExternal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveCollab.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-coll-ext-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCollab.id
+    sourceCidr: filter(enclaveCollab.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointExternal.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointDefaultPortal
@@ -787,22 +907,24 @@ module ec_collab_to_external 'modules/enclave-connection.bicep' = {
 
 // -------------------defaultPortal Connections-------------------
 // Connection: Collaboration enclave to defaultPortal endpoint
-module ec_collab_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-coll-portal-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_collab_to_defaultPortal_cm_ep 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-collab-to-defaultPortal-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCollab.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveCollab.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-coll-portal-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCollab.id
+    sourceCidr: filter(enclaveCollab.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
@@ -821,22 +943,24 @@ module ec_collab_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Desktop enclave to defaultPortal endpoint
-module ec_desktop_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-desk-portal-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_desktop_to_defaultPortal_cm_ep 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-desktop-to-defaultPortal-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveDesktop.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveDesktop.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-desk-portal-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveDesktop.id
+    sourceCidr: filter(enclaveDesktop.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
@@ -855,22 +979,24 @@ module ec_desktop_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Platform enclave to defaultPortal endpoint
-module ec_platform_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-plat-portal-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_platform_to_defaultPortal_cm_ep 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-platform-to-defaultPortal-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'platforms'
+    company: 'primeContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclavePlatform.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclavePlatform.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-plat-portal-${uniqueNumber}'
-    tags: {
-      department: 'platforms'
-      company: 'primeContractor'
-    }
+    sourceResourceId: enclavePlatform.id
+    sourceCidr: filter(enclavePlatform.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
@@ -889,22 +1015,24 @@ module ec_platform_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Weapon enclave to defaultPortal endpoint
-module ec_weapon_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-weap-portal-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_weapon_to_defaultPortal_cm_ep 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-weapon-to-defaultPortal-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'pewPewDept'
+    company: 'weaponContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveWeapon.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-weap-portal-${uniqueNumber}'
-    tags: {
-      department: 'pewPewDept'
-      company: 'weaponContractor'
-    }
+    sourceResourceId: enclaveWeapon.id
+    sourceCidr: filter(enclaveWeapon.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
@@ -923,22 +1051,24 @@ module ec_weapon_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: SubKtr enclave to defaultPortal endpoint
-module ec_subktr_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-sub-portal-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_subktr_to_defaultPortal_cm_ep 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-subktr-to-defaultPortal-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'softwareDevDept'
+    company: 'subContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveSubKtr.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-sub-portal-${uniqueNumber}'
-    tags: {
-      department: 'softwareDevDept'
-      company: 'subContractor'
-    }
+    sourceResourceId: enclaveSubKtr.id
+    sourceCidr: filter(enclaveSubKtr.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
@@ -957,22 +1087,24 @@ module ec_subktr_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Cyber enclave to defaultPortal endpoint
-module ec_cyber_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-cyber-portal-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_cyber_to_defaultPortal_cm_ep 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-cyber-to-defaultPortal-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCyber.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-cyber-portal-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCyber.id
+    sourceCidr: filter(enclaveCyber.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointDefaultPortal.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
@@ -992,19 +1124,19 @@ module ec_cyber_to_defaultPortal_cm_ep 'modules/enclave-connection.bicep' = {
 
 // -------------------Identity Connections-------------------
 // Connection: Collaboration enclave to Identity enclave ADDS endpoint
-module ec_collab_to_identity_adds 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-coll-idadds-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_collab_to_identity_adds 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-collab-to-identity-adds-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCollab.outputs.enclaveResourceId
-    destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCollab.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-coll-idadds-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCollab.id
+    sourceCidr: filter(enclaveCollab.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: enclaveIdentity_endpointName_1_v2.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1012,6 +1144,8 @@ module ec_collab_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
+    #disable-next-line no-unnecessary-dependson
+    enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
     ep_enclaveWeapon_from_platform
     ep_enclaveWeapon_from_subktr
@@ -1026,19 +1160,19 @@ module ec_collab_to_identity_adds 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Desktop enclave to Identity enclave ADDS endpoint
-module ec_desktop_to_identity_adds 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-desk-idadds-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_desktop_to_identity_adds 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-desktop-to-identity-adds-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveDesktop.outputs.enclaveResourceId
-    destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: filter(enclaveDesktop.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-desk-idadds-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveDesktop.id
+    sourceCidr: filter(enclaveDesktop.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: enclaveIdentity_endpointName_1_v2.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1046,6 +1180,8 @@ module ec_desktop_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
+    #disable-next-line no-unnecessary-dependson
+    enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
     ep_enclaveWeapon_from_platform
     ep_enclaveWeapon_from_subktr
@@ -1060,19 +1196,19 @@ module ec_desktop_to_identity_adds 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Platform enclave to Identity enclave ADDS endpoint
-module ec_platform_to_identity_adds 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-plat-idadds-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_platform_to_identity_adds 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-platform-to-identity-adds-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'platforms'
+    company: 'primeContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclavePlatform.outputs.enclaveResourceId
-    destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: filter(enclavePlatform.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-plat-idadds-${uniqueNumber}'
-    tags: {
-      department: 'platforms'
-      company: 'primeContractor'
-    }
+    sourceResourceId: enclavePlatform.id
+    sourceCidr: filter(enclavePlatform.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: enclaveIdentity_endpointName_1_v2.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1080,6 +1216,8 @@ module ec_platform_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
+    #disable-next-line no-unnecessary-dependson
+    enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
     ep_enclaveWeapon_from_platform
     ep_enclaveWeapon_from_subktr
@@ -1094,19 +1232,19 @@ module ec_platform_to_identity_adds 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Weapon enclave to Identity enclave ADDS endpoint
-module ec_weapon_to_identity_adds 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-weap-idadds-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_weapon_to_identity_adds 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-weapon-to-identity-adds-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'pewPewDept'
+    company: 'weaponContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveWeapon.outputs.enclaveResourceId
-    destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-weap-idadds-${uniqueNumber}'
-    tags: {
-      department: 'pewPewDept'
-      company: 'weaponContractor'
-    }
+    sourceResourceId: enclaveWeapon.id
+    sourceCidr: filter(enclaveWeapon.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: enclaveIdentity_endpointName_1_v2.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1114,6 +1252,8 @@ module ec_weapon_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
+    #disable-next-line no-unnecessary-dependson
+    enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
     ep_enclaveWeapon_from_platform
     ep_enclaveWeapon_from_subktr
@@ -1128,19 +1268,19 @@ module ec_weapon_to_identity_adds 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: SubKtr enclave to Identity enclave ADDS endpoint
-module ec_subktr_to_identity_adds 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-sub-idadds-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_subktr_to_identity_adds 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-subktr-to-identity-adds-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'softwareDevDept'
+    company: 'subContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveSubKtr.outputs.enclaveResourceId
-    destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: filter(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-sub-idadds-${uniqueNumber}'
-    tags: {
-      department: 'softwareDevDept'
-      company: 'subContractor'
-    }
+    sourceResourceId: enclaveSubKtr.id
+    sourceCidr: filter(enclaveSubKtr.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: enclaveIdentity_endpointName_1_v2.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1148,6 +1288,8 @@ module ec_subktr_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
+    #disable-next-line no-unnecessary-dependson
+    enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
     ep_enclaveWeapon_from_platform
     ep_enclaveWeapon_from_subktr
@@ -1162,19 +1304,19 @@ module ec_subktr_to_identity_adds 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Cyber enclave to Identity enclave ADDS endpoint
-module ec_cyber_to_identity_adds 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-cyber-idadds-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_cyber_to_identity_adds 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-cyber-to-identity-adds-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCyber.outputs.enclaveResourceId
-    destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-cyber-idadds-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCyber.id
+    sourceCidr: filter(enclaveCyber.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: enclaveIdentity_endpointName_1_v2.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1182,6 +1324,8 @@ module ec_cyber_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
+    #disable-next-line no-unnecessary-dependson
+    enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
     ep_enclaveWeapon_from_platform
     ep_enclaveWeapon_from_subktr
@@ -1197,19 +1341,19 @@ module ec_cyber_to_identity_adds 'modules/enclave-connection.bicep' = {
 
 // -------------------Cyber Enclave Connections-------------------
 // Connection: Cyber enclave to identity endpoint
-module ec_cyber_to_identity 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-cyber-id-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_cyber_to_identity 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-cyber-to-identity-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCyber.outputs.enclaveResourceId
-    destinationResourceId: ep_enclaveIdentity_cyber.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-cyber-id-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCyber.id
+    sourceCidr: filter(enclaveCyber.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: ep_enclaveIdentity_cyber.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1222,6 +1366,8 @@ module ec_cyber_to_identity 'modules/enclave-connection.bicep' = {
     ep_enclaveWeapon_from_platform
     ep_enclaveWeapon_from_subktr
     ep_enclaveSubKtr_from_weapon
+    #disable-next-line no-unnecessary-dependson
+    ep_enclaveIdentity_cyber
     ep_enclaveDesktop_cyber
     ep_enclaveCollab_cyber
     ep_enclavePlatform_cyber
@@ -1231,19 +1377,19 @@ module ec_cyber_to_identity 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Cyber enclave to desktop endpoint
-module ec_cyber_to_desktop 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-cyber-desk-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_cyber_to_desktop 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-cyber-to-desktop-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCyber.outputs.enclaveResourceId
-    destinationResourceId: ep_enclaveDesktop_cyber.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-cyber-desk-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCyber.id
+    sourceCidr: filter(enclaveCyber.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: ep_enclaveDesktop_cyber.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1257,6 +1403,8 @@ module ec_cyber_to_desktop 'modules/enclave-connection.bicep' = {
     ep_enclaveWeapon_from_subktr
     ep_enclaveSubKtr_from_weapon
     ep_enclaveIdentity_cyber
+    #disable-next-line no-unnecessary-dependson
+    ep_enclaveDesktop_cyber
     ep_enclaveCollab_cyber
     ep_enclavePlatform_cyber
     ep_enclaveWeapon_cyber
@@ -1265,19 +1413,19 @@ module ec_cyber_to_desktop 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Cyber enclave to collab endpoint
-module ec_cyber_to_collab 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-cyber-coll-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_cyber_to_collab 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-cyber-to-collab-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCyber.outputs.enclaveResourceId
-    destinationResourceId: ep_enclaveCollab_cyber.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-cyber-coll-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCyber.id
+    sourceCidr: filter(enclaveCyber.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: ep_enclaveCollab_cyber.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1292,6 +1440,8 @@ module ec_cyber_to_collab 'modules/enclave-connection.bicep' = {
     ep_enclaveSubKtr_from_weapon
     ep_enclaveIdentity_cyber
     ep_enclaveDesktop_cyber
+    #disable-next-line no-unnecessary-dependson
+    ep_enclaveCollab_cyber
     ep_enclavePlatform_cyber
     ep_enclaveWeapon_cyber
     ep_enclaveSubKtr_cyber
@@ -1299,19 +1449,19 @@ module ec_cyber_to_collab 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Cyber enclave to platform endpoint
-module ec_cyber_to_platform 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-cyber-plat-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_cyber_to_platform 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-cyber-to-platform-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'platforms'
+    company: 'primeContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCyber.outputs.enclaveResourceId
-    destinationResourceId: ep_enclavePlatform_cyber.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-cyber-plat-${uniqueNumber}'
-    tags: {
-      department: 'platforms'
-      company: 'primeContractor'
-    }
+    sourceResourceId: enclaveCyber.id
+    sourceCidr: filter(enclaveCyber.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: ep_enclavePlatform_cyber.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1327,25 +1477,27 @@ module ec_cyber_to_platform 'modules/enclave-connection.bicep' = {
     ep_enclaveIdentity_cyber
     ep_enclaveDesktop_cyber
     ep_enclaveCollab_cyber
+    #disable-next-line no-unnecessary-dependson
+    ep_enclavePlatform_cyber
     ep_enclaveWeapon_cyber
     ep_enclaveSubKtr_cyber
   ]
 }
 
 // Connection: Cyber enclave to weapon endpoint
-module ec_cyber_to_weapon 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-cyber-weap-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_cyber_to_weapon 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-cyber-to-weapon-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCyber.outputs.enclaveResourceId
-    destinationResourceId: ep_enclaveWeapon_cyber.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-cyber-weap-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCyber.id
+    sourceCidr: filter(enclaveCyber.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: ep_enclaveWeapon_cyber.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1362,24 +1514,26 @@ module ec_cyber_to_weapon 'modules/enclave-connection.bicep' = {
     ep_enclaveDesktop_cyber
     ep_enclaveCollab_cyber
     ep_enclavePlatform_cyber
+    #disable-next-line no-unnecessary-dependson
+    ep_enclaveWeapon_cyber
     ep_enclaveSubKtr_cyber
   ]
 }
 
 // Connection: Cyber enclave to SubKtr endpoint
-module ec_cyber_to_subktr 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-cyber-sub-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_cyber_to_subktr 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-cyber-to-subktr-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCyber.outputs.enclaveResourceId
-    destinationResourceId: ep_enclaveSubKtr_cyber.outputs.endpointId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-cyber-sub-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCyber.id
+    sourceCidr: filter(enclaveCyber.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: ep_enclaveSubKtr_cyber.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1397,30 +1551,34 @@ module ec_cyber_to_subktr 'modules/enclave-connection.bicep' = {
     ep_enclaveCollab_cyber
     ep_enclavePlatform_cyber
     ep_enclaveWeapon_cyber
+    #disable-next-line no-unnecessary-dependson
+    ep_enclaveSubKtr_cyber
   ]
 }
 
 // -------------------Data Connections-------------------
-// Connection: Desktop enclave to data source community endpoint
-module ec_desktop_to_cm_ep_bingOutlook 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-desk-data-${uniqueNumber}'
-  params: {
+// Connection: Desktop enclave to Bing&Outlook community endpoint
+#disable-next-line BCP081
+resource ec_desktop_to_cm_ep_bingOutlook 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-desktop-to-ce-bing-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveDesktop.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointDataSource.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveDesktop.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-desk-data-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveDesktop.id
+    sourceCidr: filter(enclaveDesktop.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointDataSource.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
     communityEndpointWinget
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
     ep_enclaveWeapon_from_platform
@@ -1437,23 +1595,25 @@ module ec_desktop_to_cm_ep_bingOutlook 'modules/enclave-connection.bicep' = {
 
 // -------------------Windows Update Connections-------------------
 // Connection: Identity Windows Update
-module ec_identity_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-id-winupd-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_identity_to_cm_ep_win_update 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-identity-to-ce-win-update-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveIdentity.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclaveIdentity.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveIdentity.outputs.managedAddressSpace, '/')[0]}/26'
-    location: location
-    connectionName: 'ec-id-winupd-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveIdentity.id
+    sourceCidr: '${join(map(enclaveIdentity.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.addressPrefix), ', ')}, ${split(enclaveIdentity.properties.enclaveAddressSpaces.managedAddressSpace, '/')[0]}/26'
+    destinationEndpointId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
@@ -1471,23 +1631,25 @@ module ec_identity_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Collaboration Windows Update
-module ec_collab_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-coll-winupd-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_collab_to_cm_ep_win_update 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-collab-to-ce-win-update-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCollab.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclaveCollab.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveCollab.outputs.managedAddressSpace, '/')[0]}/26'
-    location: location
-    connectionName: 'ec-coll-winupd-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCollab.id
+    sourceCidr: '${join(map(enclaveCollab.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.addressPrefix), ', ')}, ${split(enclaveCollab.properties.enclaveAddressSpaces.managedAddressSpace, '/')[0]}/26'
+    destinationEndpointId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
@@ -1505,23 +1667,25 @@ module ec_collab_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Desktop Windows Update
-module ec_desktop_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-desk-winupd-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_desktop_to_cm_ep_win_update 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-desktop-to-ce-win-update-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveDesktop.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclaveDesktop.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveDesktop.outputs.managedAddressSpace, '/')[0]}/26'
-    location: location
-    connectionName: 'ec-desk-winupd-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveDesktop.id
+    sourceCidr: '${join(map(enclaveDesktop.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.addressPrefix), ', ')}, ${split(enclaveDesktop.properties.enclaveAddressSpaces.managedAddressSpace, '/')[0]}/26'
+    destinationEndpointId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
@@ -1539,23 +1703,25 @@ module ec_desktop_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Platform Windows Update
-module ec_platform_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-plat-winupd-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_platform_to_cm_ep_win_update 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-platform-to-ce-win-update-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclavePlatform.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclavePlatform.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclavePlatform.outputs.managedAddressSpace, '/')[0]}/26'
-    location: location
-    connectionName: 'ec-plat-winupd-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclavePlatform.id
+    sourceCidr: '${join(map(enclavePlatform.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.addressPrefix), ', ')}, ${split(enclavePlatform.properties.enclaveAddressSpaces.managedAddressSpace, '/')[0]}/26'
+    destinationEndpointId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
@@ -1573,23 +1739,25 @@ module ec_platform_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Weapon Windows Update
-module ec_weapon_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-weap-winupd-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_weapon_to_cm_ep_win_update 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-weapon-to-ce-win-update-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveWeapon.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveWeapon.outputs.managedAddressSpace, '/')[0]}/26'
-    location: location
-    connectionName: 'ec-weap-winupd-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveWeapon.id
+    sourceCidr: '${join(map(enclaveWeapon.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.addressPrefix), ', ')}, ${split(enclaveWeapon.properties.enclaveAddressSpaces.managedAddressSpace, '/')[0]}/26'
+    destinationEndpointId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
@@ -1607,23 +1775,25 @@ module ec_weapon_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: SubKtr Windows Update
-module ec_subktr_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-sub-winupd-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_subktr_to_cm_ep_win_update 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-subktr-to-ce-win-update-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveSubKtr.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveSubKtr.outputs.managedAddressSpace, '/')[0]}/26'
-    location: location
-    connectionName: 'ec-sub-winupd-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveSubKtr.id
+    sourceCidr: '${join(map(enclaveSubKtr.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.addressPrefix), ', ')}, ${split(enclaveSubKtr.properties.enclaveAddressSpaces.managedAddressSpace, '/')[0]}/26'
+    destinationEndpointId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
@@ -1641,23 +1811,25 @@ module ec_subktr_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Cyber Windows Update
-module ec_cyber_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-cyber-winupd-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_cyber_to_cm_ep_win_update 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-cyber-to-ce-win-update-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCyber.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
-    sourceAddressSpace: '${join(map(enclaveCyber.outputs.enclaveSubnetConfig, s => s.addressPrefix), ', ')}, ${split(enclaveCyber.outputs.managedAddressSpace, '/')[0]}/26'
-    location: location
-    connectionName: 'ec-cyber-winupd-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCyber.id
+    sourceCidr: '${join(map(enclaveCyber.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.addressPrefix), ', ')}, ${split(enclaveCyber.properties.enclaveAddressSpaces.managedAddressSpace, '/')[0]}/26'
+    destinationEndpointId: communityEndpointWindowsUpdates.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
@@ -1673,26 +1845,46 @@ module ec_cyber_to_cm_ep_win_update 'modules/enclave-connection.bicep' = {
     ep_enclaveSubKtr_cyber
   ]
 }
+
+// // Connection: Offline Windows Update
+// #disable-next-line BCP081
+// resource ec_offline_to_cm_ep_win_update 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+//   name: 'ec-offline-to-ce-win-update-${uniqueNumber}'
+//   location: location
+//   tags: {
+//     department: 'CommunitySharedServices'
+//     company: 'CommunityOversight'
+//   }
+//   properties: {
+//     communityResourceId: community.outputs.resourceId
+//     sourceResourceId: enclaveOffline.id
+//     sourceCidr: '${join(map(enclaveOffline.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.addressPrefix), ', ')}, ${split(enclaveOffline.properties.enclaveAddressSpaces.managedAddressSpace, '/')[0]}/26'
+//     destinationEndpointId: communityName_windows_updates.outputs.communityEndpointResourceId
+//   }
+// }
+
 // -------------------Winget Connections-------------------
 // Connection: Identity to Winget
-module ec_identity_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-id-winget-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_identity_to_cm_ep_winget 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-identity-to-ce-winget-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveIdentity.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveIdentity.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-id-winget-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveIdentity.id
+    sourceCidr: filter(enclaveIdentity.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointWinget.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
@@ -1709,24 +1901,26 @@ module ec_identity_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Collaboration Winget
-module ec_collab_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-coll-winget-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_collab_to_cm_ep_winget 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-collab-to-ce-winget-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCollab.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveCollab.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-coll-winget-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCollab.id
+    sourceCidr: filter(enclaveCollab.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointWinget.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
@@ -1743,24 +1937,26 @@ module ec_collab_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Desktop Winget
-module ec_desktop_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-desk-winget-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_desktop_to_cm_ep_winget 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-desktop-to-ce-winget-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveDesktop.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveDesktop.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-desk-winget-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveDesktop.id
+    sourceCidr: filter(enclaveDesktop.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointWinget.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
@@ -1777,24 +1973,26 @@ module ec_desktop_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Platform Winget
-module ec_platform_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-plat-winget-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_platform_to_cm_ep_winget 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-platform-to-ce-winget-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclavePlatform.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclavePlatform.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-plat-winget-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclavePlatform.id
+    sourceCidr: filter(enclavePlatform.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointWinget.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
@@ -1811,24 +2009,26 @@ module ec_platform_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Weapon Winget
-module ec_weapon_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-weap-winget-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_weapon_to_cm_ep_winget 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-weapon-to-ce-winget-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveWeapon.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-weap-winget-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveWeapon.id
+    sourceCidr: filter(enclaveWeapon.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointWinget.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
@@ -1845,24 +2045,26 @@ module ec_weapon_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: SubKtr Winget
-module ec_subktr_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-sub-winget-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_subktr_to_cm_ep_winget 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-subktr-to-ce-winget-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveSubKtr.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-sub-winget-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveSubKtr.id
+    sourceCidr: filter(enclaveSubKtr.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointWinget.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
@@ -1879,24 +2081,26 @@ module ec_subktr_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Cyber Winget
-module ec_cyber_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-cyber-winget-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_cyber_to_cm_ep_winget 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-cyber-to-ce-winget-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveCyber.outputs.enclaveResourceId
-    destinationResourceId: communityEndpointWinget.outputs.communityEndpointResourceId
-    sourceAddressSpace: filter(enclaveCyber.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-cyber-winget-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceResourceId: enclaveCyber.id
+    sourceCidr: filter(enclaveCyber.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: communityEndpointWinget.outputs.communityEndpointResourceId
   }
   dependsOn: [
     communityEndpointExternal
     communityEndpointDefaultPortal
     communityEndpointWindowsUpdates
+    #disable-next-line no-unnecessary-dependson
+    communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
@@ -1911,21 +2115,41 @@ module ec_cyber_to_cm_ep_winget 'modules/enclave-connection.bicep' = {
     ep_enclaveSubKtr_cyber
   ]
 }
+
+// // Connection: Offline Winget
+// #disable-next-line BCP081
+// resource ec_offline_to_cm_ep_winget 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+//   name: 'ec-offline-to-ce-winget-${uniqueNumber}'
+//   location: location
+//   tags: {
+//     department: 'CommunitySharedServices'
+//     company: 'CommunityOversight'
+//   }
+//   properties: {
+//     communityResourceId: community.outputs.resourceId
+//     sourceResourceId: enclaveOffline.id
+//     sourceCidr: ((stage >= 5)
+//       ? filter(enclaveOffline.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+//)
+//     destinationEndpointId: communityName_winget.outputs.communityEndpointResourceId
+//   }
+// }
+
 // -------------------Enclave to Enclave Connections-------------------
 // Connection: Platform enclave to Weapon enclave
-module ec_platform_to_weapon 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-plat-weap-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_platform_to_weapon 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-platform-to-weapon-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'platforms'
+    company: 'primeContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclavePlatform.outputs.enclaveResourceId
-    destinationResourceId: ep_enclaveWeapon_from_platform.outputs.endpointId
-    sourceAddressSpace: filter(enclavePlatform.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-plat-weap-${uniqueNumber}'
-    tags: {
-      department: 'platforms'
-      company: 'primeContractor'
-    }
+    sourceResourceId: enclavePlatform.id
+    sourceCidr: filter(enclavePlatform.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: ep_enclaveWeapon_from_platform.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1935,6 +2159,8 @@ module ec_platform_to_weapon 'modules/enclave-connection.bicep' = {
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
+    #disable-next-line no-unnecessary-dependson
+    ep_enclaveWeapon_from_platform
     ep_enclaveWeapon_from_subktr
     ep_enclaveSubKtr_from_weapon
     ep_enclaveIdentity_cyber
@@ -1947,19 +2173,19 @@ module ec_platform_to_weapon 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Weapon enclave to Platform enclave
-module ec_weapon_to_platform 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-weap-plat-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_weapon_to_platform 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-weapon-to-platform-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'pewPewDept'
+    company: 'weaponContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveWeapon.outputs.enclaveResourceId
-    destinationResourceId: ep_enclavePlatform_from_weapon.outputs.endpointId
-    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-weap-plat-${uniqueNumber}'
-    tags: {
-      department: 'pewPewDept'
-      company: 'weaponContractor'
-    }
+    sourceResourceId: enclaveWeapon.id
+    sourceCidr: filter(enclaveWeapon.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: ep_enclavePlatform_from_weapon.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -1968,6 +2194,8 @@ module ec_weapon_to_platform 'modules/enclave-connection.bicep' = {
     communityEndpointWinget
     communityEndpointDataSource
     enclaveIdentity_endpointName_1_v2
+    #disable-next-line no-unnecessary-dependson
+    ep_enclavePlatform_from_weapon
     ep_enclaveWeapon_from_platform
     ep_enclaveWeapon_from_subktr
     ep_enclaveSubKtr_from_weapon
@@ -1981,19 +2209,19 @@ module ec_weapon_to_platform 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: Weapon enclave to SubKtr enclave
-module ec_weapon_to_subktr 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-weap-sub-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_weapon_to_subktr 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-weapon-to-subktr-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'pewPewDept'
+    company: 'weaponContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveWeapon.outputs.enclaveResourceId
-    destinationResourceId: ep_enclaveSubKtr_from_weapon.outputs.endpointId
-    sourceAddressSpace: filter(enclaveWeapon.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-weap-sub-${uniqueNumber}'
-    tags: {
-      department: 'pewPewDept'
-      company: 'weaponContractor'
-    }
+    sourceResourceId: enclaveWeapon.id
+    sourceCidr: filter(enclaveWeapon.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: ep_enclaveSubKtr_from_weapon.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -2005,6 +2233,8 @@ module ec_weapon_to_subktr 'modules/enclave-connection.bicep' = {
     ep_enclavePlatform_from_weapon
     ep_enclaveWeapon_from_platform
     ep_enclaveWeapon_from_subktr
+    #disable-next-line no-unnecessary-dependson
+    ep_enclaveSubKtr_from_weapon
     ep_enclaveIdentity_cyber
     ep_enclaveDesktop_cyber
     ep_enclaveCollab_cyber
@@ -2015,19 +2245,19 @@ module ec_weapon_to_subktr 'modules/enclave-connection.bicep' = {
 }
 
 // Connection: SubKtr enclave to Weapon enclave
-module ec_subktr_to_weapon 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-sub-weap-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_subktr_to_weapon 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-subktr-to-weapon-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'softwareDevDept'
+    company: 'subContractor'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
-    sourceResourceId: enclaveSubKtr.outputs.enclaveResourceId
-    destinationResourceId: ep_enclaveWeapon_from_subktr.outputs.endpointId
-    sourceAddressSpace: filter(enclaveSubKtr.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
-    location: location
-    connectionName: 'ec-sub-weap-${uniqueNumber}'
-    tags: {
-      department: 'softwareDevDept'
-      company: 'subContractor'
-    }
+    sourceResourceId: enclaveSubKtr.id
+    sourceCidr: filter(enclaveSubKtr.properties.enclaveVirtualNetwork.subnetConfigurations, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
+    destinationEndpointId: ep_enclaveWeapon_from_subktr.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -2038,6 +2268,8 @@ module ec_subktr_to_weapon 'modules/enclave-connection.bicep' = {
     enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
     ep_enclaveWeapon_from_platform
+    #disable-next-line no-unnecessary-dependson
+    ep_enclaveWeapon_from_subktr
     ep_enclaveSubKtr_from_weapon
     ep_enclaveIdentity_cyber
     ep_enclaveDesktop_cyber
@@ -2050,19 +2282,19 @@ module ec_subktr_to_weapon 'modules/enclave-connection.bicep' = {
 
 // -------------------Transit Hub Connections-------------------
 // Connection: Transithub to Identity enclave ADDS endpoint
-module ec_external_to_identity_adds 'modules/enclave-connection.bicep' = {
-  name: 'deploy-ec-ext-idadds-${uniqueNumber}'
-  params: {
+#disable-next-line BCP081
+resource ec_external_to_identity_adds 'microsoft.mission/enclaveconnections@2025-05-01-preview' = {
+  name: 'ec-external-to-identity-adds-demo-${uniqueNumber}'
+  location: location
+  tags: {
+    department: 'CommunitySharedServices'
+    company: 'CommunityOversight'
+  }
+  properties: {
     communityResourceId: community.outputs.resourceId
     sourceResourceId: transitHub.outputs.transitHubResourceId
-    destinationResourceId: enclaveIdentity_endpointName_1_v2.outputs.endpointId
-    sourceAddressSpace: '172.16.18.0/24'
-    location: location
-    connectionName: 'ec-ext-idadds-${uniqueNumber}'
-    tags: {
-      department: 'CommunitySharedServices'
-      company: 'CommunityOversight'
-    }
+    sourceCidr: '172.16.18.0/24'
+    destinationEndpointId: enclaveIdentity_endpointName_1_v2.id
   }
   dependsOn: [
     communityEndpointExternal
@@ -2070,6 +2302,8 @@ module ec_external_to_identity_adds 'modules/enclave-connection.bicep' = {
     communityEndpointWindowsUpdates
     communityEndpointWinget
     communityEndpointDataSource
+    #disable-next-line no-unnecessary-dependson
+    enclaveIdentity_endpointName_1_v2
     ep_enclavePlatform_from_weapon
     ep_enclaveWeapon_from_platform
     ep_enclaveWeapon_from_subktr

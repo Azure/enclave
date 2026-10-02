@@ -1,0 +1,33 @@
+name: Validate generated ARM templates
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-generated-arm-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Build and verify generated ARM
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Regenerate and verify ARM templates
+        shell: pwsh
+        run: |
+          ./eng/Build-ArmTemplates.ps1 -TestReadmeDeploymentLinks
+          ./eng/Build-ArmTemplates.ps1 -Check
