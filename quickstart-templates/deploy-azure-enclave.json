@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "17097276438984958972"
+      "templateHash": "3607484769920293178"
     }
   },
   "definitions": {
@@ -1342,7 +1342,11 @@
             }
           }
         }
-      }
+      },
+      "dependsOn": [
+        "community",
+        "communityResourceGroup"
+      ]
     },
     "communityEndpointMsftAzure": {
       "type": "Microsoft.Resources/deployments",
