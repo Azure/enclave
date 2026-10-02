@@ -36,8 +36,6 @@ param connectionName string
 @description('Tags to be assigned to the enclave connection.')
 param tags object = {}
 
-// Disable BCP081 as Microsoft.Mission/enclaveConnections is a preview resource type
-#disable-next-line BCP081
 resource enclaveConnection 'Microsoft.Mission/enclaveConnections@2026-03-01-preview' = {
   name: connectionName
   location: location

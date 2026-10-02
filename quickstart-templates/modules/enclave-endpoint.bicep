@@ -48,14 +48,15 @@ param rules enclaveEndpointRuleType[]
 @description('Optional. Tags to apply to the enclave endpoint.')
 param tags object = {}
 
+@description('Whether endpoint rule updates are applied automatically or require manual approval.')
+@allowed(['Automatic', 'Manual'])
+param updateMode string = 'Automatic'
+
 // Reference to existing parent enclave resource
-#disable-next-line BCP081
 resource enclave 'Microsoft.Mission/virtualEnclaves@2026-03-01-preview' existing = {
   name: enclaveName
 }
 
-// Disable BCP081 as Microsoft.Mission/virtualEnclaves/enclaveEndpoints is a preview resource type
-#disable-next-line BCP081
 resource enclaveEndpoint 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2026-03-01-preview' = {
   parent: enclave
   name: endpointName
@@ -63,6 +64,7 @@ resource enclaveEndpoint 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@202
   tags: tags
   properties: {
     ruleCollection: rules
+    updateMode: updateMode
   }
 }
 

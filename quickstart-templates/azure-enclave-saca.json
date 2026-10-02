@@ -6,7 +6,11 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
+<<<<<<< HEAD
       "templateHash": "17782356406681768148"
+=======
+      "templateHash": "6617650972853997653"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
     }
   },
   "definitions": {
@@ -286,7 +290,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
+<<<<<<< HEAD
               "templateHash": "15211851496822557066"
+=======
+              "templateHash": "6721890420651872179"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
@@ -425,26 +433,126 @@
               "properties": {
                 "serviceId": {
                   "type": "string",
+<<<<<<< HEAD
+=======
+                  "allowedValues": [
+                    "AKS",
+                    "AppService",
+                    "AzureFirewalls",
+                    "ContainerRegistry",
+                    "CosmosDB",
+                    "DataConnectors",
+                    "Insights",
+                    "KeyVault",
+                    "Logic",
+                    "MicrosoftSQL",
+                    "Monitoring",
+                    "PostgreSQL",
+                    "PrivateDNSZones",
+                    "ServiceBus",
+                    "Storage"
+                  ],
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   "metadata": {
                     "description": "The service identifier."
                   }
                 },
                 "option": {
                   "type": "string",
+<<<<<<< HEAD
                   "metadata": {
                     "description": "The service option (Allow, Deny, NotApplicable)."
+=======
+                  "allowedValues": [
+                    "Allow",
+                    "Deny",
+                    "ExceptionOnly",
+                    "NotApplicable"
+                  ],
+                  "metadata": {
+                    "description": "The service option (Allow, Deny, ExceptionOnly, or NotApplicable)."
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   }
                 },
                 "enforcement": {
                   "type": "string",
+<<<<<<< HEAD
                   "metadata": {
                     "description": "The enforcement mode (Enabled, Disabled)."
+=======
+                  "allowedValues": [
+                    "Disabled",
+                    "Enabled"
+                  ],
+                  "metadata": {
+                    "description": "The enforcement mode (Enabled or Disabled)."
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   }
                 },
                 "policyAction": {
                   "type": "string",
+<<<<<<< HEAD
                   "metadata": {
                     "description": "The policy action (Enforce, Audit)."
+=======
+                  "allowedValues": [
+                    "AuditOnly",
+                    "Enforce",
+                    "None"
+                  ],
+                  "metadata": {
+                    "description": "The policy action (AuditOnly, Enforce, or None)."
+                  }
+                }
+              }
+            },
+            "diagnosticDestinationType": {
+              "type": "object",
+              "properties": {
+                "destinationType": {
+                  "type": "string",
+                  "allowedValues": [
+                    "CommunityWorkspace",
+                    "CustomWorkspace",
+                    "EnclaveWorkspace"
+                  ],
+                  "metadata": {
+                    "description": "The destination type for diagnostics."
+                  }
+                },
+                "customWorkspaceResourceId": {
+                  "type": "string",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Log Analytics workspace resource ID. Required when destinationType is CustomWorkspace."
+                  }
+                },
+                "diagnosticSettingsName": {
+                  "type": "string",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Custom name for the diagnostic settings."
+                  }
+                }
+              }
+            },
+            "monitoringSettingsType": {
+              "type": "object",
+              "properties": {
+                "diagnosticDestinations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/diagnosticDestinationType"
+                  },
+                  "metadata": {
+                    "description": "List of diagnostic destinations."
+                  }
+                },
+                "flowLogDestination": {
+                  "$ref": "#/definitions/diagnosticDestinationType",
+                  "metadata": {
+                    "description": "The destination for flow logs."
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   }
                 }
               }
@@ -504,6 +612,7 @@
                 "description": "The list of governed services for the community."
               }
             },
+<<<<<<< HEAD
             "approvalSettings": {
               "$ref": "#/definitions/communityApprovalSettingsType",
               "defaultValue": {
@@ -514,6 +623,63 @@
                 "enclaveCreation": null,
                 "enclaveEndpointUpdate": null,
                 "enclaveMaintenanceMode": null
+=======
+            "monitoringSettings": {
+              "$ref": "#/definitions/monitoringSettingsType",
+              "defaultValue": {
+                "diagnosticDestinations": [
+                  {
+                    "destinationType": "CommunityWorkspace"
+                  }
+                ],
+                "flowLogDestination": {
+                  "destinationType": "CommunityWorkspace"
+                }
+              },
+              "metadata": {
+                "displayName": "Monitoring Settings",
+                "description": "Monitoring settings for diagnostic and flow log destinations."
+              }
+            },
+            "approvalSettings": {
+              "$ref": "#/definitions/communityApprovalSettingsType",
+              "defaultValue": {
+                "communityEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 1
+                },
+                "communityMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 1
+                },
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 1
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 1
+                },
+                "enclaveCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 1
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 1
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 1
+                }
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -532,6 +698,10 @@
                 "addressSpace": "[parameters('addressSpace')]",
                 "maintenanceModeConfiguration": "[parameters('maintenanceModeConfiguration')]",
                 "governedServiceList": "[parameters('governedServiceList')]",
+<<<<<<< HEAD
+=======
+                "monitoringSettings": "[parameters('monitoringSettings')]",
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "approvalSettings": {
                   "communityEndpointUpdate": "[tryGet(parameters('approvalSettings'), 'communityEndpointUpdate')]",
                   "communityMaintenanceMode": "[tryGet(parameters('approvalSettings'), 'communityMaintenanceMode')]",
@@ -624,10 +794,36 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
+<<<<<<< HEAD
               "templateHash": "3698052620106389402"
             }
           },
           "definitions": {
+=======
+              "templateHash": "3689946510813165946"
+            }
+          },
+          "definitions": {
+            "transitOptionParamsType": {
+              "type": "object",
+              "properties": {
+                "scaleUnits": {
+                  "type": "int",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Scale units for the gateway."
+                  }
+                },
+                "remoteVirtualNetworkId": {
+                  "type": "string",
+                  "nullable": true,
+                  "metadata": {
+                    "description": "Remote virtual network resource ID for peering."
+                  }
+                }
+              }
+            },
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             "transitOptionType": {
               "type": "object",
               "properties": {
@@ -643,7 +839,11 @@
                   }
                 },
                 "params": {
+<<<<<<< HEAD
                   "type": "object",
+=======
+                  "$ref": "#/definitions/transitOptionParamsType",
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                   "metadata": {
                     "description": "Parameters specific to the transit type."
                   }
@@ -693,6 +893,20 @@
               "metadata": {
                 "description": "Tags to be assigned to the transit hub."
               }
+<<<<<<< HEAD
+=======
+            },
+            "securityProvider": {
+              "type": "string",
+              "defaultValue": "None",
+              "allowedValues": [
+                "AzureFirewall",
+                "None"
+              ],
+              "metadata": {
+                "description": "The security provider for the transit hub."
+              }
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -709,6 +923,10 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
+<<<<<<< HEAD
+=======
+                "securityProvider": "[parameters('securityProvider')]",
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "transitOption": "[parameters('transitOption')]"
               }
             }
@@ -1170,7 +1388,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
+<<<<<<< HEAD
               "templateHash": "16775608663396955211"
+=======
+              "templateHash": "13573103881482708685"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -1192,7 +1414,10 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
+<<<<<<< HEAD
                 "IP",
+=======
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -1312,6 +1537,20 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
+<<<<<<< HEAD
+=======
+            },
+            "updateMode": {
+              "type": "string",
+              "defaultValue": "Automatic",
+              "allowedValues": [
+                "Automatic",
+                "Manual"
+              ],
+              "metadata": {
+                "description": "Whether endpoint rule updates are applied automatically or require manual approval."
+              }
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -1328,7 +1567,12 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
+<<<<<<< HEAD
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
+=======
+                "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
+                "updateMode": "[parameters('updateMode')]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -1399,7 +1643,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
+<<<<<<< HEAD
               "templateHash": "16775608663396955211"
+=======
+              "templateHash": "13573103881482708685"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -1421,7 +1669,10 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
+<<<<<<< HEAD
                 "IP",
+=======
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -1541,6 +1792,20 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
+<<<<<<< HEAD
+=======
+            },
+            "updateMode": {
+              "type": "string",
+              "defaultValue": "Automatic",
+              "allowedValues": [
+                "Automatic",
+                "Manual"
+              ],
+              "metadata": {
+                "description": "Whether endpoint rule updates are applied automatically or require manual approval."
+              }
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -1557,7 +1822,12 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
+<<<<<<< HEAD
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
+=======
+                "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
+                "updateMode": "[parameters('updateMode')]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -1628,7 +1898,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
+<<<<<<< HEAD
               "templateHash": "16775608663396955211"
+=======
+              "templateHash": "13573103881482708685"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -1650,7 +1924,10 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
+<<<<<<< HEAD
                 "IP",
+=======
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -1770,6 +2047,20 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
+<<<<<<< HEAD
+=======
+            },
+            "updateMode": {
+              "type": "string",
+              "defaultValue": "Automatic",
+              "allowedValues": [
+                "Automatic",
+                "Manual"
+              ],
+              "metadata": {
+                "description": "Whether endpoint rule updates are applied automatically or require manual approval."
+              }
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -1786,7 +2077,12 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
+<<<<<<< HEAD
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
+=======
+                "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
+                "updateMode": "[parameters('updateMode')]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -1857,7 +2153,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
+<<<<<<< HEAD
               "templateHash": "16775608663396955211"
+=======
+              "templateHash": "13573103881482708685"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -1879,7 +2179,10 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
+<<<<<<< HEAD
                 "IP",
+=======
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -1999,6 +2302,20 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
+<<<<<<< HEAD
+=======
+            },
+            "updateMode": {
+              "type": "string",
+              "defaultValue": "Automatic",
+              "allowedValues": [
+                "Automatic",
+                "Manual"
+              ],
+              "metadata": {
+                "description": "Whether endpoint rule updates are applied automatically or require manual approval."
+              }
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -2015,7 +2332,12 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
+<<<<<<< HEAD
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
+=======
+                "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
+                "updateMode": "[parameters('updateMode')]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -2086,7 +2408,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
+<<<<<<< HEAD
               "templateHash": "16775608663396955211"
+=======
+              "templateHash": "13573103881482708685"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -2108,7 +2434,10 @@
               "allowedValues": [
                 "FQDN",
                 "FQDNTag",
+<<<<<<< HEAD
                 "IP",
+=======
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
                 "IPAddress",
                 "PrivateNetwork",
                 "ServiceTag"
@@ -2228,6 +2557,20 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the community endpoint."
               }
+<<<<<<< HEAD
+=======
+            },
+            "updateMode": {
+              "type": "string",
+              "defaultValue": "Automatic",
+              "allowedValues": [
+                "Automatic",
+                "Manual"
+              ],
+              "metadata": {
+                "description": "Whether endpoint rule updates are applied automatically or require manual approval."
+              }
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -2244,7 +2587,12 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
+<<<<<<< HEAD
                 "ruleCollection": "[parameters('communityEndpointRuleCollection')]"
+=======
+                "ruleCollection": "[parameters('communityEndpointRuleCollection')]",
+                "updateMode": "[parameters('updateMode')]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -2320,8 +2668,15 @@
           "deployWorkload": {
             "value": true
           },
+<<<<<<< HEAD
           "workloadName": {
             "value": "[format('wl-id-ADDS-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
+=======
+          "workloadNames": {
+            "value": [
+              "[format('wl-id-ADDS-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
+            ]
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "workloadResourceGroupName": {
             "value": "[format('rg-id-ADDS-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
@@ -2335,7 +2690,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
+<<<<<<< HEAD
               "templateHash": "14812321329925731463"
+=======
+              "templateHash": "7163142406234217791"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -2530,6 +2889,16 @@
                 "description": "The name of the workload resource."
               }
             },
+<<<<<<< HEAD
+=======
+            "workloadNames": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Optional list of workload names to deploy. If provided, this list takes precedence over workloadName."
+              }
+            },
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             "workloadResourceGroupName": {
               "type": "string",
               "defaultValue": ""
@@ -2564,10 +2933,33 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
+<<<<<<< HEAD
                 "connectionCreation": null,
                 "connectionUpdate": null,
                 "enclaveEndpointUpdate": null,
                 "enclaveMaintenanceMode": null
+=======
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -2576,7 +2968,19 @@
             }
           },
           "variables": {
+<<<<<<< HEAD
             "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
+=======
+            "copy": [
+              {
+                "name": "computedWorkloadResourceIds",
+                "count": "[length(variables('effectiveWorkloadNames'))]",
+                "input": "[format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[copyIndex('computedWorkloadResourceIds')])]"
+              }
+            ],
+            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]",
+            "effectiveWorkloadNames": "[if(greater(length(parameters('workloadNames')), 0), parameters('workloadNames'), createArray(parameters('workloadName')))]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "resources": {
             "enclave": {
@@ -2601,10 +3005,21 @@
               }
             },
             "workload": {
+<<<<<<< HEAD
               "condition": "[parameters('deployWorkload')]",
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
               "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
+=======
+              "copy": {
+                "name": "workload",
+                "count": "[length(variables('effectiveWorkloadNames'))]"
+              },
+              "condition": "[parameters('deployWorkload')]",
+              "type": "Microsoft.Mission/virtualEnclaves/workloads",
+              "apiVersion": "2026-03-01-preview",
+              "name": "[format('{0}/{1}', parameters('enclaveName'), variables('effectiveWorkloadNames')[copyIndex()])]",
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
@@ -2670,9 +3085,22 @@
             "workloadResourceId": {
               "type": "string",
               "metadata": {
+<<<<<<< HEAD
                 "description": "The resource ID of the workload (if deployed)."
               },
               "value": "[if(parameters('deployWorkload'), resourceId('Microsoft.Mission/virtualEnclaves/workloads', parameters('enclaveName'), parameters('workloadName')), '')]"
+=======
+                "description": "The resource ID of the first workload (if deployed)."
+              },
+              "value": "[if(and(parameters('deployWorkload'), greater(length(variables('effectiveWorkloadNames')), 0)), format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[0]), '')]"
+            },
+            "workloadResourceIds": {
+              "type": "array",
+              "metadata": {
+                "description": "The resource IDs of deployed workloads (if deployed)."
+              },
+              "value": "[if(parameters('deployWorkload'), variables('computedWorkloadResourceIds'), createArray())]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           }
         }
@@ -2723,8 +3151,15 @@
           "deployWorkload": {
             "value": true
           },
+<<<<<<< HEAD
           "workloadName": {
             "value": "[format('wl-operations-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
+=======
+          "workloadNames": {
+            "value": [
+              "[format('wl-operations-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
+            ]
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "workloadResourceGroupName": {
             "value": "[format('rg-operations-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
@@ -2738,7 +3173,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
+<<<<<<< HEAD
               "templateHash": "14812321329925731463"
+=======
+              "templateHash": "7163142406234217791"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -2933,6 +3372,16 @@
                 "description": "The name of the workload resource."
               }
             },
+<<<<<<< HEAD
+=======
+            "workloadNames": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Optional list of workload names to deploy. If provided, this list takes precedence over workloadName."
+              }
+            },
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             "workloadResourceGroupName": {
               "type": "string",
               "defaultValue": ""
@@ -2967,10 +3416,33 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
+<<<<<<< HEAD
                 "connectionCreation": null,
                 "connectionUpdate": null,
                 "enclaveEndpointUpdate": null,
                 "enclaveMaintenanceMode": null
+=======
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -2979,7 +3451,19 @@
             }
           },
           "variables": {
+<<<<<<< HEAD
             "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
+=======
+            "copy": [
+              {
+                "name": "computedWorkloadResourceIds",
+                "count": "[length(variables('effectiveWorkloadNames'))]",
+                "input": "[format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[copyIndex('computedWorkloadResourceIds')])]"
+              }
+            ],
+            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]",
+            "effectiveWorkloadNames": "[if(greater(length(parameters('workloadNames')), 0), parameters('workloadNames'), createArray(parameters('workloadName')))]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "resources": {
             "enclave": {
@@ -3004,10 +3488,21 @@
               }
             },
             "workload": {
+<<<<<<< HEAD
               "condition": "[parameters('deployWorkload')]",
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
               "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
+=======
+              "copy": {
+                "name": "workload",
+                "count": "[length(variables('effectiveWorkloadNames'))]"
+              },
+              "condition": "[parameters('deployWorkload')]",
+              "type": "Microsoft.Mission/virtualEnclaves/workloads",
+              "apiVersion": "2026-03-01-preview",
+              "name": "[format('{0}/{1}', parameters('enclaveName'), variables('effectiveWorkloadNames')[copyIndex()])]",
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
@@ -3073,9 +3568,22 @@
             "workloadResourceId": {
               "type": "string",
               "metadata": {
+<<<<<<< HEAD
                 "description": "The resource ID of the workload (if deployed)."
               },
               "value": "[if(parameters('deployWorkload'), resourceId('Microsoft.Mission/virtualEnclaves/workloads', parameters('enclaveName'), parameters('workloadName')), '')]"
+=======
+                "description": "The resource ID of the first workload (if deployed)."
+              },
+              "value": "[if(and(parameters('deployWorkload'), greater(length(variables('effectiveWorkloadNames')), 0)), format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[0]), '')]"
+            },
+            "workloadResourceIds": {
+              "type": "array",
+              "metadata": {
+                "description": "The resource IDs of deployed workloads (if deployed)."
+              },
+              "value": "[if(parameters('deployWorkload'), variables('computedWorkloadResourceIds'), createArray())]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           }
         }
@@ -3126,8 +3634,15 @@
           "deployWorkload": {
             "value": true
           },
+<<<<<<< HEAD
           "workloadName": {
             "value": "[format('wl-shared-apps-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
+=======
+          "workloadNames": {
+            "value": [
+              "[format('wl-shared-apps-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
+            ]
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "workloadResourceGroupName": {
             "value": "[format('rg-shared-apps-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
@@ -3141,7 +3656,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
+<<<<<<< HEAD
               "templateHash": "14812321329925731463"
+=======
+              "templateHash": "7163142406234217791"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -3336,6 +3855,16 @@
                 "description": "The name of the workload resource."
               }
             },
+<<<<<<< HEAD
+=======
+            "workloadNames": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Optional list of workload names to deploy. If provided, this list takes precedence over workloadName."
+              }
+            },
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             "workloadResourceGroupName": {
               "type": "string",
               "defaultValue": ""
@@ -3370,10 +3899,33 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
+<<<<<<< HEAD
                 "connectionCreation": null,
                 "connectionUpdate": null,
                 "enclaveEndpointUpdate": null,
                 "enclaveMaintenanceMode": null
+=======
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -3382,7 +3934,19 @@
             }
           },
           "variables": {
+<<<<<<< HEAD
             "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
+=======
+            "copy": [
+              {
+                "name": "computedWorkloadResourceIds",
+                "count": "[length(variables('effectiveWorkloadNames'))]",
+                "input": "[format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[copyIndex('computedWorkloadResourceIds')])]"
+              }
+            ],
+            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]",
+            "effectiveWorkloadNames": "[if(greater(length(parameters('workloadNames')), 0), parameters('workloadNames'), createArray(parameters('workloadName')))]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "resources": {
             "enclave": {
@@ -3407,10 +3971,21 @@
               }
             },
             "workload": {
+<<<<<<< HEAD
               "condition": "[parameters('deployWorkload')]",
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
               "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
+=======
+              "copy": {
+                "name": "workload",
+                "count": "[length(variables('effectiveWorkloadNames'))]"
+              },
+              "condition": "[parameters('deployWorkload')]",
+              "type": "Microsoft.Mission/virtualEnclaves/workloads",
+              "apiVersion": "2026-03-01-preview",
+              "name": "[format('{0}/{1}', parameters('enclaveName'), variables('effectiveWorkloadNames')[copyIndex()])]",
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
@@ -3476,9 +4051,22 @@
             "workloadResourceId": {
               "type": "string",
               "metadata": {
+<<<<<<< HEAD
                 "description": "The resource ID of the workload (if deployed)."
               },
               "value": "[if(parameters('deployWorkload'), resourceId('Microsoft.Mission/virtualEnclaves/workloads', parameters('enclaveName'), parameters('workloadName')), '')]"
+=======
+                "description": "The resource ID of the first workload (if deployed)."
+              },
+              "value": "[if(and(parameters('deployWorkload'), greater(length(variables('effectiveWorkloadNames')), 0)), format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[0]), '')]"
+            },
+            "workloadResourceIds": {
+              "type": "array",
+              "metadata": {
+                "description": "The resource IDs of deployed workloads (if deployed)."
+              },
+              "value": "[if(parameters('deployWorkload'), variables('computedWorkloadResourceIds'), createArray())]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           }
         }
@@ -3533,8 +4121,15 @@
           "deployWorkload": {
             "value": true
           },
+<<<<<<< HEAD
           "workloadName": {
             "value": "[format('wl-mission-apps-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
+=======
+          "workloadNames": {
+            "value": [
+              "[format('wl-mission-apps-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
+            ]
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "workloadResourceGroupName": {
             "value": "[format('rg-mission-apps-{0}-{1}', parameters('uniqueNumber'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]"
@@ -3548,7 +4143,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
+<<<<<<< HEAD
               "templateHash": "14812321329925731463"
+=======
+              "templateHash": "7163142406234217791"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -3743,6 +4342,16 @@
                 "description": "The name of the workload resource."
               }
             },
+<<<<<<< HEAD
+=======
+            "workloadNames": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Optional list of workload names to deploy. If provided, this list takes precedence over workloadName."
+              }
+            },
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             "workloadResourceGroupName": {
               "type": "string",
               "defaultValue": ""
@@ -3777,10 +4386,33 @@
             "approvalSettings": {
               "$ref": "#/definitions/enclaveApprovalSettingsType",
               "defaultValue": {
+<<<<<<< HEAD
                 "connectionCreation": null,
                 "connectionUpdate": null,
                 "enclaveEndpointUpdate": null,
                 "enclaveMaintenanceMode": null
+=======
+                "connectionCreation": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "connectionUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveEndpointUpdate": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                },
+                "enclaveMaintenanceMode": {
+                  "approvalPolicy": "NotRequired",
+                  "mandatoryApprovers": [],
+                  "minimumApproversRequired": 0
+                }
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               },
               "metadata": {
                 "displayName": "Approval Settings",
@@ -3789,7 +4421,19 @@
             }
           },
           "variables": {
+<<<<<<< HEAD
             "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]"
+=======
+            "copy": [
+              {
+                "name": "computedWorkloadResourceIds",
+                "count": "[length(variables('effectiveWorkloadNames'))]",
+                "input": "[format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[copyIndex('computedWorkloadResourceIds')])]"
+              }
+            ],
+            "effectiveWorkloadResourceGroupName": "[if(empty(trim(parameters('workloadResourceGroupName'))), format('wl-rg-{0}-{1}', toLower(parameters('enclaveName')), substring(uniqueString(deployment().name, parameters('location')), 0, 6)), trim(parameters('workloadResourceGroupName')))]",
+            "effectiveWorkloadNames": "[if(greater(length(parameters('workloadNames')), 0), parameters('workloadNames'), createArray(parameters('workloadName')))]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
           },
           "resources": {
             "enclave": {
@@ -3814,10 +4458,21 @@
               }
             },
             "workload": {
+<<<<<<< HEAD
               "condition": "[parameters('deployWorkload')]",
               "type": "Microsoft.Mission/virtualEnclaves/workloads",
               "apiVersion": "2026-03-01-preview",
               "name": "[format('{0}/{1}', parameters('enclaveName'), parameters('workloadName'))]",
+=======
+              "copy": {
+                "name": "workload",
+                "count": "[length(variables('effectiveWorkloadNames'))]"
+              },
+              "condition": "[parameters('deployWorkload')]",
+              "type": "Microsoft.Mission/virtualEnclaves/workloads",
+              "apiVersion": "2026-03-01-preview",
+              "name": "[format('{0}/{1}', parameters('enclaveName'), variables('effectiveWorkloadNames')[copyIndex()])]",
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
@@ -3883,9 +4538,22 @@
             "workloadResourceId": {
               "type": "string",
               "metadata": {
+<<<<<<< HEAD
                 "description": "The resource ID of the workload (if deployed)."
               },
               "value": "[if(parameters('deployWorkload'), resourceId('Microsoft.Mission/virtualEnclaves/workloads', parameters('enclaveName'), parameters('workloadName')), '')]"
+=======
+                "description": "The resource ID of the first workload (if deployed)."
+              },
+              "value": "[if(and(parameters('deployWorkload'), greater(length(variables('effectiveWorkloadNames')), 0)), format('{0}/workloads/{1}', resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), variables('effectiveWorkloadNames')[0]), '')]"
+            },
+            "workloadResourceIds": {
+              "type": "array",
+              "metadata": {
+                "description": "The resource IDs of deployed workloads (if deployed)."
+              },
+              "value": "[if(parameters('deployWorkload'), variables('computedWorkloadResourceIds'), createArray())]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           }
         }
@@ -3948,7 +4616,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
+<<<<<<< HEAD
               "templateHash": "6250350341902244931"
+=======
+              "templateHash": "17098404646497358101"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "definitions": {
@@ -4031,6 +4703,20 @@
               "metadata": {
                 "description": "Optional. Tags to apply to the enclave endpoint."
               }
+<<<<<<< HEAD
+=======
+            },
+            "updateMode": {
+              "type": "string",
+              "defaultValue": "Automatic",
+              "allowedValues": [
+                "Automatic",
+                "Manual"
+              ],
+              "metadata": {
+                "description": "Whether endpoint rule updates are applied automatically or require manual approval."
+              }
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
             }
           },
           "resources": {
@@ -4047,7 +4733,12 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
+<<<<<<< HEAD
                 "ruleCollection": "[parameters('rules')]"
+=======
+                "ruleCollection": "[parameters('rules')]",
+                "updateMode": "[parameters('updateMode')]"
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc
               }
             }
           },
@@ -6921,4 +7612,8 @@
       ]
     }
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> f3b462bb8e1625ac963a83ac98b8df38dad06adc

@@ -159,6 +159,10 @@ module enclaveWebApp 'modules/enclave.bicep' = {
       }
     ]
     deployWorkload: true
+    workloadNames: [
+      workloadFrontendName
+      workloadBackendName
+    ]
   }
 }
 
@@ -183,29 +187,6 @@ module enclaveDMZ 'modules/enclave.bicep' = {
     ]
     deployWorkload: true
   }
-}
-
-// Deploy Workloads for Enclave-WebApp
-// Note: Workloads are deployed as separate resources since the enclave module
-// doesn't support multiple workload deployments
-#disable-next-line BCP081
-resource wl_webapp_frontend 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-preview' = {
-  name: '${enclaveWebAppName}/${workloadFrontendName}'
-  location: location
-  properties: {}
-  dependsOn: [
-    enclaveWebApp
-  ]
-}
-
-#disable-next-line BCP081
-resource wl_webapp_backend 'Microsoft.Mission/virtualEnclaves/workloads@2025-05-01-preview' = {
-  name: '${enclaveWebAppName}/${workloadBackendName}'
-  location: location
-  properties: {}
-  dependsOn: [
-    enclaveWebApp
-  ]
 }
 
 // Deploy Enclave Endpoint for WebApp enclave

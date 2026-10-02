@@ -76,16 +76,16 @@ type maintenanceModeConfigurationType = {
 
 type governedServiceType = {
   @description('The service identifier.')
-  serviceId: string
-  
-  @description('The service option (Allow, Deny, NotApplicable).')
-  option: string
-  
-  @description('The enforcement mode (Enabled, Disabled).')
-  enforcement: string
-  
-  @description('The policy action (Enforce, Audit).')
-  policyAction: string
+  serviceId: ('AKS' | 'AppService' | 'AzureFirewalls' | 'ContainerRegistry' | 'CosmosDB' | 'DataConnectors' | 'Insights' | 'KeyVault' | 'Logic' | 'MicrosoftSQL' | 'Monitoring' | 'PostgreSQL' | 'PrivateDNSZones' | 'ServiceBus' | 'Storage')
+
+  @description('The service option (Allow, Deny, ExceptionOnly, or NotApplicable).')
+  option: ('Allow' | 'Deny' | 'ExceptionOnly' | 'NotApplicable')
+
+  @description('The enforcement mode (Enabled or Disabled).')
+  enforcement: ('Enabled' | 'Disabled')
+
+  @description('The policy action (AuditOnly, Enforce, or None).')
+  policyAction: ('AuditOnly' | 'Enforce' | 'None')
 }
 
 @description('The maintenance mode configuration for the community.')
@@ -104,22 +104,82 @@ param maintenanceModeConfiguration maintenanceModeConfigurationType = {
 })
 param governedServiceList governedServiceType[]
 
+type diagnosticDestinationType = {
+  @description('The destination type for diagnostics.')
+  destinationType: ('CommunityWorkspace' | 'CustomWorkspace' | 'EnclaveWorkspace')
+
+  @description('Log Analytics workspace resource ID. Required when destinationType is CustomWorkspace.')
+  customWorkspaceResourceId: string?
+
+  @description('Custom name for the diagnostic settings.')
+  diagnosticSettingsName: string?
+}
+
+type monitoringSettingsType = {
+  @description('List of diagnostic destinations.')
+  diagnosticDestinations: diagnosticDestinationType[]
+
+  @description('The destination for flow logs.')
+  flowLogDestination: diagnosticDestinationType
+}
+
+@description('Monitoring settings for diagnostic and flow log destinations.')
+@metadata({
+  displayName: 'Monitoring Settings'
+})
+param monitoringSettings monitoringSettingsType = {
+  diagnosticDestinations: [
+    {
+      destinationType: 'CommunityWorkspace'
+    }
+  ]
+  flowLogDestination: {
+    destinationType: 'CommunityWorkspace'
+  }
+}
+
 @description('Approval settings for various actions on the community resources.')
 @metadata({
   displayName: 'Approval Settings'
 })
 param approvalSettings communityApprovalSettingsType = {
-  communityEndpointUpdate: null
-  communityMaintenanceMode: null
-  connectionCreation: null
-  connectionUpdate: null
-  enclaveCreation: null
-  enclaveEndpointUpdate: null
-  enclaveMaintenanceMode: null
+  communityEndpointUpdate: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 1
+  }
+  communityMaintenanceMode: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 1
+  }
+  connectionCreation: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 1
+  }
+  connectionUpdate: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 1
+  }
+  enclaveCreation: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 1
+  }
+  enclaveEndpointUpdate: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 1
+  }
+  enclaveMaintenanceMode: {
+    approvalPolicy: 'NotRequired'
+    mandatoryApprovers: []
+    minimumApproversRequired: 1
+  }
 }
 
-// Disable BCP081 as Microsoft.Mission/communities is a preview resource type
-#disable-next-line BCP081
 resource community 'Microsoft.Mission/communities@2026-03-01-preview' = {
   name: communityName
   location: location
@@ -128,6 +188,7 @@ resource community 'Microsoft.Mission/communities@2026-03-01-preview' = {
     addressSpace: addressSpace
     maintenanceModeConfiguration: maintenanceModeConfiguration
     governedServiceList: governedServiceList
+    monitoringSettings: monitoringSettings
     approvalSettings: {
       communityEndpointUpdate: approvalSettings.?communityEndpointUpdate
       communityMaintenanceMode: approvalSettings.?communityMaintenanceMode
