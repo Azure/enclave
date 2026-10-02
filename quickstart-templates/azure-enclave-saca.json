@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.47.16.16243",
-      "templateHash": "16106366018118122082"
+      "version": "0.45.15.27210",
+      "templateHash": "10713244751942975096"
     }
   },
   "definitions": {
@@ -285,8 +285,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "7230816687086942243"
+              "version": "0.45.15.27210",
+              "templateHash": "6721890420651872179"
             },
             "name": "Community Module",
             "description": "This module deploys a community resource which is the hub of the Azure Enclave hub and spoke architecture."
@@ -751,8 +751,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "18338852779920517852"
+              "version": "0.45.15.27210",
+              "templateHash": "3689946510813165946"
             }
           },
           "definitions": {
@@ -930,8 +930,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "17865631271129971836"
+              "version": "0.45.15.27210",
+              "templateHash": "8173239528489251168"
             }
           },
           "definitions": {
@@ -1328,8 +1328,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15407222717784794941"
+              "version": "0.45.15.27210",
+              "templateHash": "13573103881482708685"
             }
           },
           "definitions": {
@@ -1568,8 +1568,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15407222717784794941"
+              "version": "0.45.15.27210",
+              "templateHash": "13573103881482708685"
             }
           },
           "definitions": {
@@ -1808,8 +1808,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15407222717784794941"
+              "version": "0.45.15.27210",
+              "templateHash": "13573103881482708685"
             }
           },
           "definitions": {
@@ -2048,8 +2048,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15407222717784794941"
+              "version": "0.45.15.27210",
+              "templateHash": "13573103881482708685"
             }
           },
           "definitions": {
@@ -2288,8 +2288,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15407222717784794941"
+              "version": "0.45.15.27210",
+              "templateHash": "13573103881482708685"
             }
           },
           "definitions": {
@@ -2550,8 +2550,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "2114287059988937210"
+              "version": "0.45.15.27210",
+              "templateHash": "4741630208054215262"
             }
           },
           "definitions": {
@@ -2909,7 +2909,7 @@
               "metadata": {
                 "description": "The subnet configurations of the enclave virtual network."
               },
-              "value": "[reference('enclave').enclaveVirtualNetwork.subnetConfigurations]"
+              "value": "[reference(resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations]"
             },
             "maintenanceModeConfiguration": {
               "$ref": "#/definitions/maintenanceModeConfigurationType",
@@ -2997,8 +2997,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "2114287059988937210"
+              "version": "0.45.15.27210",
+              "templateHash": "4741630208054215262"
             }
           },
           "definitions": {
@@ -3356,7 +3356,7 @@
               "metadata": {
                 "description": "The subnet configurations of the enclave virtual network."
               },
-              "value": "[reference('enclave').enclaveVirtualNetwork.subnetConfigurations]"
+              "value": "[reference(resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations]"
             },
             "maintenanceModeConfiguration": {
               "$ref": "#/definitions/maintenanceModeConfigurationType",
@@ -3444,8 +3444,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "2114287059988937210"
+              "version": "0.45.15.27210",
+              "templateHash": "4741630208054215262"
             }
           },
           "definitions": {
@@ -3803,7 +3803,7 @@
               "metadata": {
                 "description": "The subnet configurations of the enclave virtual network."
               },
-              "value": "[reference('enclave').enclaveVirtualNetwork.subnetConfigurations]"
+              "value": "[reference(resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations]"
             },
             "maintenanceModeConfiguration": {
               "$ref": "#/definitions/maintenanceModeConfigurationType",
@@ -3895,8 +3895,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "2114287059988937210"
+              "version": "0.45.15.27210",
+              "templateHash": "4741630208054215262"
             }
           },
           "definitions": {
@@ -4254,7 +4254,7 @@
               "metadata": {
                 "description": "The subnet configurations of the enclave virtual network."
               },
-              "value": "[reference('enclave').enclaveVirtualNetwork.subnetConfigurations]"
+              "value": "[reference(resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations]"
             },
             "maintenanceModeConfiguration": {
               "$ref": "#/definitions/maintenanceModeConfigurationType",
@@ -4337,8 +4337,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "1003166389926596742"
+              "version": "0.45.15.27210",
+              "templateHash": "17098404646497358101"
             }
           },
           "definitions": {
@@ -4523,8 +4523,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -4681,8 +4681,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -4839,8 +4839,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -4997,8 +4997,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -5155,8 +5155,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -5313,8 +5313,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -5470,8 +5470,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -5627,8 +5627,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -5784,8 +5784,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -5942,8 +5942,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -6100,8 +6100,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -6258,8 +6258,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -6416,8 +6416,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -6574,8 +6574,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -6732,8 +6732,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -6890,8 +6890,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -7048,8 +7048,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {
@@ -7206,8 +7206,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.47.16.16243",
-              "templateHash": "15200872762536076669"
+              "version": "0.45.15.27210",
+              "templateHash": "13652158573216093219"
             }
           },
           "parameters": {

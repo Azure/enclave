@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "224869507530165980"
+      "templateHash": "16017623802676702623"
     },
     "name": "Azure Enclave Tutorial Template",
     "description": "Tutorial template demonstrating Azure Enclave deployment using modular components"
@@ -917,7 +917,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "7163142406234217791"
+              "templateHash": "4741630208054215262"
             }
           },
           "definitions": {
@@ -1275,7 +1275,7 @@
               "metadata": {
                 "description": "The subnet configurations of the enclave virtual network."
               },
-              "value": "[reference('enclave').enclaveVirtualNetwork.subnetConfigurations]"
+              "value": "[reference(resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations]"
             },
             "maintenanceModeConfiguration": {
               "$ref": "#/definitions/maintenanceModeConfigurationType",
@@ -1354,7 +1354,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "7163142406234217791"
+              "templateHash": "4741630208054215262"
             }
           },
           "definitions": {
@@ -1712,7 +1712,7 @@
               "metadata": {
                 "description": "The subnet configurations of the enclave virtual network."
               },
-              "value": "[reference('enclave').enclaveVirtualNetwork.subnetConfigurations]"
+              "value": "[reference(resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations]"
             },
             "maintenanceModeConfiguration": {
               "$ref": "#/definitions/maintenanceModeConfigurationType",

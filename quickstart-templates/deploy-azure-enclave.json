@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.15.27210",
-      "templateHash": "3607484769920293178"
+      "templateHash": "17682451280289676811"
     }
   },
   "definitions": {
@@ -2204,7 +2204,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.15.27210",
-              "templateHash": "7163142406234217791"
+              "templateHash": "4741630208054215262"
             }
           },
           "definitions": {
@@ -2562,7 +2562,7 @@
               "metadata": {
                 "description": "The subnet configurations of the enclave virtual network."
               },
-              "value": "[reference('enclave').enclaveVirtualNetwork.subnetConfigurations]"
+              "value": "[reference(resourceId('Microsoft.Mission/virtualEnclaves', parameters('enclaveName')), '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations]"
             },
             "maintenanceModeConfiguration": {
               "$ref": "#/definitions/maintenanceModeConfigurationType",
