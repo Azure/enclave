@@ -337,7 +337,7 @@ module enclaveMission 'modules/enclave.bicep' = {
   }
 }
 
-var missionWorkloadSubnetCidr = reference(resourceId('Microsoft.Mission/virtualEnclaves', '${uniqueEnclaveNamePrefix}-mission'), '2025-05-01-preview').enclaveVirtualNetwork.subnetConfigurations[0].addressPrefix
+var missionWorkloadSubnetCidr = filter(enclaveMission.outputs.enclaveSubnetConfig, s => s.subnetName == 'WorkloadSubnet')[0].addressPrefix
 
 // Enclave Endpoints
 // Enclave Endpoint: Identity enclave ADDS 

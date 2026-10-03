@@ -30,13 +30,12 @@ param location string = resourceGroup().location
 
 @description('The name of the enclave connection.')
 @minLength(3)
-@maxLength(30)
 param connectionName string
 
 @description('Tags to be assigned to the enclave connection.')
 param tags object = {}
 
-resource enclaveConnection 'Microsoft.Mission/enclaveConnections@2026-03-01-preview' = {
+resource enclaveConnection 'Microsoft.Mission/enclaveConnections@2026-04-01' = {
   name: connectionName
   location: location
   tags: tags
