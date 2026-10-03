@@ -180,7 +180,7 @@ param approvalSettings communityApprovalSettingsType = {
   }
 }
 
-resource community 'Microsoft.Mission/communities@2026-03-01-preview' = {
+resource community 'Microsoft.Mission/communities@2026-04-01' = {
   name: communityName
   location: location
   tags: tags

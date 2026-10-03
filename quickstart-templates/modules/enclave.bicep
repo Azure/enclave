@@ -112,6 +112,9 @@ var computedWorkloadResourceIds = [for wlName in effectiveWorkloadNames: '${encl
 @description('Tags to be assigned to the enclave resource.')
 param tags object = {}
 
+@description('Tags to be assigned to workload resources. Defaults to the enclave tags.')
+param workloadTags object = tags
+
 @description('The list of subnet configurations for the enclave virtual network.')
 @metadata({
   displayName: 'Subnet Configurations'
@@ -127,6 +130,12 @@ param tags object = {}
   ]
 })
 param subnetConfigurationsList subnetConfigurationType[]
+
+@description('Whether communication between enclave subnets is allowed. Set to null to omit the property.')
+param allowSubnetCommunication bool?
+
+@description('Whether approval settings are included on the enclave resource.')
+param includeApprovalSettings bool = true
 
 @description('Approval settings for various actions on the enclave resources.')
 @metadata({
@@ -155,31 +164,44 @@ param approvalSettings enclaveApprovalSettingsType = {
   }
 }
 
-resource enclave 'Microsoft.Mission/virtualEnclaves@2026-03-01-preview' = {
-  name: enclaveName
-  location: location
-  tags: tags
-  properties: {
+var enclaveVirtualNetworkProperties = union(
+  {
+    networkSize: networkSize
+    subnetConfigurations: subnetConfigurationsList
+  },
+  allowSubnetCommunication == null ? {} : {
+    allowSubnetCommunication: allowSubnetCommunication
+  }
+)
+
+var enclaveProperties = union(
+  {
     communityResourceId: communityResourceId
-    enclaveVirtualNetwork: {
-      networkSize: networkSize
-      subnetConfigurations: subnetConfigurationsList
-    }
+    enclaveVirtualNetwork: enclaveVirtualNetworkProperties
     maintenanceModeConfiguration: maintenanceModeConfiguration
+  },
+  includeApprovalSettings ? {
     approvalSettings: {
       connectionCreation: approvalSettings.?connectionCreation
       connectionUpdate: approvalSettings.?connectionUpdate
       enclaveEndpointUpdate: approvalSettings.?enclaveEndpointUpdate
       enclaveMaintenanceMode: approvalSettings.?enclaveMaintenanceMode
     }
-  }
+  } : {}
+)
+
+resource enclave 'Microsoft.Mission/virtualEnclaves@2026-04-01' = {
+  name: enclaveName
+  location: location
+  tags: tags
+  properties: enclaveProperties
 }
 
-resource workload 'Microsoft.Mission/virtualEnclaves/workloads@2026-03-01-preview' = [for wlName in effectiveWorkloadNames: if (deployWorkload) {
+resource workload 'Microsoft.Mission/virtualEnclaves/workloads@2026-04-01' = [for wlName in effectiveWorkloadNames: if (deployWorkload) {
   parent: enclave
   name: wlName
   location: location
-  tags: tags
+  tags: workloadTags
   properties: {
     resourceGroupCollection: [
       '${subscription().id}/resourceGroups/${effectiveWorkloadResourceGroupName}'
@@ -206,7 +228,7 @@ output managedAddressSpace string = enclave.properties.enclaveAddressSpaces.mana
 @description('The subnet configurations of the enclave virtual network.')
 // The provider's declared subnet type omits the runtime-generated addressPrefix field.
 #disable-next-line use-resource-symbol-reference
-output enclaveSubnetConfig array = reference(enclave.id, '2026-03-01-preview').enclaveVirtualNetwork.subnetConfigurations
+output enclaveSubnetConfig array = reference(enclave.id, '2026-04-01').enclaveVirtualNetwork.subnetConfigurations
 
 @description('The current maintenance mode configuration.')
 output maintenanceModeConfiguration maintenanceModeConfigurationType = maintenanceModeConfiguration

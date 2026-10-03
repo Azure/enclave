@@ -86,11 +86,11 @@ param tags object = {}
 param updateMode string = 'Automatic'
 
 // Reference to existing parent community resource
-resource community 'Microsoft.Mission/communities@2026-03-01-preview' existing = {
+resource community 'Microsoft.Mission/communities@2026-04-01' existing = {
   name: communityName
 }
 
-resource communityEndpoint 'Microsoft.Mission/communities/communityEndpoints@2026-03-01-preview' = {
+resource communityEndpoint 'Microsoft.Mission/communities/communityEndpoints@2026-04-01' = {
   parent: community
   name: communityEndpointName
   location: location

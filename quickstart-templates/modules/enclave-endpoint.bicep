@@ -52,20 +52,29 @@ param tags object = {}
 @allowed(['Automatic', 'Manual'])
 param updateMode string = 'Automatic'
 
+@description('Whether updateMode is included on the enclave endpoint resource.')
+param includeUpdateMode bool = true
+
 // Reference to existing parent enclave resource
-resource enclave 'Microsoft.Mission/virtualEnclaves@2026-03-01-preview' existing = {
+resource enclave 'Microsoft.Mission/virtualEnclaves@2026-04-01' existing = {
   name: enclaveName
 }
 
-resource enclaveEndpoint 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2026-03-01-preview' = {
+var enclaveEndpointProperties = union(
+  {
+    ruleCollection: rules
+  },
+  includeUpdateMode ? {
+    updateMode: updateMode
+  } : {}
+)
+
+resource enclaveEndpoint 'Microsoft.Mission/virtualEnclaves/enclaveEndpoints@2026-04-01' = {
   parent: enclave
   name: endpointName
   location: location
   tags: tags
-  properties: {
-    ruleCollection: rules
-    updateMode: updateMode
-  }
+  properties: enclaveEndpointProperties
 }
 
 @description('The resource ID of the enclave endpoint.')
