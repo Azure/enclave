@@ -747,3 +747,4 @@ module connectionExternalToIdentityAdds 'modules/enclave-connection.bicep' = {
     enclaveEndpointIdentity
   ]
 }
+
