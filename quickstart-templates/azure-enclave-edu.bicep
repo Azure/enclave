@@ -39,7 +39,7 @@ type maintenanceModeConfigurationType = {
 }
 
 // Portal format example:
-// {"mode": "Advanced", "principals": [{"id": "your-principal-id", "type": "User"}],"justification": "Networking"}
+// {"mode": "General", "principals": [{"id": "your-principal-id", "type": "User"}],"justification": "Networking"}
 @description('Maintenance mode configuration for resources.')
 param maintenanceModeConfig maintenanceModeConfigurationType = {
   mode: 'Off'
